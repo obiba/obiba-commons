@@ -14,9 +14,9 @@
   <!-- POM Relationships                                                                           -->
   <!--=============================================================================================-->
   <parent>
-    <groupId>ca.qc.cartagene</groupId>
-    <artifactId>cartagene-parent</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <groupId>org.obiba</groupId>
+    <artifactId>obiba-commons</artifactId>
+    <version>1.0.1-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -25,12 +25,13 @@
   <packaging>jar</packaging>
 
   <dependencies>
+    <!-- Set the Obiba Commons component's version in this section only -->
     <dependency>
       <groupId>org.obiba</groupId>
       <artifactId>obiba-core</artifactId>
-      <version>1.0-SNAPSHOT</version>
     </dependency>
 
+    <!-- Common component's versions -->
     <dependency>
       <groupId>commons-dbcp</groupId>
       <artifactId>commons-dbcp</artifactId>
