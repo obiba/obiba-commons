@@ -1,0 +1,15 @@
+<dataset>
+
+  <a id="1" value="1"/>
+  <b id="1" value="101" parent="1"/>
+  <c id="1" value="201" parent="1"/>
+
+  <a id="2" value="2"/>
+  <b id="2" value="102" parent="2"/>
+  <c id="2" value="202" parent="2"/>
+  <c id="3" value="203" parent="2"/>
+
+  <b id="4" value="104" parent="2"/>
+  <c id="4" value="204" parent="4"/>
+
+</dataset>

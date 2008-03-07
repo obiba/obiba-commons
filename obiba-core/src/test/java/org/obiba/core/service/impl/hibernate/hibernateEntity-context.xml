@@ -1,0 +1,50 @@
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.1.xsd">
+
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="org.hsqldb.jdbcDriver"/>
+        <property name="url" value="jdbc:hsqldb:mem:target/test.db;shutdown=true"/>
+        <property name="username" value="sa"/>
+        <property name="password" value=""/>
+    </bean>
+
+    <bean id="hibernateConfig" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+      <property name="properties">
+        <value>
+          hibernate.hbm2ddl.auto=update
+          hibernate.dialect=org.hibernate.dialect.HSQLDialect
+        </value>
+      </property>
+    </bean>
+
+  <!-- Use a friendlier NamingStrategy -->
+  <bean id="namingStrategy" class="org.hibernate.cfg.ImprovedNamingStrategy"/>
+
+  <!-- The Hibernate SessionFactory -->
+  <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+    <property name="dataSource">
+      <ref bean="dataSource"/>
+    </property>
+    <property name="namingStrategy">
+      <ref bean="namingStrategy"/>
+    </property>
+    <property name="annotatedClasses">
+      <list>
+        <value>org.obiba.core.service.impl.hibernate.testModel.AnEntity</value>
+      </list>
+    </property>
+    <property name="configurationClass" value="org.hibernate.cfg.AnnotationConfiguration"/>
+    <property name="hibernateProperties" ref="hibernateConfig"/>
+  </bean>
+
+  <!-- Hook the SessionFactory to a platform TransactionManager -->
+  <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>
+
+<!--
+  <bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate" scope="prototype">
+    <property name="transactionManager" ref="transactionManager"/>
+  </bean>
+-->
+</beans>

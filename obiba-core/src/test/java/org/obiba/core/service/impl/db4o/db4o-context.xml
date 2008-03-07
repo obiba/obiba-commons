@@ -1,0 +1,28 @@
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.1.xsd">
+
+  <bean id="configurationObject" class="org.obiba.db4o.ConfigurationFactoryBean">
+    <property name="messageLevel" value="2"/>
+    <property name="activationDepth" value="0"/>
+    <!-- possible values are NEW, CLONED and GLOBAL -->
+    <property name="configurationCreationMode" value="NEW"/>
+    <property name="transparentActivation" value="true"/>
+    <property name="generateUUIDs" value="GLOBALLY"/>
+  </bean>
+
+  <bean id="objectContainer" class="org.obiba.db4o.ObjectContainerFactoryBean">
+    <property name="configuration" ref="configurationObject"/>
+    <property name="memoryFile"> 
+     <bean class="com.db4o.ext.MemoryFile"/>
+  </property>
+  </bean>
+
+  <bean id="transactionManager" class="org.obiba.db4o.Db4oTransactionManager">
+    <property name="objectContainer" ref="objectContainer"/>
+  </bean>
+
+  <bean id="persistenceManager" class="org.obiba.core.service.impl.db4o.PersistenceManagerDb4oImpl">
+    <property name="objectContainer" ref="objectContainer"/>
+  </bean>
+
+</beans>
