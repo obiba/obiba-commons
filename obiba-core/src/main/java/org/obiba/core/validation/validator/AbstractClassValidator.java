@@ -1,5 +1,6 @@
 package org.obiba.core.validation.validator;
 
+import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -30,4 +31,20 @@ public abstract class AbstractClassValidator implements Validator {
 	 */
 	protected abstract Class getValidatorSupportClass();
 
+  /**
+   * Validate given object.
+   * @param obj the object to validate.
+   * @return null if object is null or object class is not supported by this validator.
+   */
+  public Errors validate(final Object obj) {
+    Errors errors = null;
+    
+    if (obj != null && supports(obj.getClass())) {
+      errors = new BindException(obj, obj.getClass().getName());
+
+      validate(obj, errors);
+    }
+
+    return errors;
+  }
 }
