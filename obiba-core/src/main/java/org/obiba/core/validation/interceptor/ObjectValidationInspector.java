@@ -20,7 +20,6 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.obiba.core.service.PersistenceManager;
-import org.obiba.core.validation.exception.ValidationException;
 import org.obiba.core.validation.validator.AbstractPersistenceAwareClassValidator;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -29,6 +28,8 @@ import org.springframework.validation.Validator;
 public class ObjectValidationInspector {
   
   private List<Validator> validators = new ArrayList<Validator>();
+
+  protected PersistenceManager persistenceManager;
   
   private Log log = LogFactory.getLog(getClass());
   
@@ -45,6 +46,14 @@ public class ObjectValidationInspector {
    */
   public void setValidators(List<Validator> validators) {
     this.validators = validators;
+  }
+  
+  public void setPersistenceManager(PersistenceManager persistenceManager) {
+    this.persistenceManager = persistenceManager;
+  }
+  
+  public PersistenceManager getPersistenceManager() {
+    return persistenceManager;
   }
 
   private void inspectObjectProperties(final Object arg,
@@ -119,7 +128,7 @@ public class ObjectValidationInspector {
   public void inspectObject(final List<Errors> errors, final Object arg) {
     for (final Validator validator : getValidators()) {
       if (validator.supports(arg.getClass())) {
-        if (validator instanceof AbstractPersistenceAwareClassValidator) {
+        if (persistenceManager != null && validator instanceof AbstractPersistenceAwareClassValidator) {
           ((AbstractPersistenceAwareClassValidator)validator).setPersistenceManager(persistenceManager);
         }
         log.debug("Validator supported: " + arg.getClass());
@@ -142,15 +151,5 @@ public class ObjectValidationInspector {
         || clazz.isAssignableFrom(LinkedList.class)
         || clazz.isAssignableFrom(TreeSet.class) || clazz
         .isAssignableFrom(Vector.class));
-  }
-  
-  protected PersistenceManager persistenceManager;
-
-  public void setPersistenceManager(PersistenceManager persistenceManager) {
-    this.persistenceManager = persistenceManager;
-  }
-  
-  public PersistenceManager getPersistenceManager() {
-    return persistenceManager;
   }
 }
