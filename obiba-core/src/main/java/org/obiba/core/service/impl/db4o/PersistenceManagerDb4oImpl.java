@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.obiba.core.domain.IEntity;
 import org.obiba.core.service.PagingClause;
-import org.obiba.core.service.PersistenceManager;
 import org.obiba.core.service.SortingClause;
+import org.obiba.core.service.impl.DefaultPersistenceManagerImpl;
 import org.obiba.core.service.impl.hibernate.PersistenceManagerHibernateImpl;
 import org.obiba.db4o.Db4oUtil;
 import org.slf4j.Logger;
@@ -20,7 +20,7 @@ import com.db4o.ext.ExtObjectContainer;
 import com.db4o.query.Query;
 
 @Transactional
-public class PersistenceManagerDb4oImpl implements PersistenceManager {
+public class PersistenceManagerDb4oImpl extends DefaultPersistenceManagerImpl {
 
   private final Logger log = LoggerFactory.getLogger(PersistenceManagerHibernateImpl.class);
 

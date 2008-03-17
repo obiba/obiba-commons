@@ -10,6 +10,7 @@ import org.hibernate.criterion.Projections;
 import org.obiba.core.service.PagingClause;
 import org.obiba.core.service.PersistenceManager;
 import org.obiba.core.service.SortingClause;
+import org.obiba.core.service.impl.DefaultPersistenceManagerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @param <T>
  */
 @Transactional
-public class PersistenceManagerHibernateImpl implements PersistenceManager {
+public class PersistenceManagerHibernateImpl extends DefaultPersistenceManagerImpl {
 
   private final Logger log = LoggerFactory.getLogger(PersistenceManagerHibernateImpl.class);
 
@@ -101,8 +102,9 @@ public class PersistenceManagerHibernateImpl implements PersistenceManager {
     getSession().save(entity);
     return entity;
   }
-
+  
   protected int count(Criteria criteria) {
     return (Integer)criteria.setProjection(Projections.rowCount()).uniqueResult();
   }
+
 }
