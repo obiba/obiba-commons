@@ -221,6 +221,11 @@ public class EntityListTablePanel<T> extends Panel {
       rowSelectionColumn.clearSelectionComponents();
   }
   
+  
+  /**
+   * Sets whether to display the column selection widget on the table's header row.
+   * @param selection true if the widget should be displayed.
+   */
   public void setAllowColumnSelection(boolean selection) {
     if(selection == false) {
       selector.setVisible(false);
