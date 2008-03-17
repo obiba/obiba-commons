@@ -98,5 +98,14 @@ public class ValidationException extends RuntimeException {
     
     return new BindException(target, target != null ? target.getClass().getName() : "null");
   }
+  
+  @Override
+  public String toString() {
+    StringBuffer errorMessage = new StringBuffer();
+    for (Errors error : errors) {
+      errorMessage.append(error.toString());
+    }
+    return errorMessage.toString();
+  }
 
 }
