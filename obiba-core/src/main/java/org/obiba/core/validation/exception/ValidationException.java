@@ -1,10 +1,12 @@
 package org.obiba.core.validation.exception;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
 
 public class ValidationException extends RuntimeException {
 
@@ -55,6 +57,25 @@ public class ValidationException extends RuntimeException {
 	public void setErrors(final List<Errors> errors) {
 		this.errors = errors;
 	}
+
+  /**
+   * Get the object errors in a flat list.
+   * @return
+   */
+  public List<ObjectError> getAllObjectErrors() {
+    List<ObjectError> allErrors = new ArrayList<ObjectError>();
+    
+    if (errors != null) {
+      for (Errors err : errors) {
+        for (Object oerr : err.getAllErrors()) {
+          if (oerr instanceof ObjectError)
+            allErrors.add((ObjectError)oerr);
+        }
+      }
+    }
+    
+    return allErrors;
+  }
   
   public void reject(Object target, String errorCode) {
     Errors error = getTargetErrors(target);
