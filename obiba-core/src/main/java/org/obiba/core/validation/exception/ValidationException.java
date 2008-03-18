@@ -101,11 +101,7 @@ public class ValidationException extends RuntimeException {
   
   @Override
   public String toString() {
-    StringBuffer errorMessage = new StringBuffer();
-    for (Errors error : errors) {
-      errorMessage.append(error.toString());
-    }
-    return errorMessage.toString();
+    return errors.toString();
   }
 
 }

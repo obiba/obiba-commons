@@ -25,17 +25,16 @@ public abstract class DefaultPersistenceManagerImpl implements PersistenceManage
     this.objectValidationInspector = objectValidationInspector;
   }
   
-  public <T> T saveValidate(T entity) throws ValidationException {
+  public <T> void validate(T entity) throws ValidationException {
     if (getObjectValidationInspector() != null) {
       final List<Errors> errors = new ArrayList<Errors>();
-      getObjectValidationInspector().setPersistenceManager(this);
+      getObjectValidationInspector().setEntityQueryService(this);
       getObjectValidationInspector().inspectObject(errors, entity);
       if (errors.size() > 0) {
         log.warn("Validation error(s) found, throwing ValidationException.");
         throw new ValidationException(errors);
       }
     }
-    return save(entity);
   }
 
 }

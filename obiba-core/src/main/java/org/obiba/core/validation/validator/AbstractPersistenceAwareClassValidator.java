@@ -1,6 +1,6 @@
 package org.obiba.core.validation.validator;
 
-import org.obiba.core.service.PersistenceManager;
+import org.obiba.core.service.EntityQueryService;
 
 /**
  * Validator class to extend for performing object validation on a specific class, with PersistenceManager
@@ -11,13 +11,13 @@ import org.obiba.core.service.PersistenceManager;
  */
 public abstract class AbstractPersistenceAwareClassValidator extends AbstractClassValidator {
 
-  protected PersistenceManager persistenceManager;
-
-  public void setPersistenceManager(PersistenceManager persistenceManager) {
-    this.persistenceManager = persistenceManager;
-  }
+  protected EntityQueryService entityQueryService;
   
-  public PersistenceManager getPersistenceManager() {
-    return persistenceManager;
+  public EntityQueryService getEntityQueryService() {
+    return entityQueryService;
+  }
+
+  public void setEntityQueryService(EntityQueryService entityQueryService) {
+    this.entityQueryService = entityQueryService;
   }
 }

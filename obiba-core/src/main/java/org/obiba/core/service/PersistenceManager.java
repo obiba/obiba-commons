@@ -12,8 +12,6 @@ public interface PersistenceManager extends EntityQueryService {
 
   public <T> T newInstance(Class<T> type);
 
-  public <T> T save(T entity);
-  
-  public <T> T saveValidate(T entity) throws ValidationException;
+  public <T> T save(T entity) throws ValidationException;
 
 }

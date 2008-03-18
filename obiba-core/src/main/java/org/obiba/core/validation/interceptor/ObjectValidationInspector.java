@@ -19,7 +19,7 @@ import java.util.Vector;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.obiba.core.service.PersistenceManager;
+import org.obiba.core.service.EntityQueryService;
 import org.obiba.core.validation.validator.AbstractPersistenceAwareClassValidator;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -29,7 +29,7 @@ public class ObjectValidationInspector {
   
   private List<Validator> validators = new ArrayList<Validator>();
 
-  protected PersistenceManager persistenceManager;
+  protected EntityQueryService entityQueryService;
   
   private Log log = LogFactory.getLog(getClass());
   
@@ -48,12 +48,12 @@ public class ObjectValidationInspector {
     this.validators = validators;
   }
   
-  public void setPersistenceManager(PersistenceManager persistenceManager) {
-    this.persistenceManager = persistenceManager;
+  public void setEntityQueryService(EntityQueryService entityQueryService) {
+    this.entityQueryService = entityQueryService;
   }
   
-  public PersistenceManager getPersistenceManager() {
-    return persistenceManager;
+  public EntityQueryService getEntityQueryService() {
+    return entityQueryService;
   }
 
   private void inspectObjectProperties(final Object arg,
@@ -128,8 +128,8 @@ public class ObjectValidationInspector {
   public void inspectObject(final List<Errors> errors, final Object arg) {
     for (final Validator validator : getValidators()) {
       if (validator.supports(arg.getClass())) {
-        if (persistenceManager != null && validator instanceof AbstractPersistenceAwareClassValidator) {
-          ((AbstractPersistenceAwareClassValidator)validator).setPersistenceManager(persistenceManager);
+        if (entityQueryService != null && validator instanceof AbstractPersistenceAwareClassValidator) {
+          ((AbstractPersistenceAwareClassValidator)validator).setEntityQueryService(entityQueryService);
         }
         log.debug("Validator supported: " + arg.getClass());
         validateAndAddErrors(arg, validator, errors);
