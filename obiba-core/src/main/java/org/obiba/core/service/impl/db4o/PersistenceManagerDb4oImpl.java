@@ -8,7 +8,7 @@ import org.obiba.core.service.PagingClause;
 import org.obiba.core.service.SortingClause;
 import org.obiba.core.service.impl.DefaultPersistenceManagerImpl;
 import org.obiba.core.service.impl.hibernate.PersistenceManagerHibernateImpl;
-import org.obiba.core.validation.exception.ValidationException;
+import org.obiba.core.validation.exception.ValidationRuntimeException;
 import org.obiba.db4o.Db4oUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,7 +106,7 @@ public class PersistenceManagerDb4oImpl extends DefaultPersistenceManagerImpl {
     return entity;
   }
 
-  public <T> T save(T entity) throws ValidationException {
+  public <T> T save(T entity) throws ValidationRuntimeException {
     validate(entity);
     container().store(entity);
     if(entity instanceof IEntity) {

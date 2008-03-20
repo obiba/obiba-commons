@@ -11,7 +11,7 @@ import org.obiba.core.service.PagingClause;
 import org.obiba.core.service.PersistenceManager;
 import org.obiba.core.service.SortingClause;
 import org.obiba.core.service.impl.DefaultPersistenceManagerImpl;
-import org.obiba.core.validation.exception.ValidationException;
+import org.obiba.core.validation.exception.ValidationRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -99,7 +99,7 @@ public class PersistenceManagerHibernateImpl extends DefaultPersistenceManagerIm
     return entity;
   }
 
-  public <T> T save(T entity) throws ValidationException {
+  public <T> T save(T entity) throws ValidationRuntimeException {
     validate(entity);
     getSession().save(entity);
     return entity;

@@ -7,7 +7,7 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.obiba.core.validation.exception.ValidationException;
+import org.obiba.core.validation.exception.ValidationRuntimeException;
 import org.springframework.validation.Errors;
 
 public class MethodArgValidationInterceptor extends ObjectValidationInspector implements MethodInterceptor {
@@ -30,7 +30,7 @@ public class MethodArgValidationInterceptor extends ObjectValidationInspector im
 
 		if (errors.size() > 0) {
 			log.warn("Validation error(s) found, throwing ValidationException.");
-			throw new ValidationException(errors);
+			throw new ValidationRuntimeException(errors);
 		}
 
 		return methodInvocation.proceed();

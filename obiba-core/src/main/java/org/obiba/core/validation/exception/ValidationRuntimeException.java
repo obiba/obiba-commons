@@ -8,7 +8,7 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
 
-public class ValidationException extends RuntimeException {
+public class ValidationRuntimeException extends RuntimeException {
 
 	/**
 	 * Generated serialVersion
@@ -16,30 +16,30 @@ public class ValidationException extends RuntimeException {
 	private static final long serialVersionUID = 2605997256235741510L;
 	private List<Errors> errors;
 
-	public ValidationException(final List<Errors> errors) {
+	public ValidationRuntimeException(final List<Errors> errors) {
 		this.errors = errors;
 	}
   
-  public ValidationException() {
+  public ValidationRuntimeException() {
     this.errors = new LinkedList<Errors>();
   }
   
-  public ValidationException(Object target, String errorCode, String defaultMessage) {
+  public ValidationRuntimeException(Object target, String errorCode, String defaultMessage) {
     this.errors = new LinkedList<Errors>();
     reject(target, errorCode, defaultMessage);
   }
 
-  public ValidationException(Object target, String errorCode, Object[] errorArgs, String defaultMessage) {
+  public ValidationRuntimeException(Object target, String errorCode, Object[] errorArgs, String defaultMessage) {
     this.errors = new LinkedList<Errors>();
     reject(target, errorCode, errorArgs, defaultMessage);
   }
   
-  public ValidationException(String errorCode, String defaultMessage) {
+  public ValidationRuntimeException(String errorCode, String defaultMessage) {
     this.errors = new LinkedList<Errors>();
     reject(null, errorCode, defaultMessage);
   }
   
-  public ValidationException(String errorCode, Object[] errorArgs, String defaultMessage) {
+  public ValidationRuntimeException(String errorCode, Object[] errorArgs, String defaultMessage) {
     this.errors = new LinkedList<Errors>();
     reject(null, errorCode, errorArgs, defaultMessage);
   }

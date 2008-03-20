@@ -1,6 +1,6 @@
 package org.obiba.core.service;
 
-import org.obiba.core.validation.exception.ValidationException;
+import org.obiba.core.validation.exception.ValidationRuntimeException;
 
 
 /**
@@ -12,6 +12,6 @@ public interface PersistenceManager extends EntityQueryService {
 
   public <T> T newInstance(Class<T> type);
 
-  public <T> T save(T entity) throws ValidationException;
+  public <T> T save(T entity) throws ValidationRuntimeException;
 
 }
