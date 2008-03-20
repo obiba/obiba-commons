@@ -184,6 +184,11 @@ public class KeyValueDataPanel extends Panel {
       }
     }));
 
+    //If the value's model is empty, generate a model with a spacing character. This prevents some display glitches on the table.
+    if (pValue.getModel().getObject().toString().equals("")) {
+      pValue = new EmptyCellFragment(getRowValueId());
+    }
+    
     item.add(pValue);
 
     if (pRowAuth != null) {
@@ -259,6 +264,18 @@ public class KeyValueDataPanel extends Panel {
     }
 
   }
+  
+  
+  
+  private class EmptyCellFragment extends Fragment {
+    private static final long serialVersionUID = -1448002319546204879L;
+
+    public EmptyCellFragment(String id) {
+      super(id, "emptyCellFragment", KeyValueDataPanel.this);
+    }
+
+  }
+  
   
   private class NoDataRowFragment extends Fragment {
     public NoDataRowFragment(String id) {
