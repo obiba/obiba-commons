@@ -185,7 +185,7 @@ public class KeyValueDataPanel extends Panel {
     }));
 
     //If the value's model is empty, generate a model with a spacing character. This prevents some display glitches on the table.
-    if (pValue.getModel().getObject().toString().equals("")) {
+    if ((pValue == null) || (pValue.getModel().getObject() == null) || (pValue.getModel().getObject().toString().equals(""))) {
       pValue = new EmptyCellFragment(getRowValueId());
     }
     
