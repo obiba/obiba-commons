@@ -15,6 +15,7 @@ public class ValidationRuntimeException extends RuntimeException {
 	 */
 	private static final long serialVersionUID = 2605997256235741510L;
 	private List<Errors> errors;
+  private Object nullTarget = new Object();
 
 	public ValidationRuntimeException(final List<Errors> errors) {
 		this.errors = errors;
@@ -108,6 +109,9 @@ public class ValidationRuntimeException extends RuntimeException {
   }
   
   private Errors getTargetErrors(Object target) {
+    if (target == null)
+      target = nullTarget;
+    
     for (Errors error : errors) {
       if (error instanceof BindException) {
         if (target != null && target.equals(((BindException)error).getTarget()))
@@ -117,7 +121,7 @@ public class ValidationRuntimeException extends RuntimeException {
       }
     }
     
-    return new BindException(target, target != null ? target.getClass().getName() : "null");
+    return new BindException(target, target.getClass().getName());
   }
   
   @Override
