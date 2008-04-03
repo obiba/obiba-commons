@@ -71,6 +71,23 @@ public class FileUtil {
   }
 
   /**
+   * Move file to a directory or a new file.
+   * @param source
+   * @param dest
+   * @throws IOException
+   */
+  public static void moveFile(File source, File dest) throws IOException {
+    if (dest.isDirectory()) {
+      dest = new File(dest, source.getName());
+    }
+    
+    if (!source.renameTo(dest)) {
+      copyFile(source, dest);
+      source.delete();
+    }
+  }
+  
+  /**
    * Delete the normal file or delete recursively the directory.
    * @param resource
    * @return
