@@ -7,8 +7,10 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 import org.dbunit.DatabaseUnitException;
+import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseDataSourceConnection;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.dbunit.ext.hsqldb.HsqldbDataTypeFactory;
 import org.dbunit.operation.DatabaseOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +70,7 @@ public class DbUnitAwareTestExecutionListener implements TestExecutionListener {
 
     DataSource dataSource = (DataSource)context.getApplicationContext().getBean(dataSourceBeanName);
     DatabaseDataSourceConnection c = new DatabaseDataSourceConnection(dataSource);
+    c.getConfig().setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new HsqldbDataTypeFactory());
     try {
       String filenames[] = datasetAnnotation.filenames();
       if(filenames == null || filenames.length == 0) {
