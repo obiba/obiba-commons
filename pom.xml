@@ -24,7 +24,7 @@
         <artifactId>obiba-core</artifactId>
         <version>${project.version}</version>
       </dependency>
-    
+
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring</artifactId>
@@ -95,19 +95,25 @@
         <version>1.0.1B</version>
         <scope>test</scope>
       </dependency>
-      
+
       <!-- Use commons-dbcp as the DataSource implementation -->
       <dependency>
         <groupId>commons-dbcp</groupId>
         <artifactId>commons-dbcp</artifactId>
         <version>1.2.2</version>
       </dependency>
-		
-	  <dependency>
-		<groupId>commons-beanutils</groupId>
-		<artifactId>commons-beanutils</artifactId>
-		<version>1.7.0</version>
-	  </dependency>
+
+      <dependency>
+        <groupId>commons-beanutils</groupId>
+        <artifactId>commons-beanutils</artifactId>
+        <version>1.7.0</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
 
       <!-- If we need MySQL -->
       <dependency>
@@ -116,12 +122,12 @@
         <version>5.0.5</version>
       </dependency>
 
-     <dependency>
-       <groupId>com.db4o</groupId>
-       <artifactId>db4o</artifactId>
-       <version>7.1.27.9108</version>
-       <classifier>jdk1.5</classifier>
-     </dependency>
+      <dependency>
+        <groupId>com.db4o</groupId>
+        <artifactId>db4o</artifactId>
+        <version>7.1.27.9108</version>
+        <classifier>jdk1.5</classifier>
+      </dependency>
 
       <!-- Logging framework -->
       <dependency>
@@ -297,13 +303,17 @@
       <name>
         Springframework Maven SNAPSHOT (and milestone) Repository
       </name>
-      <url>http://s3.amazonaws.com/maven.springframework.org/snapshot</url>
+      <url>
+        http://s3.amazonaws.com/maven.springframework.org/snapshot
+      </url>
     </repository>
 
     <repository>
       <id>spring-s3.milestones</id>
       <name>Spring Portfolio Maven MILESTONE Repository</name>
-      <url>http://s3.amazonaws.com/maven.springframework.org/milestone</url>
+      <url>
+        http://s3.amazonaws.com/maven.springframework.org/milestone
+      </url>
     </repository>
 
     <repository>
@@ -315,7 +325,7 @@
       </snapshots>
     </repository>
   </repositories>
-  
+
   <pluginRepositories>
     <pluginRepository>
       <id>internal</id>
