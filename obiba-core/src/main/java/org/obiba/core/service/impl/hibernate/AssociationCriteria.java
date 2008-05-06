@@ -414,7 +414,8 @@ public class AssociationCriteria {
     return (Integer)baseCriteria.setProjection(Projections.rowCount()).uniqueResult();
   }
 
-  public List list() {
+  @SuppressWarnings("unchecked")
+  public <T> List<T> list() {
     return baseCriteria.list();
   }
 
