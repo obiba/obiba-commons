@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
@@ -235,7 +234,13 @@
   <distributionManagement>
     <repository>
       <url>file:///data/tomcat/apache-tomcat-5.5.16/webapps/maven2</url>
+      <uniqueVersion>false</uniqueVersion>
     </repository>
+
+    <snapshotRepository>
+      <url>file:///data/tomcat/apache-tomcat-5.5.16/webapps/maven2-snapshots</url>
+      <uniqueVersion>true</uniqueVersion>
+    </snapshotRepository>
   </distributionManagement>
 
   <build>
@@ -300,20 +305,14 @@
 
     <repository>
       <id>spring-s3</id>
-      <name>
-        Springframework Maven SNAPSHOT (and milestone) Repository
-      </name>
-      <url>
-        http://s3.amazonaws.com/maven.springframework.org/snapshot
-      </url>
+      <name>Springframework Maven SNAPSHOT (and milestone) Repository</name>
+      <url>http://s3.amazonaws.com/maven.springframework.org/snapshot</url>
     </repository>
 
     <repository>
       <id>spring-s3.milestones</id>
       <name>Spring Portfolio Maven MILESTONE Repository</name>
-      <url>
-        http://s3.amazonaws.com/maven.springframework.org/milestone
-      </url>
+      <url>http://s3.amazonaws.com/maven.springframework.org/milestone</url>
     </repository>
 
     <repository>
