@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -60,33 +59,33 @@
     <dependency>
       <groupId>org.apache.wicket</groupId>
       <artifactId>wicket</artifactId>
-        <version>${wicket.version}</version>
+      <version>${wicket.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.apache.wicket</groupId>
       <artifactId>wicket-spring</artifactId>
-        <version>${wicket.version}</version>
+      <version>${wicket.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.apache.wicket</groupId>
       <artifactId>wicket-spring-annot</artifactId>
-        <version>${wicket.version}</version>
+      <version>${wicket.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.apache.wicket</groupId>
       <artifactId>wicket-extensions</artifactId>
-        <version>${wicket.version}</version>
+      <version>${wicket.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.apache.wicket</groupId>
       <artifactId>wicket-auth-roles</artifactId>
-        <version>${wicket.version}</version>
+      <version>${wicket.version}</version>
     </dependency>
-    
+
     <!-- LOGGING DEPENDENCIES - LOG4J -->
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -115,11 +114,18 @@
       <version>${jetty.version}</version>
       <scope>provided</scope>
     </dependency>
-        <!-- Even though we don't use it, the JTA jar is required due because the Spring class hierarchy and hibernate references javax.transaction.TransactionManager -->
+    <!-- Even though we don't use it, the JTA jar is required due because the Spring class hierarchy and hibernate references javax.transaction.TransactionManager -->
     <dependency>
       <groupId>javax.transaction</groupId>
       <artifactId>jta</artifactId>
       <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.thoughtworks.xstream</groupId>
+      <artifactId>xstream</artifactId>
+      <version>1.3</version>
+      <optional>true</optional>
     </dependency>
 
   </dependencies>
@@ -144,10 +150,10 @@
             <extended>false</extended>
             <logTimeZone>GMT</logTimeZone>
           </requestLog>
-        </configuration> 
+        </configuration>
       </plugin>
-		
-	  <plugin>
+
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
         <executions>
@@ -162,7 +168,7 @@
       </plugin>
     </plugins>
   </build>
-  
+
   <properties>
     <wicket.version>1.3.3</wicket.version>
     <jetty.version>6.1.4</jetty.version>
@@ -173,5 +179,5 @@
       <url>file:///data/tomcat/apache-tomcat-5.5.16/webapps/maven2</url>
     </repository>
   </distributionManagement>
-	
+
 </project>
