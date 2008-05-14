@@ -31,6 +31,9 @@ public class XstreamResourceDatabaseSeed implements DatabaseSeed, InitializingBe
   @SuppressWarnings("unchecked")
   @Transactional
   public void seedDatabase(WebApplication application) {
+    if(shouldSeed(application) == false) {
+      return;
+    }
     if (xstreamResource != null) {
       Object xstreamResult = null;
       try {
