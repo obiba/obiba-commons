@@ -15,7 +15,7 @@ public class DetachableEntityModel extends LoadableDetachableModel {
 
   private static final long serialVersionUID = 1606621482493529188L;
 
-  private transient final Logger log = LoggerFactory.getLogger(DetachableEntityModel.class);
+  private static final Logger log = LoggerFactory.getLogger(DetachableEntityModel.class);
 
   private Serializable id;
 

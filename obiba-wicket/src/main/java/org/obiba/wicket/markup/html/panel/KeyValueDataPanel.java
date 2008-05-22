@@ -35,7 +35,7 @@ public class KeyValueDataPanel extends Panel {
   ListView myListView;
 
   int rowCounter = 0;
-  
+
   private WebMarkupContainer noDataRow = new WebMarkupContainer("noDataRow");
 
   public KeyValueDataPanel(String id) {
@@ -76,6 +76,7 @@ public class KeyValueDataPanel extends Panel {
 
   /**
    * Set/replace the current header label.
+   * 
    * @param header
    */
   public void setHeader(IModel header) {
@@ -84,6 +85,7 @@ public class KeyValueDataPanel extends Panel {
 
   /**
    * Set/replace the current header.
+   * 
    * @param header
    */
   public void setHeader(Component header) {
@@ -106,8 +108,7 @@ public class KeyValueDataPanel extends Panel {
    * @param pRowAuth
    */
   public void addRow(IModel pKey, IModel pValue, RowAuthorization... pRowAuth) {
-    addRow(new Label(getRowKeyId(), pKey), new Label(getRowValueId(), pValue),
-        false, pRowAuth);
+    addRow(new Label(getRowKeyId(), pKey), new Label(getRowValueId(), pValue), false, pRowAuth);
   }
 
   /**
@@ -118,10 +119,8 @@ public class KeyValueDataPanel extends Panel {
    * @param indent
    * @param pRowAuth
    */
-  public void addRow(IModel pKey, IModel pValue, boolean indent,
-      RowAuthorization... pRowAuth) {
-    addRow(new Label(getRowKeyId(), pKey), new Label(getRowValueId(), pValue),
-        indent, pRowAuth);
+  public void addRow(IModel pKey, IModel pValue, boolean indent, RowAuthorization... pRowAuth) {
+    addRow(new Label(getRowKeyId(), pKey), new Label(getRowValueId(), pValue), indent, pRowAuth);
   }
 
   /**
@@ -131,11 +130,10 @@ public class KeyValueDataPanel extends Panel {
    * @param pValue
    * @param pRowAuth
    */
-  public void addRow(IModel pKey, Component pValue,
-      RowAuthorization... pRowAuth) {
+  public void addRow(IModel pKey, Component pValue, RowAuthorization... pRowAuth) {
     addRow(new Label(getRowKeyId(), pKey), pValue, false, pRowAuth);
   }
-  
+
   /**
    * Add components row, with key indentation and autorization filter.
    * 
@@ -144,11 +142,10 @@ public class KeyValueDataPanel extends Panel {
    * @param indent
    * @param pRowAuth
    */
-  public void addRow(IModel pKey, Component pValue, boolean indent,
-      RowAuthorization... pRowAuth) {
+  public void addRow(IModel pKey, Component pValue, boolean indent, RowAuthorization... pRowAuth) {
     addRow(new Label(getRowKeyId(), pKey), pValue, indent, pRowAuth);
   }
-  
+
   /**
    * Add components row, with autorization filter.
    * 
@@ -156,8 +153,7 @@ public class KeyValueDataPanel extends Panel {
    * @param pValue
    * @param pRowAuth
    */
-  public void addRow(Component pKey, Component pValue,
-      RowAuthorization... pRowAuth) {
+  public void addRow(Component pKey, Component pValue, RowAuthorization... pRowAuth) {
     addRow(pKey, pValue, false, pRowAuth);
   }
 
@@ -168,8 +164,7 @@ public class KeyValueDataPanel extends Panel {
    * @param pValue
    * @param pRowAuth
    */
-  public void addRow(Component pKey, Component pValue, final boolean indent,
-      RowAuthorization... pRowAuth) {
+  public void addRow(Component pKey, Component pValue, final boolean indent, RowAuthorization... pRowAuth) {
     rowCounter++;
     WebMarkupContainer item = new WebMarkupContainer(view.newChildId());
     view.add(item);
@@ -184,31 +179,29 @@ public class KeyValueDataPanel extends Panel {
       }
     }));
 
-    //If the value's model is empty, generate a model with a spacing character. This prevents some display glitches on the table.
-    if ((pValue == null) || pValue.getModelObjectAsString().equals("")) {
+    // If the value's is empty, generate an empty component with a spacing character.
+    // This prevents some display glitches on the table.
+    if (pValue == null) {
       pValue = new EmptyCellFragment(getRowValueId());
     }
-    
+
     item.add(pValue);
 
     if (pRowAuth != null) {
       for (int i = 0; i < pRowAuth.length; i++) {
-        MetaDataRoleAuthorizationStrategy.authorize(item, pRowAuth[i]
-            .getAction(), pRowAuth[i].getRoles());
+        MetaDataRoleAuthorizationStrategy.authorize(item, pRowAuth[i].getAction(), pRowAuth[i].getRoles());
       }
     }
 
-    pValue.add(new AttributeModifier("class", true,
-        new AbstractReadOnlyModel() {
-          private static final long serialVersionUID = 8250197630638663648L;
+    pValue.add(new AttributeModifier("class", true, new AbstractReadOnlyModel() {
+      private static final long serialVersionUID = 8250197630638663648L;
 
-          int rowIndex = rowCounter;
+      int rowIndex = rowCounter;
 
-          public Object getObject() {
-            return (rowIndex % 2 == 1) ? getValueOddCssClass()
-                : getValueEvenCssClass();
-          }
-        }));
+      public Object getObject() {
+        return (rowIndex % 2 == 1) ? getValueOddCssClass() : getValueEvenCssClass();
+      }
+    }));
 
   }
 
@@ -253,9 +246,9 @@ public class KeyValueDataPanel extends Panel {
 
     public KeyValueDataPanelHeaderFragment(Component titleComponent) {
       super("header", "headerFragment", KeyValueDataPanel.this);
-      if(titleComponent != null) {
-        if(titleComponent.getId().equals(getHeaderId()) == false) {
-          throw new IllegalArgumentException("KeyValueDataPanel header Component's id must be '"+getHeaderId()+"'");
+      if (titleComponent != null) {
+        if (titleComponent.getId().equals(getHeaderId()) == false) {
+          throw new IllegalArgumentException("KeyValueDataPanel header Component's id must be '" + getHeaderId() + "'");
         }
         add(titleComponent);
       } else {
@@ -264,9 +257,7 @@ public class KeyValueDataPanel extends Panel {
     }
 
   }
-  
-  
-  
+
   private class EmptyCellFragment extends Fragment {
     private static final long serialVersionUID = -1448002319546204879L;
 
@@ -275,8 +266,7 @@ public class KeyValueDataPanel extends Panel {
     }
 
   }
-  
-  
+
   private class NoDataRowFragment extends Fragment {
     public NoDataRowFragment(String id) {
       super(id, "noDataRow", KeyValueDataPanel.this);
