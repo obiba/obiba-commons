@@ -446,6 +446,27 @@ public class EntityListTablePanel<T> extends Panel {
 
     return selection;
   }
+  
+  
+  /**
+   * Sets the checkbox of the row corresponding to the given model to "selected".
+   * @param model the targeted row's model
+   */
+  public void setSelected(IModel model) {
+    EntitySelection es = getSelection(model);
+    es.setSelected(true);
+  }
+  
+  
+  /**
+   * Sets the checkbox of the row corresponding to the given model to "deselected".
+   * @param model the targeted row's model
+   */
+  public void setDeselected(IModel model) {
+    EntitySelection es = getSelection(model);
+    es.setSelected(false);
+  }
+  
 
   /**
    * Get the ids that where selected in the selection column.
