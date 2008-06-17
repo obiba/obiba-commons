@@ -108,7 +108,7 @@ public class KeyValueDataPanel extends Panel {
    * @param pRowAuth
    */
   public void addRow(IModel pKey, IModel pValue, RowAuthorization... pRowAuth) {
-    addRow(new Label(getRowKeyId(), pKey), new Label(getRowValueId(), pValue), false, pRowAuth);
+    addRow(pKey, pValue, false, pRowAuth);
   }
 
   /**
@@ -120,7 +120,7 @@ public class KeyValueDataPanel extends Panel {
    * @param pRowAuth
    */
   public void addRow(IModel pKey, IModel pValue, boolean indent, RowAuthorization... pRowAuth) {
-    addRow(new Label(getRowKeyId(), pKey), new Label(getRowValueId(), pValue), indent, pRowAuth);
+    addRow(new Label(getRowKeyId(), pKey), createValueLabel(pValue), indent, pRowAuth);
   }
 
   /**
@@ -131,7 +131,7 @@ public class KeyValueDataPanel extends Panel {
    * @param pRowAuth
    */
   public void addRow(IModel pKey, Component pValue, RowAuthorization... pRowAuth) {
-    addRow(new Label(getRowKeyId(), pKey), pValue, false, pRowAuth);
+    addRow(pKey, pValue, false, pRowAuth);
   }
 
   /**
@@ -156,6 +156,21 @@ public class KeyValueDataPanel extends Panel {
   public void addRow(Component pKey, Component pValue, RowAuthorization... pRowAuth) {
     addRow(pKey, pValue, false, pRowAuth);
   }
+  
+  
+  /**
+   * Creates a label for the value cell of a row, if an <tt>IModel</tt> was provided instead of a <tt>Component</tt>.
+   * @param pValue the model to use for the value cell.
+   * @return the label generated from the model, or null if the model contained a null value.
+   */
+  private Label createValueLabel(IModel pValue) {
+    Label l = null;
+    if (pValue.getObject() != null) {
+      l = new Label(getRowValueId(), pValue);
+    }
+    return l;
+  }
+  
 
   /**
    * Add components row, with autorization filter.
