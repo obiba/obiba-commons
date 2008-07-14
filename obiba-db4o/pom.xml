@@ -20,7 +20,7 @@
   </parent>
 
   <groupId>org.obiba</groupId>
-  <artifactId>obiba-persistence-db4o</artifactId>
+  <artifactId>obiba-db4o</artifactId>
   <packaging>jar</packaging>
 
   <dependencies>

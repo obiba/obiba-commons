@@ -14,6 +14,7 @@
 
   <modules>
     <module>obiba-core</module>
+    <module>obiba-db4o</module>
     <module>obiba-wicket</module>
   </modules>
 
