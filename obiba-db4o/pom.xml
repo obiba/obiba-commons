@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <!--=============================================================================================-->
+  <!-- Project Information                                                                         -->
+  <!--=============================================================================================-->
+  <name>Obiba db4o</name>
+  <description>Obiba core's persistence layer implemented on db4o</description>
+
+  <!--=============================================================================================-->
+  <!-- POM Relationships                                                                           -->
+  <!--=============================================================================================-->
+  <parent>
+    <groupId>org.obiba</groupId>
+    <artifactId>obiba-commons</artifactId>
+    <version>1.0.1-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <groupId>org.obiba</groupId>
+  <artifactId>obiba-persistence-db4o</artifactId>
+  <packaging>jar</packaging>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.obiba</groupId>
+      <artifactId>obiba-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.db4o</groupId>
+      <artifactId>db4o</artifactId>
+      <classifier>jdk1.5</classifier>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
