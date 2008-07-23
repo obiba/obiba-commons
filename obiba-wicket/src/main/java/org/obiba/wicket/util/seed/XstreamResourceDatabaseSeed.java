@@ -67,14 +67,12 @@ public class XstreamResourceDatabaseSeed implements DatabaseSeed,
 		}
 
 		if (xstreamResourcePatterns != null) {
-			log.info("xstreamResourcePatterns=" + xstreamResourcePatterns);
 			for (String locationPattern : xstreamResourcePatterns) {
 				try {
 					Resource[] resources = resolver
 							.getResources(locationPattern);
 					if (resources != null) {
 						for (Resource resource : resources) {
-							log.info("resource=" + resource);
 							Object xstreamResult = null;
 
 							xstreamResult = xstream.fromXML(resource
