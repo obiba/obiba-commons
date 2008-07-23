@@ -8,14 +8,17 @@ import org.apache.wicket.protocol.http.WebApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.XStreamException;
 
 public class XstreamResourceDatabaseSeed implements DatabaseSeed,
-		InitializingBean {
+		InitializingBean, ResourceLoaderAware {
 
 	private final Logger log = LoggerFactory
 			.getLogger(XstreamResourceDatabaseSeed.class);
@@ -23,6 +26,10 @@ public class XstreamResourceDatabaseSeed implements DatabaseSeed,
 	private XStream xstream = new XStream();
 
 	private Resource xstreamResource;
+
+	private String[] xstreamResourcePatterns;
+
+	private ResourcePatternResolver resolver;
 
 	private Map<String, Class<?>> aliases;
 
@@ -36,11 +43,15 @@ public class XstreamResourceDatabaseSeed implements DatabaseSeed,
 		if (shouldSeed(application) == false) {
 			return;
 		}
+
 		if (xstreamResource != null) {
-			Object xstreamResult = null;
 			try {
+				Object xstreamResult = null;
+				
 				xstreamResult = xstream.fromXML(xstreamResource
 						.getInputStream(), resourceEncoding);
+				
+				handleXstreamResult(xstreamResult);
 			} catch (UnsupportedEncodingException e) {
 				throw new RuntimeException(e);
 			} catch (IOException e) {
@@ -49,25 +60,58 @@ public class XstreamResourceDatabaseSeed implements DatabaseSeed,
 			} catch (XStreamException e) {
 				log.error("Invalid XStream Resource.", e);
 				throw e;
-			}
-
-			try {
-				handleXstreamResult(xstreamResult);
 			} catch (RuntimeException e) {
 				log.error("Error parsing XStream Resource.", e);
 				throw e;
 			}
 		}
+
+		if (xstreamResourcePatterns != null) {
+			log.info("xstreamResourcePatterns=" + xstreamResourcePatterns);
+			for (String locationPattern : xstreamResourcePatterns) {
+				try {
+					Resource[] resources = resolver
+							.getResources(locationPattern);
+					if (resources != null) {
+						for (Resource resource : resources) {
+							log.info("resource=" + resource);
+							Object xstreamResult = null;
+
+							xstreamResult = xstream.fromXML(resource
+									.getInputStream(), resourceEncoding);
+
+							handleXstreamResult(resource, xstreamResult);
+						}
+					}
+
+				} catch (UnsupportedEncodingException e) {
+					throw new RuntimeException(e);
+				} catch (IOException e) {
+					log.error("Error parsing XStream Resource.", e);
+					throw new RuntimeException(e);
+				} catch (XStreamException e) {
+					log.error("Invalid XStream Resource.", e);
+					throw e;
+				} catch (RuntimeException e) {
+					log.error("Error parsing XStream Resource.", e);
+					throw e;
+				}
+			}
+		}
 	}
 
 	public void afterPropertiesSet() throws Exception {
-		if (this.xstreamResource == null
-				|| this.xstreamResource.exists() == false) {
+		if ((this.xstreamResource == null || this.xstreamResource.exists() == false)
+				&& (this.xstreamResourcePatterns == null || this.xstreamResourcePatterns.length == 0)) {
 			log
-					.error("XStream resource not specified, no seeding will take place. Make sure the 'resource' property is set.");
+					.error("XStream resource not specified, no seeding will take place. Make sure the 'resource' or 'resourcePatterns' property are set.");
 		} else {
 			initializeXstream(xstream);
 		}
+	}
+
+	public void setResourcePatterns(String[] xstreamResourcePatterns) {
+		this.xstreamResourcePatterns = xstreamResourcePatterns;
 	}
 
 	public void setResource(Resource xstreamResource) {
@@ -107,7 +151,20 @@ public class XstreamResourceDatabaseSeed implements DatabaseSeed,
 		return true;
 	}
 
+	/**
+	 * Called after 'resource' has been processed.
+	 * @param result
+	 */
 	protected void handleXstreamResult(Object result) {
+
+	}
+
+	/**
+	 * Called after one resource from 'resourcePatterns' has been processed.
+	 * @param resource
+	 * @param result
+	 */
+	protected void handleXstreamResult(Resource resource, Object result) {
 
 	}
 
@@ -120,5 +177,9 @@ public class XstreamResourceDatabaseSeed implements DatabaseSeed,
 				xstream.alias(aliasEntry.getKey(), aliasEntry.getValue());
 			}
 		}
+	}
+
+	public void setResourceLoader(ResourceLoader resourceLoader) {
+		this.resolver = (ResourcePatternResolver) resourceLoader;
 	}
 }
