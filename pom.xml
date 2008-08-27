@@ -14,7 +14,6 @@
 
   <modules>
     <module>obiba-core</module>
-    <module>obiba-db4o</module>
     <module>obiba-wicket</module>
   </modules>
 
@@ -121,13 +120,6 @@
         <groupId>mysql</groupId>
         <artifactId>mysql-connector-java</artifactId>
         <version>5.0.5</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.db4o</groupId>
-        <artifactId>db4o</artifactId>
-        <version>7.1.27.9108</version>
-        <classifier>jdk1.5</classifier>
       </dependency>
 
       <!-- Logging framework -->
