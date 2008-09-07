@@ -1,8 +1,5 @@
 package org.obiba.wicket.markup.html.panel;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.authorization.Action;
@@ -15,23 +12,21 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
 
 /**
- * A convenient class for generating tables of data.
- * 
- * @author ymarcon
- * 
+ * A convenient class for generating tables of key/value pairs.
+ * <p>
+ * Data is presented in a two column table. The first column contains the keys and the second contains the values. Rows
+ * are added by using one of the <code>addRow()</code> methods.
  */
 public class KeyValueDataPanel extends Panel {
 
   private static final long serialVersionUID = 5705222737293170400L;
 
-  Map<Component, Component> rowMap = new HashMap<Component, Component>();
-
   RepeatingView view;
 
-  // List<Row> rows = new LinkedList<Row>();
   ListView myListView;
 
   int rowCounter = 0;
@@ -45,8 +40,7 @@ public class KeyValueDataPanel extends Panel {
   /**
    * 
    * @param id
-   * @param header
-   *          use {@link #getHeaderId()} to put the right id to the component
+   * @param header use {@link #getHeaderId()} to put the right id to the component
    */
   public KeyValueDataPanel(String id, Component header) {
     super(id);
@@ -90,103 +84,91 @@ public class KeyValueDataPanel extends Panel {
    */
   public void setHeader(Component header) {
     KeyValueDataPanelHeaderFragment newHeader = new KeyValueDataPanelHeaderFragment(header);
-    if (get("header") != null)
-      get("header").replaceWith(newHeader);
-    else
-      add(newHeader);
+    addOrReplace(newHeader);
   }
 
+  /**
+   * When set to true, a row that spans both columns is made visible. Its content is a message that states that no data
+   * was found to display. The resource key <code>datatable.no-records-found</code> is used to generate the message.
+   * 
+   * @param show determines whether or not to show the row.
+   */
   public void showNoDataRow(boolean show) {
     noDataRow.setVisible(show);
   }
 
   /**
-   * Add labels, with autorization filter.
+   * Add labels, with authorization filter.
    * 
-   * @param pKey
-   * @param pValue
-   * @param pRowAuth
+   * @param key
+   * @param value
+   * @param rowAuth
    */
-  public void addRow(IModel pKey, IModel pValue, RowAuthorization... pRowAuth) {
-    addRow(pKey, pValue, false, pRowAuth);
+  public void addRow(IModel key, IModel value, RowAuthorization... rowAuth) {
+    addRow(key, value, false, rowAuth);
   }
 
   /**
-   * Add labels, with key indentation and autorization filter.
+   * Add labels, with key indentation and authorization filter.
    * 
-   * @param pKey
-   * @param pValue
+   * @param key
+   * @param value
    * @param indent
-   * @param pRowAuth
+   * @param rowAuth
    */
-  public void addRow(IModel pKey, IModel pValue, boolean indent, RowAuthorization... pRowAuth) {
-    addRow(new Label(getRowKeyId(), pKey), createValueLabel(pValue), indent, pRowAuth);
+  public void addRow(IModel key, IModel value, boolean indent, RowAuthorization... rowAuth) {
+    addRow(new Label(getRowKeyId(), key), createValueLabel(value), indent, rowAuth);
   }
 
   /**
-   * Add components row, with autorization filter.
+   * Add components row, with authorization filter.
    * 
-   * @param pKey
-   * @param pValue
-   * @param pRowAuth
+   * @param key
+   * @param value
+   * @param rowAuth
    */
-  public void addRow(IModel pKey, Component pValue, RowAuthorization... pRowAuth) {
-    addRow(pKey, pValue, false, pRowAuth);
+  public void addRow(IModel key, Component value, RowAuthorization... rowAuth) {
+    addRow(key, value, false, rowAuth);
   }
 
   /**
-   * Add components row, with key indentation and autorization filter.
+   * Add components row, with key indentation and authorization filter.
    * 
-   * @param pKey
-   * @param pValue
+   * @param key
+   * @param value
    * @param indent
-   * @param pRowAuth
+   * @param rowAuth
    */
-  public void addRow(IModel pKey, Component pValue, boolean indent, RowAuthorization... pRowAuth) {
-    addRow(new Label(getRowKeyId(), pKey), pValue, indent, pRowAuth);
+  public void addRow(IModel key, Component value, boolean indent, RowAuthorization... rowAuth) {
+    addRow(new Label(getRowKeyId(), key), value, indent, rowAuth);
   }
 
   /**
    * Add components row, with autorization filter.
    * 
-   * @param pKey
-   * @param pValue
-   * @param pRowAuth
+   * @param key
+   * @param value
+   * @param rowAuth
    */
-  public void addRow(Component pKey, Component pValue, RowAuthorization... pRowAuth) {
-    addRow(pKey, pValue, false, pRowAuth);
+  public void addRow(Component key, Component value, RowAuthorization... rowAuth) {
+    addRow(key, value, false, rowAuth);
   }
-  
-  
-  /**
-   * Creates a label for the value cell of a row, if an <tt>IModel</tt> was provided instead of a <tt>Component</tt>.
-   * @param pValue the model to use for the value cell.
-   * @return the label generated from the model, or null if the model contained a null value.
-   */
-  private Label createValueLabel(IModel pValue) {
-    Label l = null;
-    if (pValue.getObject() != null) {
-      l = new Label(getRowValueId(), pValue);
-    }
-    return l;
-  }
-  
 
   /**
-   * Add components row, with autorization filter.
+   * Add components row, with authorization filter.
    * 
-   * @param pKey
-   * @param pValue
-   * @param pRowAuth
+   * @param key
+   * @param value
+   * @param rowAuth
    */
-  public void addRow(Component pKey, Component pValue, final boolean indent, RowAuthorization... pRowAuth) {
+  public void addRow(Component key, Component value, final boolean indent, RowAuthorization... rowAuth) {
     rowCounter++;
     WebMarkupContainer item = new WebMarkupContainer(view.newChildId());
     view.add(item);
 
-    item.add(pKey);
+    item.add(key);
 
-    pKey.add(new AttributeModifier("class", true, new AbstractReadOnlyModel() {
+    key.add(new AttributeModifier("class", true, new AbstractReadOnlyModel() {
       private static final long serialVersionUID = 825034630638663648L;
 
       public Object getObject() {
@@ -196,19 +178,19 @@ public class KeyValueDataPanel extends Panel {
 
     // If the value's is empty, generate an empty component with a spacing character.
     // This prevents some display glitches on the table.
-    if (pValue == null) {
-      pValue = new EmptyCellFragment(getRowValueId());
+    if(value == null) {
+      value = new EmptyCellFragment(getRowValueId());
     }
 
-    item.add(pValue);
+    item.add(value);
 
-    if (pRowAuth != null) {
-      for (int i = 0; i < pRowAuth.length; i++) {
-        MetaDataRoleAuthorizationStrategy.authorize(item, pRowAuth[i].getAction(), pRowAuth[i].getRoles());
+    if(rowAuth != null) {
+      for(int i = 0; i < rowAuth.length; i++) {
+        MetaDataRoleAuthorizationStrategy.authorize(item, rowAuth[i].getAction(), rowAuth[i].getRoles());
       }
     }
 
-    pValue.add(new AttributeModifier("class", true, new AbstractReadOnlyModel() {
+    value.add(new AttributeModifier("class", true, new AbstractReadOnlyModel() {
       private static final long serialVersionUID = 8250197630638663648L;
 
       int rowIndex = rowCounter;
@@ -241,9 +223,9 @@ public class KeyValueDataPanel extends Panel {
 
     private String roles;
 
-    public RowAuthorization(Action pAction, String pRoles) {
-      action = pAction;
-      roles = pRoles;
+    public RowAuthorization(Action action, String roles) {
+      this.action = action;
+      this.roles = roles;
     }
 
     public Action getAction() {
@@ -255,14 +237,40 @@ public class KeyValueDataPanel extends Panel {
     }
   }
 
+  /**
+   * Creates a label for the value cell of a row, if an <tt>IModel</tt> was provided instead of a <tt>Component</tt>.
+   * @param value the model to use for the value cell.
+   * @return the label generated from the model, or null if the model contained a null value.
+   */
+  private Label createValueLabel(IModel value) {
+    // Wrap the original model that returns a whitespace when the original model value is null.
+    // This allows the table cell tag to always have a body (ie: never renders <td/>).
+    // A display issue (GFLX-111) was caused by this.
+    // The reason we don't return a null component is because the original model may return a value later in our
+    // life-cycle.
+
+    // TODO: find a way to fix the display issue instead of hacking the models (ie: use css)
+    return new Label(getRowValueId(), new Model(value) {
+
+      private static final long serialVersionUID = 7669446358458768567L;
+
+      @Override
+      public Object getObject() {
+        IModel o = (IModel) super.getObject();
+        if(o.getObject() == null) return " ";
+        return o.getObject();
+      }
+    });
+  }
+
   private class KeyValueDataPanelHeaderFragment extends Fragment {
 
     private static final long serialVersionUID = -6785397649238353097L;
 
     public KeyValueDataPanelHeaderFragment(Component titleComponent) {
       super("header", "headerFragment", KeyValueDataPanel.this);
-      if (titleComponent != null) {
-        if (titleComponent.getId().equals(getHeaderId()) == false) {
+      if(titleComponent != null) {
+        if(titleComponent.getId().equals(getHeaderId()) == false) {
           throw new IllegalArgumentException("KeyValueDataPanel header Component's id must be '" + getHeaderId() + "'");
         }
         add(titleComponent);
@@ -280,12 +288,6 @@ public class KeyValueDataPanel extends Panel {
       super(id, "emptyCellFragment", KeyValueDataPanel.this);
     }
 
-  }
-
-  private class NoDataRowFragment extends Fragment {
-    public NoDataRowFragment(String id) {
-      super(id, "noDataRow", KeyValueDataPanel.this);
-    }
   }
 
 }
