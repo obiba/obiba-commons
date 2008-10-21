@@ -1,5 +1,6 @@
 package org.obiba.wicket.test;
 
+import org.apache.wicket.Page;
 import org.apache.wicket.spring.SpringWebApplication;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 
@@ -10,7 +11,7 @@ import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
  */
 public class MockSpringApplication extends SpringWebApplication {
 
-  Class<?> homePage;
+  Class<?> homePage = Page.class;
 
   @Override
   protected void init() {
