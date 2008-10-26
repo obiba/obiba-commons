@@ -35,6 +35,8 @@ public class MessageSourceResolvableStringModel extends AbstractReadOnlyModel {
     this.messageSource = messageSource;
     this.messageSourceResolvableModel = messageSourceResolvableModel;
     this.localeModel = localeModel;
+
+    if(this.messageSourceResolvableModel == null) throw new IllegalArgumentException("MessageSourceResolvableModel cannot be null");
   }
 
   public MessageSourceResolvableStringModel(MessageSource messageSource, IModel messageSourceResolvableModel) {
@@ -42,7 +44,7 @@ public class MessageSourceResolvableStringModel extends AbstractReadOnlyModel {
   }
 
   public MessageSourceResolvableStringModel(IModel messageSourceResolvableModel) {
-    this(((SpringWebApplication) SpringWebApplication.get()).getSpringContextLocator().getSpringContext(), messageSourceResolvableModel);
+    this(null, messageSourceResolvableModel);
   }
 
   /**
@@ -54,14 +56,16 @@ public class MessageSourceResolvableStringModel extends AbstractReadOnlyModel {
 
   @Override
   public void detach() {
-    this.localeModel.detach();
+    if(localeModel != null) {
+      this.localeModel.detach();
+    }
     this.messageSourceResolvableModel.detach();
     super.detach();
   }
 
   @Override
   public Object getObject() {
-    return messageSource.getMessage((MessageSourceResolvable) messageSourceResolvableModel.getObject(), getLocale());
+    return getMessageSource().getMessage((MessageSourceResolvable) messageSourceResolvableModel.getObject(), getLocale());
   }
 
   private Locale getLocale() {
@@ -69,6 +73,13 @@ public class MessageSourceResolvableStringModel extends AbstractReadOnlyModel {
       return (Locale) localeModel.getObject();
     }
     return WebSession.get().getLocale();
+  }
+
+  private MessageSource getMessageSource() {
+    if(messageSource != null) {
+      return messageSource;
+    }
+    return ((SpringWebApplication) SpringWebApplication.get()).getSpringContextLocator().getSpringContext();
   }
 
 }
