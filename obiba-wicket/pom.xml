@@ -1,15 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <!--=============================================================================================-->
-  <!-- Project Information                                                                         -->
-  <!--=============================================================================================-->
   <name>Obiba Wicket</name>
   <description />
 
-  <!--=============================================================================================-->
-  <!-- POM Relationships                                                                           -->
-  <!--=============================================================================================-->
   <parent>
     <groupId>org.obiba</groupId>
     <artifactId>obiba-commons</artifactId>
@@ -28,11 +22,11 @@
       <artifactId>obiba-core</artifactId>
     </dependency>
 
-    <!-- Common component's versions -->
     <dependency>
       <groupId>commons-dbcp</groupId>
       <artifactId>commons-dbcp</artifactId>
       <scope>runtime</scope>
+      <optional>true</optional>
     </dependency>
 
     <dependency>
@@ -45,12 +39,14 @@
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
       <scope>runtime</scope>
+      <optional>true</optional>
     </dependency>
 
     <dependency>
       <groupId>hsqldb</groupId>
       <artifactId>hsqldb</artifactId>
       <scope>runtime</scope>
+      <optional>true</optional>
     </dependency>
 
     <!--  WICKET DEPENDENCIES -->
@@ -84,14 +80,13 @@
       <version>${wicket.version}</version>
     </dependency>
 
-    <!-- LOGGING DEPENDENCIES - LOG4J -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
       <scope>runtime</scope>
     </dependency>
 
-    <!--  JETTY DEPENDENCIES FOR TESTING  -->
+    <!--  Jetty dependencies for testing  -->
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jetty</artifactId>
@@ -112,6 +107,7 @@
       <version>${jetty.version}</version>
       <scope>provided</scope>
     </dependency>
+
     <!-- Even though we don't use it, the JTA jar is required due because the Spring class hierarchy and hibernate references javax.transaction.TransactionManager -->
     <dependency>
       <groupId>javax.transaction</groupId>
@@ -168,14 +164,8 @@
   </build>
 
   <properties>
-    <wicket.version>1.3.4</wicket.version>
+    <wicket.version>1.3.5</wicket.version>
     <jetty.version>6.1.4</jetty.version>
   </properties>
-
-  <distributionManagement>
-    <repository>
-      <url>file:///data/tomcat/apache-tomcat-5.5.16/webapps/maven2</url>
-    </repository>
-  </distributionManagement>
 
 </project>
