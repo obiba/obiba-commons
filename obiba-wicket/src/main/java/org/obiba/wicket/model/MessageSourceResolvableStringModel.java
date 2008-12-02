@@ -3,11 +3,13 @@ package org.obiba.wicket.model;
 import java.io.Serializable;
 import java.util.Locale;
 
+import org.apache.wicket.Application;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.spring.SpringWebApplication;
+import org.obiba.wicket.application.ISpringWebApplication;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
 
@@ -79,7 +81,14 @@ public class MessageSourceResolvableStringModel extends AbstractReadOnlyModel {
     if(messageSource != null) {
       return messageSource;
     }
-    return ((SpringWebApplication) SpringWebApplication.get()).getSpringContextLocator().getSpringContext();
+    Application application = Application.get();
+    if(application instanceof ISpringWebApplication) {
+      return ((ISpringWebApplication) application).getSpringContextLocator().getSpringContext();
+    } else if(application instanceof SpringWebApplication) {
+      return ((SpringWebApplication) application).getSpringContextLocator().getSpringContext();
+    }
+
+    throw new IllegalStateException("Cannot find MessageSource. Application must either implement ISpringWebApplication or extend SpringWebApplication.");
   }
 
 }
