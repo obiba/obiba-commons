@@ -56,7 +56,18 @@ public class LocaleDropDownChoice extends DropDownChoice {
 
     public Object getDisplayValue(Object object) {
       Locale lang = (Locale) object;
-      return lang.getDisplayLanguage(getDisplayLocale(lang));
+      Locale displayLocale = getDisplayLocale(lang);
+
+      StringBuilder sb = new StringBuilder();
+      sb.append(lang.getDisplayLanguage(displayLocale));
+      if(lang.getCountry() != null && lang.getCountry().length() > 0) {
+        sb.append(" (").append(lang.getDisplayCountry(displayLocale));
+        if(lang.getVariant() != null && lang.getVariant().length() > 0) {
+          sb.append(", ").append(lang.getDisplayVariant(displayLocale));
+        }
+        sb.append(")");
+      }
+      return sb.toString();
     }
 
     public String getIdValue(Object object, int index) {
