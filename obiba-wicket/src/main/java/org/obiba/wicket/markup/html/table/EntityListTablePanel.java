@@ -16,12 +16,15 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.IBehavior;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.HeaderlessColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.markup.repeater.IItemReuseStrategy;
 import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.markup.repeater.RefreshingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
@@ -159,6 +162,22 @@ public class EntityListTablePanel<T> extends Panel {
         EntityListTablePanel.this.onPageChanged();
       }
     });
+  }
+  
+  /**
+   * Sets the item reuse strategy. This strategy controls the creation of {@link Item}s.
+   * 
+   * @see RefreshingView#setItemReuseStrategy(IItemReuseStrategy)
+   * @see IItemReuseStrategy
+   * 
+   * @param strategy
+   *            item reuse strategy
+   * @return this for chaining
+   */
+  public final EntityListTablePanel<T> setItemReuseStrategy(IItemReuseStrategy strategy)
+  {
+    dataTable.setItemReuseStrategy(strategy);
+    return this;
   }
 
   public IColumnProvider getColumnProvider() {
