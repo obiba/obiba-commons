@@ -44,34 +44,8 @@ public class XstreamResourceDatabaseSeed implements DatabaseSeed, InitializingBe
     }
 
     if(xstreamResource != null) {
-      InputStreamReader reader = null;
-      try {
-        Object xstreamResult = null;
-
-        reader = new InputStreamReader(xstreamResource.getInputStream(), resourceEncoding);
-        xstreamResult = xstream.fromXML(new InputStreamReader(xstreamResource.getInputStream(), resourceEncoding));
-
-        handleXstreamResult(xstreamResult);
-      } catch(UnsupportedEncodingException e) {
-        throw new RuntimeException(e);
-      } catch(IOException e) {
-        log.error("Error parsing XStream Resource.", e);
-        throw new RuntimeException(e);
-      } catch(XStreamException e) {
-        log.error("Invalid XStream Resource.", e);
-        throw e;
-      } catch(RuntimeException e) {
-        log.error("Error parsing XStream Resource.", e);
-        throw e;
-      } finally {
-        if(reader != null) {
-          try {
-            reader.close();
-          } catch(Exception e) {
-            // ignore
-          }
-        }
-      }
+      Object result = handleXtreamResource(xstreamResource);
+      handleXstreamResult(result);
     }
 
     if(xstreamResourcePatterns != null) {
@@ -80,36 +54,13 @@ public class XstreamResourceDatabaseSeed implements DatabaseSeed, InitializingBe
           Resource[] resources = resolver.getResources(locationPattern);
           if(resources != null) {
             for(Resource resource : resources) {
-              Object xstreamResult = null;
-
-              InputStreamReader reader = new InputStreamReader(resource.getInputStream(), resourceEncoding);
-              try {
-                xstreamResult = xstream.fromXML(reader);
-              } finally {
-                if(reader != null) {
-                  try {
-                    reader.close();
-                  } catch(Exception e) {
-                    // ignore
-                  }
-                }
-              }
-
-              handleXstreamResult(resource, xstreamResult);
+              Object result = handleXtreamResource(resource);
+              handleXstreamResult(resource, result);
             }
           }
-
-        } catch(UnsupportedEncodingException e) {
-          throw new RuntimeException(e);
         } catch(IOException e) {
-          log.error("Error parsing XStream Resource.", e);
+          log.error("Error resolving resource pattern {}: {}", locationPattern, e.getMessage());
           throw new RuntimeException(e);
-        } catch(XStreamException e) {
-          log.error("Invalid XStream Resource.", e);
-          throw e;
-        } catch(RuntimeException e) {
-          log.error("Error parsing XStream Resource.", e);
-          throw e;
         }
       }
     }
@@ -141,6 +92,10 @@ public class XstreamResourceDatabaseSeed implements DatabaseSeed, InitializingBe
 
   public void setDevelopmentSeed(boolean devSeed) {
     this.developmentSeed = devSeed;
+  }
+
+  public void setResourceLoader(ResourceLoader resourceLoader) {
+    this.resolver = (ResourcePatternResolver) resourceLoader;
   }
 
   protected boolean shouldSeed(WebApplication application) {
@@ -179,6 +134,40 @@ public class XstreamResourceDatabaseSeed implements DatabaseSeed, InitializingBe
 
   }
 
+  /**
+   * Given a {@code Resource} this method passes the underlying {@code InputStream} to the configured {@code XStream}
+   * instance.
+   * @param resource the {@code Resource} to load
+   * @return the result of {@code XStream#fromXML(java.io.Reader)}
+   */
+  protected Object handleXtreamResource(Resource resource) {
+    log.info("Loading resource {}.", resource);
+    InputStreamReader reader = null;
+    try {
+      reader = new InputStreamReader(resource.getInputStream(), resourceEncoding);
+      return xstream.fromXML(new InputStreamReader(resource.getInputStream(), resourceEncoding));
+    } catch(UnsupportedEncodingException e) {
+      throw new RuntimeException(e);
+    } catch(IOException e) {
+      log.error("Error parsing XStream resource {}: {}", resource, e.getMessage());
+      throw new RuntimeException(e);
+    } catch(XStreamException e) {
+      log.error("Invalid XStream resource {}: {}", resource, e.getMessage());
+      throw e;
+    } catch(RuntimeException e) {
+      log.error("Error parsing XStream resource {}: {}", resource, e.getMessage());
+      throw e;
+    } finally {
+      if(reader != null) {
+        try {
+          reader.close();
+        } catch(Exception e) {
+          // ignore
+        }
+      }
+    }
+  }
+
   protected void initializeXstream(XStream xstream) {
     xstream.setMode(XStream.ID_REFERENCES);
     if(this.aliases != null) {
@@ -189,7 +178,4 @@ public class XstreamResourceDatabaseSeed implements DatabaseSeed, InitializingBe
     }
   }
 
-  public void setResourceLoader(ResourceLoader resourceLoader) {
-    this.resolver = (ResourcePatternResolver) resourceLoader;
-  }
 }
