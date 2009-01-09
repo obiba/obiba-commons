@@ -1,8 +1,8 @@
 package org.obiba.wicket.test;
 
-import org.apache.wicket.Page;
 import org.apache.wicket.spring.SpringWebApplication;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
+import org.apache.wicket.util.tester.DummyHomePage;
 
 /**
  * A configurable Wicket {@code WebApplication} implementation that can inject member variables annotated with
@@ -11,7 +11,7 @@ import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
  */
 public class MockSpringApplication extends SpringWebApplication {
 
-  Class<?> homePage = Page.class;
+  Class<?> homePage = DummyHomePage.class;
 
   @Override
   protected void init() {
