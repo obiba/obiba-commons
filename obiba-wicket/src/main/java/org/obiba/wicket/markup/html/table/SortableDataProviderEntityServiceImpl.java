@@ -9,7 +9,6 @@ import org.obiba.core.service.EntityQueryService;
 import org.obiba.core.service.PagingClause;
 import org.obiba.core.service.SortingClause;
 
-
 /**
  * Uses an instance of {@link EntityService} to implement {@link SortableDataProvider}.
  * <p/>
@@ -29,17 +28,17 @@ public class SortableDataProviderEntityServiceImpl<T> extends AbstractSortableDa
   }
 
   protected List<T> getList(PagingClause paging, SortingClause... clauses) {
-    return queryService.list(type, paging, clauses);
+    return getQueryService().list(type, paging, clauses);
   }
 
   public IModel makeModel(final T object) {
-    return new DetachableEntityModel(queryService, object);
+    return new DetachableEntityModel(getQueryService(), object);
   }
 
   public int size() {
-    return queryService.count(type);
+    return getQueryService().count(type);
   }
-  
+
   protected EntityQueryService getQueryService() {
     return queryService;
   }
