@@ -1,6 +1,7 @@
 package org.obiba.runtime.upgrade.support;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -137,6 +138,13 @@ public class DefaultUpgradeManager implements UpgradeManager {
         applicableSteps.add(step);
       }
     }
+
+    // Make sure we apply upgrade steps in order of the version they apply to.
+    Collections.sort(applicableSteps, new Comparator<UpgradeStep>() {
+      public int compare(UpgradeStep step1, UpgradeStep step2) {
+        return versionComparator.compare(step1.getAppliesTo(), step2.getAppliesTo());
+      }
+    });
     return applicableSteps;
   }
 }
