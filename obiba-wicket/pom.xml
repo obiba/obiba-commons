@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <name>Obiba Wicket</name>
+  <name>OBiBa Wicket</name>
   <description />
 
   <parent>
@@ -28,12 +28,6 @@
       <artifactId>commons-dbcp</artifactId>
       <scope>runtime</scope>
       <optional>true</optional>
-    </dependency>
-
-    <dependency>
-      <groupId>org.dbunit</groupId>
-      <artifactId>dbunit</artifactId>
-      <scope>compile</scope>
     </dependency>
 
     <dependency>
@@ -81,12 +75,6 @@
       <version>${wicket.version}</version>
     </dependency>
 
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-
     <!--  Jetty dependencies for testing  -->
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
@@ -109,11 +97,15 @@
       <scope>provided</scope>
     </dependency>
 
-    <!-- Even though we don't use it, the JTA jar is required due because the Spring class hierarchy and hibernate references javax.transaction.TransactionManager -->
+    <!--
+      Even though we don't use it, the JTA jar is required due because the Spring class hierarchy and hibernate references javax.transaction.TransactionManager
+    -->
     <dependency>
       <groupId>javax.transaction</groupId>
       <artifactId>jta</artifactId>
       <scope>runtime</scope>
+      <optional>true</optional>
+
     </dependency>
 
     <dependency>
@@ -148,19 +140,6 @@
         </configuration>
       </plugin>
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
 
