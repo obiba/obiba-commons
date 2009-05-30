@@ -33,4 +33,46 @@ public class VersionTest {
     Assert.assertEquals("b4", v.getQualifier());
   }
 
+  @Test
+  public void testCompare() {
+    Version v1 = new Version("1.2");
+    Version v2 = new Version("1.2.1");
+    Assert.assertTrue(v1.compareTo(v2) < 0);
+    Assert.assertTrue(v2.compareTo(v1) > 0);
+  }
+
+  @Test
+  public void testCompareWithQualifier() {
+    Version v1 = new Version("1.2.1-b1");
+    Version v2 = new Version("1.2.1-b2");
+    Assert.assertTrue(v1.compareTo(v2) < 0);
+    Assert.assertTrue(v2.compareTo(v1) > 0);
+  }
+
+  @Test
+  public void testCompareWithQualifierAndNoQualifier() {
+    Version v1 = new Version("1.2.1");
+    Version v2 = new Version("1.2.1-b1");
+    Assert.assertTrue(v1.compareTo(v2) < 0);
+    Assert.assertTrue(v2.compareTo(v1) > 0);
+  }
+
+  @Test
+  public void testEquals() {
+    Version v1 = new Version("1.2");
+    Version v2 = new Version(1, 2);
+
+    Assert.assertTrue(v1.equals(v2));
+    Assert.assertEquals(v1.hashCode(), v2.hashCode());
+  }
+
+  @Test
+  public void testEqualsWithQualifier() {
+    Version v1 = new Version("1.2-b4");
+    Version v2 = new Version(1, 2, 0, "b4");
+
+    Assert.assertTrue(v1.equals(v2));
+    Assert.assertEquals(v1.hashCode(), v2.hashCode());
+  }
+
 }

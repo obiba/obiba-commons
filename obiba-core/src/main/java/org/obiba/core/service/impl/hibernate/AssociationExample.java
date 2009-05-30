@@ -32,7 +32,7 @@ public class AssociationExample implements Criterion {
   private static final long serialVersionUID = 1545101873498985131L;
 
   private final Object entity;
-  private final Set excludedProperties = new HashSet();
+  private final Set<String> excludedProperties = new HashSet<String>();
   private PropertySelector selector;
   private boolean isLikeEnabled;
   private boolean isIgnoreCaseEnabled;
@@ -53,18 +53,27 @@ public class AssociationExample implements Criterion {
   private static final PropertySelector NOT_NULL_OR_ZERO = new NotNullOrZeroPropertySelector();
 
   static final class AllPropertySelector implements PropertySelector, Serializable {
+
+    private static final long serialVersionUID = -4563517949036036320L;
+
     public boolean include(Object object, String propertyName, Type type) {
       return true;
     }
   }
 
   static final class NotNullPropertySelector implements PropertySelector, Serializable {
+
+    private static final long serialVersionUID = -1409817364720711277L;
+
     public boolean include(Object object, String propertyName, Type type) {
       return object!=null;
     }
   }
 
   static final class NotNullOrZeroPropertySelector implements PropertySelector, Serializable {
+
+    private static final long serialVersionUID = -2071586786806088292L;
+
     public boolean include(Object object, String propertyName, Type type) {
       return object!=null && (
         !(object instanceof Number) || ( (Number) object ).longValue()!=0
@@ -210,7 +219,7 @@ public class AssociationExample implements Criterion {
     Type[] propertyTypes = meta.getPropertyTypes();
      //TODO: get all properties, not just the fetched ones!
     Object[] values = meta.getPropertyValues( entity, getEntityMode(criteria, criteriaQuery) );
-    List list = new ArrayList();
+    List<TypedValue> list = new ArrayList<TypedValue>();
     for (int i=0; i<propertyNames.length; i++) {
       Object value = values[i];
       Type type = propertyTypes[i];
@@ -241,7 +250,7 @@ public class AssociationExample implements Criterion {
     return result;
   }
 
-  protected void addPropertyTypedValue(Object value, Type type, List list) {
+  protected void addPropertyTypedValue(Object value, Type type, List<TypedValue> list) {
     if ( value!=null ) {
       if ( value instanceof String ) {
         String string = (String) value;
@@ -257,7 +266,7 @@ public class AssociationExample implements Criterion {
       String path,
       Object component,
       AbstractComponentType type,
-      List list,
+      List<TypedValue> list,
       Criteria criteria,
       CriteriaQuery criteriaQuery)
   throws HibernateException {

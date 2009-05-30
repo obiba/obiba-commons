@@ -17,7 +17,7 @@ public class DDLGenerator {
   //  System constants for the current platform directory token
   static String fileSep = System.getProperty("file.separator");
   
-  public static String DEFAULT_DIALECT = "org.hibernate.dialect.MySQLInnoDBDialect"; 
+  public static final String DEFAULT_DIALECT = "org.hibernate.dialect.MySQLInnoDBDialect"; 
   
   private SessionFactory sessionFactory;
   

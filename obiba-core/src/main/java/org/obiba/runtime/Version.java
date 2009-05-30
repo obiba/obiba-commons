@@ -6,24 +6,23 @@ import java.util.regex.Pattern;
 /**
  * Represents a version number and allows comparing to other version numbers.
  * <p/>
- * Format is <code>major'.'minor('.'micro)?(('.'|'-'|'_')qualifier)?</code>
- * <br/>
+ * Format is <code>major'.'minor('.'micro)?(('.'|'-'|'_')qualifier)?</code> <br/>
  * where major, minor and micro are composed of digits and qualifier is an arbitrary string.
  * 
  * @author plaflamm
- *
+ * 
  */
 final public class Version implements Comparable<Version> {
 
   private static final Pattern VERSION_PATTERN = Pattern.compile("(\\d+)\\.(\\d+)(\\.(\\d+))?(([\\.\\-_])(\\D.+))?");
-  
-  private int major;
 
-  private int minor;
+  private final int major;
 
-  private int micro;
+  private final int minor;
 
-  private String qualifier;
+  private final int micro;
+
+  private final String qualifier;
 
   public Version(int major, int minor) {
     this(major, minor, 0, null);
@@ -37,9 +36,10 @@ final public class Version implements Comparable<Version> {
     this.major = major;
     this.minor = minor;
     this.micro = micro;
-    this.qualifier = qualifier;
-    if(this.qualifier == null) {
+    if(qualifier == null) {
       this.qualifier = "";
+    } else {
+      this.qualifier = qualifier;
     }
   }
 
@@ -60,6 +60,8 @@ final public class Version implements Comparable<Version> {
       this.minor = Integer.parseInt(minor);
       if(micro != null) {
         this.micro = Integer.parseInt(micro);
+      } else {
+        this.micro = 0;
       }
       if(qualifier != null) {
         this.qualifier = qualifier;
@@ -81,9 +83,44 @@ final public class Version implements Comparable<Version> {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder().append(major).append('.').append(minor).append('.').append(micro);
-    if(qualifier != null && qualifier.length() > 0) 
-      sb.append('-').append(qualifier);
-    return sb.toString(); 
+    if(qualifier != null && qualifier.length() > 0) sb.append('-').append(qualifier);
+    return sb.toString();
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if(this == obj) {
+      return true;
+    }
+    if(obj == null) {
+      return false;
+    }
+    if(getClass() != obj.getClass()) {
+      return false;
+    }
+
+    final Version rhs = (Version) obj;
+    if(major != rhs.major) {
+      return false;
+    }
+    if(minor != rhs.minor) {
+      return false;
+    }
+    if(micro != rhs.micro) {
+      return false;
+    }
+    return qualifier.equals(rhs.qualifier);
+  }
+
+  @Override
+  public int hashCode() {
+    final int PRIME = 31;
+    int hash = 1;
+    hash = PRIME * hash + major;
+    hash = PRIME * hash + minor;
+    hash = PRIME * hash + micro;
+    hash = PRIME * hash + (qualifier != null ? qualifier.hashCode() : 0);
+    return hash;
   }
 
   public int getMajor() {
@@ -103,11 +140,11 @@ final public class Version implements Comparable<Version> {
   }
 
   private IllegalArgumentException invalidVersionString(String version, String reason) {
-    return new IllegalArgumentException("Invalid version string '"+version+"'. Expected format is \"major'.'minor('.'micro)?(('.'|'-'|'_')qualifier)?\": " + reason);
+    return new IllegalArgumentException("Invalid version string '" + version + "'. Expected format is \"major'.'minor('.'micro)?(('.'|'-'|'_')qualifier)?\": " + reason);
   }
 
   private IllegalArgumentException invalidVersionString(String version, Exception e) {
-    return new IllegalArgumentException("Invalid version string '"+version+"'. Expected format is \"major'.'minor('.'micro)?(('.'|'-'|'_')qualifier)?\"", e);
+    return new IllegalArgumentException("Invalid version string '" + version + "'. Expected format is \"major'.'minor('.'micro)?(('.'|'-'|'_')qualifier)?\"", e);
   }
 
 }

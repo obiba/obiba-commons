@@ -14,15 +14,17 @@ import org.hamcrest.Matcher;
  * Implementation of {@link Matcher} for comparing dates and time.
  */
 public class DateMatcher extends BaseMatcher<Date> {
-  
+
   /** The expected value */
-  private Calendar value;
+  private final Calendar value;
+
   /** An array of Calendar fields that should be compared */
-  private int[] fields;
+  private final int[] fields;
+
   /** A description of the matching */
-  private String desc;
-  
-  public DateMatcher(Date d, String desc, int[] fields) {
+  private final String desc;
+
+  private DateMatcher(Date d, String desc, int[] fields) {
     (this.value = GregorianCalendar.getInstance()).setTime(d);
     this.fields = fields;
     this.desc = desc;
@@ -36,8 +38,8 @@ public class DateMatcher extends BaseMatcher<Date> {
   public boolean matches(Object obj) {
     if(obj instanceof java.util.Date) {
       Calendar c = GregorianCalendar.getInstance();
-      c.setTime((Date)obj);
-      for (int i = 0; i < fields.length; i++) {
+      c.setTime((Date) obj);
+      for(int i = 0; i < fields.length; i++) {
         int field = fields[i];
         if(value.get(field) != c.get(field)) return false;
       }
@@ -46,13 +48,13 @@ public class DateMatcher extends BaseMatcher<Date> {
     return false;
   }
 
-  static public DateMatcher same(Date d, String desc, int ... fields) {
+  static public DateMatcher same(Date d, String desc, int... fields) {
     return new DateMatcher(d, desc, fields);
   }
 
   /**
    * Matches the year and the day of year of two dates.
-   *
+   * 
    * @param d
    * @return
    */
@@ -71,7 +73,7 @@ public class DateMatcher extends BaseMatcher<Date> {
 
   /**
    * Matches the day of the year, ie: January first.
-   *
+   * 
    * @param d
    * @return
    */
@@ -81,7 +83,7 @@ public class DateMatcher extends BaseMatcher<Date> {
 
   /**
    * Matches the time of day up to the seconds.
-   *
+   * 
    * @param d
    * @return
    */

@@ -1,5 +1,6 @@
 package org.obiba.core.util;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -12,7 +13,9 @@ import java.util.Comparator;
  * 
  * @param <T> a type that implements {@code Comparable}
  */
-public class ComparableComparator<T extends Comparable<T>> implements Comparator<T> {
+public class ComparableComparator<T extends Comparable<T>> implements Comparator<T>, Serializable {
+
+  private static final long serialVersionUID = -2271811769930959756L;
 
   public int compare(T o1, T o2) {
     return o1.compareTo(o2);
