@@ -125,7 +125,7 @@ public class DefaultUpgradeManager implements UpgradeManager {
 
   /**
    * Extracts all applicable upgrade steps from the list of possible steps. An applicable step is a step instance that
-   * has a {@code Version} that is greater or equal to the {@code Version} returned by {@code #getCurrentVersion()},
+   * has a {@code Version} that is greater than {@code Version} returned by {@code #getCurrentVersion()},
    * determined using the {@code #versionComparator}.
    * 
    * @return a new list containing all the applicable steps.
@@ -134,7 +134,7 @@ public class DefaultUpgradeManager implements UpgradeManager {
     List<UpgradeStep> applicableSteps = new ArrayList<UpgradeStep>();
     for(UpgradeStep step : upgradeSteps) {
       int diff = versionComparator.compare(getCurrentVersion(), step.getAppliesTo());
-      if(diff <= 0) {
+      if(diff < 0) {
         applicableSteps.add(step);
       }
     }
