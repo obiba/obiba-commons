@@ -1,10 +1,15 @@
 package org.obiba.core.util;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class StreamUtil {
 
@@ -75,4 +80,50 @@ public final class StreamUtil {
       silentSafeClose(in);
     }
   }
+
+  /**
+   * 
+   * @since 1.0.4
+   * @param in
+   * @return
+   * @throws IOException
+   */
+  public static final List<String> readLines(final InputStream in) throws IOException {
+    InputStreamReader reader = new InputStreamReader(in);
+    return readLines(reader);
+  }
+
+  /**
+   * @since 1.0.4
+   * @param in
+   * @param encoding
+   * @return
+   * @throws IOException
+   */
+  public static final List<String> readLines(final InputStream in, String encoding) throws IOException {
+    if(encoding == null) {
+      return readLines(in);
+    } else {
+      return readLines(new InputStreamReader(in, encoding));
+    }
+  }
+
+  /**
+   * 
+   * @since 1.0.4
+   * @param input
+   * @return
+   * @throws IOException
+   */
+  public static List<String> readLines(Reader in) throws IOException {
+    BufferedReader reader = new BufferedReader(in);
+    List<String> list = new ArrayList<String>();
+    String line = reader.readLine();
+    while(line != null) {
+      list.add(line);
+      line = reader.readLine();
+    }
+    return list;
+  }
+
 }
