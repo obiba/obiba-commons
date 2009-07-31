@@ -50,7 +50,7 @@ import org.apache.wicket.validation.IValidator;
  * @author Igor Vaynberg (ivaynberg)
  * @author Eelco Hillenius
  */
-public class AjaxEditableLabel extends Panel {
+public class AjaxEditableLabel<T> extends Panel {
 
   private static final long serialVersionUID = 1L;
   
@@ -60,14 +60,14 @@ public class AjaxEditableLabel extends Panel {
   private Component label;
 
   /** editor component. */
-  private FormComponent editor;
+  private FormComponent<T> editor;
 
   public AjaxEditableLabel(String id) {
     super(id);
     setOutputMarkupId(true);
   }
 
-  public AjaxEditableLabel(String id, IModel model) {
+  public AjaxEditableLabel(String id, IModel<T> model) {
     super(id, model);
     setOutputMarkupId(true);
   }
@@ -82,7 +82,7 @@ public class AjaxEditableLabel extends Panel {
    *            The validator
    * @return This
    */
-  public final AjaxEditableLabel add(IValidator validator) {
+  public final AjaxEditableLabel<T> add(IValidator<T> validator) {
     getEditor().add(validator);
     return this;
   }
@@ -94,7 +94,7 @@ public class AjaxEditableLabel extends Panel {
    * @param labelModel
    * @return this for chaining
    */
-  public final AjaxEditableLabel setLabel(final IModel labelModel) {
+  public final AjaxEditableLabel<T> setLabel(final IModel<String> labelModel) {
     getEditor().setLabel(labelModel);
     return this;
   }
@@ -102,10 +102,10 @@ public class AjaxEditableLabel extends Panel {
   /**
    * @see org.apache.wicket.MarkupContainer#setModel(org.apache.wicket.model.IModel)
    */
-  public final Component setModel(IModel model) {
-    super.setModel(model);
-    getLabel().setModel(model);
-    getEditor().setModel(model);
+  public final Component setModel(IModel<T> model) {
+    super.setDefaultModel(model);
+    getLabel().setDefaultModel(model);
+    getEditor().setDefaultModel(model);
     return this;
   }
 
@@ -115,7 +115,7 @@ public class AjaxEditableLabel extends Panel {
    * @param required
    * @return this for chaining
    */
-  public final AjaxEditableLabel setRequired(final boolean required) {
+  public final AjaxEditableLabel<T> setRequired(final boolean required) {
     getEditor().setRequired(required);
     return this;
   }
@@ -127,7 +127,7 @@ public class AjaxEditableLabel extends Panel {
    * @param type
    * @return this for chaining
    */
-  public final AjaxEditableLabel setType(Class type) {
+  public final AjaxEditableLabel<T> setType(Class<T> type) {
     getEditor().setType(type);
     return this;
   }
@@ -159,13 +159,13 @@ public class AjaxEditableLabel extends Panel {
    *            The model
    * @return The editor
    */
-  protected Component newLabel(MarkupContainer parent, String componentId, IModel model) {
+  protected Component newLabel(MarkupContainer parent, String componentId, IModel<?> model) {
     Label label = new Label(componentId, model) {
 
       private static final long serialVersionUID = 1L;
 
       protected void onComponentTagBody(MarkupStream markupStream, ComponentTag openTag) {
-        if (getModelObject() == null) {
+        if (getDefaultModelObject() == null) {
           replaceComponentTagBody(markupStream, openTag, defaultNullLabel());
         } else {
           super.onComponentTagBody(markupStream, openTag);
@@ -188,8 +188,9 @@ public class AjaxEditableLabel extends Panel {
    *            The model
    * @return The editor
    */
-  protected FormComponent newEditor(MarkupContainer parent, String componentId, IModel model) {
-    TextField editor = new TextField(componentId, model) {
+  protected FormComponent<T> newEditor(MarkupContainer parent, String componentId, IModel<T> model) {
+    TextField<T> editor = new TextField<T>(componentId, model) {
+      private static final long serialVersionUID = 1L;
 
       @Override
       protected void onComponentTag(ComponentTag tag) {
@@ -221,14 +222,14 @@ public class AjaxEditableLabel extends Panel {
    * 
    * @return The editor component
    */
-  protected final FormComponent getEditor() {
+  protected final FormComponent<T> getEditor() {
     if (editor == null) {
       initLabelAndEditor(getParentModel());
     }
     return editor;
   }
 
-  protected void setEditor(FormComponent editor) {
+  protected void setEditor(FormComponent<T> editor) {
     this.editor = editor;
   }
 
@@ -286,12 +287,13 @@ public class AjaxEditableLabel extends Panel {
   /**
    * @return Gets the parent model in case no explicit model was specified.
    */
-  protected IModel getParentModel() {
+  @SuppressWarnings("unchecked")
+  protected IModel<T> getParentModel() {
     // the #getModel() call below will resolve and assign any inheritable
     // model this component can use. Set that directly to the label and
     // editor so that those components work like this enclosing panel
     // does not exist (must have that e.g. with CompoundPropertyModels)
-    IModel m = getModel();
+    IModel<T> m = (IModel<T>) getDefaultModel();
 
     // check that a model was found
     if (m == null) {
@@ -346,7 +348,7 @@ public class AjaxEditableLabel extends Panel {
    * @param model
    *            The model for the label and editor
    */
-  protected void initLabelAndEditor(IModel model) {
+  protected void initLabelAndEditor(IModel<T> model) {
     setEditor(newEditor(this, "editor", model));
     setLabel(newLabel(this, "label", model));
     add(getLabel());

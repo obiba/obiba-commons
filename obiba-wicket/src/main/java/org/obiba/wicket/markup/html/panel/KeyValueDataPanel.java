@@ -1,5 +1,7 @@
 package org.obiba.wicket.markup.html.panel;
 
+import java.io.Serializable;
+
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.authorization.Action;
@@ -242,7 +244,7 @@ public class KeyValueDataPanel extends Panel {
    * @param value the model to use for the value cell.
    * @return the label generated from the model, or null if the model contained a null value.
    */
-  private Label createValueLabel(IModel value) {
+  private Label createValueLabel(IModel<?> value) {
     // Wrap the original model that returns a whitespace when the original model value is null.
     // This allows the table cell tag to always have a body (ie: never renders <td/>).
     // A display issue (GFLX-111) was caused by this.
@@ -255,11 +257,12 @@ public class KeyValueDataPanel extends Panel {
       private static final long serialVersionUID = 7669446358458768567L;
 
       @Override
-      public Object getObject() {
-        IModel o = (IModel) super.getObject();
+      public Serializable getObject() {
+        IModel<?> o = (IModel<?>) super.getObject();
         if(o.getObject() == null) return " ";
-        return o.getObject();
+        return (Serializable)o.getObject();
       }
+      
     });
   }
 

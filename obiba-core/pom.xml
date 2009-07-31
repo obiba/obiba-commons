@@ -30,8 +30,8 @@
     </dependency>
 
     <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate</artifactId>
+      <groupId>cglib</groupId>
+      <artifactId>cglib</artifactId>
       <optional>true</optional>
     </dependency>
 
@@ -40,10 +40,14 @@
       <artifactId>hibernate-annotations</artifactId>
       <optional>true</optional>
     </dependency>
-
+    <dependency>
+      <groupId>javassist</groupId>
+      <artifactId>javassist</artifactId>
+      <optional>true</optional>
+    </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-commons-annotations</artifactId>
+      <artifactId>hibernate-cglib-repack</artifactId>
       <optional>true</optional>
     </dependency>
 
@@ -109,7 +113,6 @@
     <dependency>
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
-      <version>1.4</version>
       <optional>true</optional>
     </dependency>
 

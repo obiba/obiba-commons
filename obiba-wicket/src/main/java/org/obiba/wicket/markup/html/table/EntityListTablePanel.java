@@ -298,7 +298,7 @@ public class EntityListTablePanel<T> extends Panel {
             SimpleDateFormat formater = new SimpleDateFormat("yyyyMMdd_HHmm");
             String name = formater.format(new Date());
             
-            String header = EntityListTablePanel.this.get("entityName").getModelObjectAsString();
+            String header = EntityListTablePanel.this.get("entityName").getDefaultModelObjectAsString();
             name = "_" + header;
             name = name.replace(' ', '_');
             
@@ -347,7 +347,7 @@ public class EntityListTablePanel<T> extends Panel {
             
             String value = "";
             if (comp != null)
-              value  = comp.getModelObjectAsString();
+              value  = comp.getDefaultModelObjectAsString();
             
             csv.append(value);
             pos++;

@@ -40,14 +40,14 @@ public class SignInPanel extends Panel
   private boolean rememberMe = true;
 
   /** Field for user name. */
-  private TextField username;
+  private TextField<String> username;
   
   private FeedbackPanel feedback;
 
   /**
    * Sign in form.
    */
-  public final class SignInForm extends Form
+  public final class SignInForm extends Form<ValueMap>
   {
     private static final long serialVersionUID = 1L;
 
@@ -69,9 +69,8 @@ public class SignInPanel extends Panel
       
       // Attach textfield components that edit properties map
       // in lieu of a formal beans model
-      add(username = new TextField("username", new PropertyModel(properties, "username")));
-      add(password = new PasswordTextField("password", new PropertyModel(properties,
-          "password")));
+      add(username = new TextField<String>("username", new PropertyModel<String>(properties, "username")));
+      add(password = new PasswordTextField("password", new PropertyModel<String>(properties, "password")));
       password.setRequired(false);
 
       // MarkupContainer row for remember me checkbox
@@ -79,8 +78,7 @@ public class SignInPanel extends Panel
       add(rememberMeRow);
 
       // Add rememberMe checkbox
-      rememberMeRow.add(new CheckBox("rememberMe", new PropertyModel(SignInPanel.this,
-          "rememberMe")));
+      rememberMeRow.add(new CheckBox("rememberMe", new PropertyModel<Boolean>(SignInPanel.this, "rememberMe")));
 
       // Make form values persistent
       setPersistent(rememberMe);
@@ -171,7 +169,7 @@ public class SignInPanel extends Panel
    */
   public String getUsername()
   {
-    return username.getModelObjectAsString();
+    return username.getDefaultModelObjectAsString();
   }
 
   /**
