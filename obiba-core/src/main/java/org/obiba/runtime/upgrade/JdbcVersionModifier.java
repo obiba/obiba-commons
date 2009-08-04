@@ -1,12 +1,11 @@
-/*******************************************************************************
+/***********************************************************************************************************************
  * Copyright 2008(c) The OBiBa Consortium. All rights reserved.
  * 
- * This program and the accompanying materials
- * are made available under the terms of the GNU Public License v3.0.
+ * This program and the accompanying materials are made available under the terms of the GNU Public License v3.0.
  * 
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- ******************************************************************************/
+ * You should have received a copy of the GNU General Public License along with this program. If not, see
+ * <http://www.gnu.org/licenses/>.
+ **********************************************************************************************************************/
 package org.obiba.runtime.upgrade;
 
 import java.util.List;
@@ -15,7 +14,6 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.obiba.runtime.Version;
-import org.obiba.runtime.upgrade.VersionModifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -71,15 +69,6 @@ public class JdbcVersionModifier implements VersionModifier, InitializingBean {
       }
     } catch(DataAccessException couldNotRetrieveCurrentVersion) {
       log.warn("Could not retrieve the current version.  This looks like a new installation of Onyx, so no upgrades are needed.");
-      log.info("Attempting to create the Version table in the database...");
-      try {
-        jdbcTemplate.execute("create table version (major int, minor int, micro int, qualifier varchar(50),version_string varchar(50))");
-        log.info("Successfully created the Version table.");
-        log.info("Setting version to : {}", versionBeingInstalled.toString());
-        setVersion(versionBeingInstalled);
-      } catch(DataAccessException couldNotCreateVersionTable) {
-        throw new RuntimeException("Could not create version table", couldNotCreateVersionTable);
-      }
     }
 
   }
