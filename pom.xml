@@ -7,7 +7,7 @@
   <groupId>org.obiba</groupId>
   <artifactId>obiba-commons</artifactId>
   <packaging>pom</packaging>
-  <version>1.0.5</version>
+  <version>1.0.6-SNAPSHOT</version>
 
   <modules>
     <module>obiba-core</module>
@@ -383,8 +383,8 @@
   </distributionManagement>
 
   <scm>
-    <connection>scm:svn:http://svn.obiba.org/obiba-commons/tags/1.0.5</connection>
-    <developerConnection>scm:svn:https://svn.obiba.org/obiba-commons/tags/1.0.5</developerConnection>
+    <connection>scm:svn:http://svn.obiba.org/obiba-commons/branches/obiba-commons-1.0.x</connection>
+    <developerConnection>scm:svn:https://svn.obiba.org/obiba-commons/branches/obiba-commons-1.0.x</developerConnection>
   </scm>
 
   <issueManagement>
