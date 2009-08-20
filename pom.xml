@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -9,7 +7,7 @@
   <groupId>org.obiba</groupId>
   <artifactId>obiba-commons</artifactId>
   <packaging>pom</packaging>
-  <version>1.0.5-SNAPSHOT</version>
+  <version>1.0.5</version>
 
   <modules>
     <module>obiba-core</module>
@@ -385,8 +383,8 @@
   </distributionManagement>
 
   <scm>
-    <connection>scm:svn:http://svn.obiba.org/obiba-commons/branches/obiba-commons-1.0.x</connection>
-    <developerConnection>scm:svn:https://svn.obiba.org/obiba-commons/branches/obiba-commons-1.0.x</developerConnection>
+    <connection>scm:svn:http://svn.obiba.org/obiba-commons/tags/1.0.5</connection>
+    <developerConnection>scm:svn:https://svn.obiba.org/obiba-commons/tags/1.0.5</developerConnection>
   </scm>
 
   <issueManagement>
