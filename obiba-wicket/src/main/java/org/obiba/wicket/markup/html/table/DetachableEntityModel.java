@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Allows detaching/attaching the actual entity from/to the model to save memory.
  */
-public class DetachableEntityModel extends LoadableDetachableModel {
+public class DetachableEntityModel<T> extends LoadableDetachableModel<T> {
 
   private static final long serialVersionUID = 1606621482493529188L;
 
@@ -19,11 +19,11 @@ public class DetachableEntityModel extends LoadableDetachableModel {
 
   private Serializable id;
 
-  private Class<?> type;
+  private Class<T> type;
 
   private EntityQueryService service;
 
-  public DetachableEntityModel(EntityQueryService service, Object o) {
+  public DetachableEntityModel(EntityQueryService service, T o) {
     super(o);
     if(o == null) throw new IllegalArgumentException("model object cannot be null");
     this.service = service;
@@ -33,7 +33,7 @@ public class DetachableEntityModel extends LoadableDetachableModel {
     } else {
       this.id = getEntityQueryService().getId(o);
     }
-    this.type = o.getClass();
+    this.type = (Class<T>)o.getClass();
   }
 
   @Override
@@ -43,7 +43,7 @@ public class DetachableEntityModel extends LoadableDetachableModel {
   }
 
   @Override
-  protected Object load() {
+  protected T load() {
     log.trace("DetachableEntityModel is loading instance id {} of type {}", id, type.getSimpleName());
     return getEntityQueryService().get(type, id);
   }
@@ -60,7 +60,7 @@ public class DetachableEntityModel extends LoadableDetachableModel {
   @Override
   public boolean equals(Object obj) {
     if(obj instanceof DetachableEntityModel) {
-      DetachableEntityModel rhs = (DetachableEntityModel) obj;
+      DetachableEntityModel<T> rhs = (DetachableEntityModel<T>) obj;
       return this.id.equals(rhs.id) && this.type.equals(rhs.type);
     }
     return super.equals(obj);
