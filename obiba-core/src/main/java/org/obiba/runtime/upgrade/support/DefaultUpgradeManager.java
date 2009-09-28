@@ -1,13 +1,23 @@
 package org.obiba.runtime.upgrade.support;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 import javax.sql.DataSource;
+
+import liquibase.change.ColumnConfig;
+import liquibase.change.ConstraintsConfig;
+import liquibase.change.CreateTableChange;
+import liquibase.database.Database;
+import liquibase.database.DatabaseFactory;
+import liquibase.database.sql.visitor.SqlVisitor;
+import liquibase.exception.JDBCException;
 
 import org.obiba.core.util.ComparableComparator;
 import org.obiba.runtime.Version;
@@ -19,7 +29,6 @@ import org.obiba.runtime.upgrade.VersionModifier;
 import org.obiba.runtime.upgrade.VersionProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 public class DefaultUpgradeManager implements UpgradeManager {
@@ -31,6 +40,8 @@ public class DefaultUpgradeManager implements UpgradeManager {
   private static final Logger log = LoggerFactory.getLogger(DefaultUpgradeManager.class);
 
   private static final String CREATE_VERSION_TABLE_SQL = "create table version (major int, minor int, micro int, qualifier varchar(50), version_string varchar(50))";
+
+  private static final String CREATE_INNODB_TABLE_SUFFIX = " ENGINE=InnoDB DEFAULT CHARSET=latin1";
 
   //
   // Instance Variables
@@ -278,11 +289,77 @@ public class DefaultUpgradeManager implements UpgradeManager {
    */
   protected void createVersionTable() {
     log.info("Creating version table...");
+
+    // Get a connection to the dataSource.
+    Connection connection = null;
     try {
-      jdbcTemplate.execute(CREATE_VERSION_TABLE_SQL);
-      log.info("Successfully created the version table.");
-    } catch(DataAccessException ex) {
+      connection = jdbcTemplate.getDataSource().getConnection();
+    } catch(SQLException ex) {
       throw new RuntimeException("Could not create version table", ex);
+    }
+
+    // Find an appropriate database instance for the connection.
+    Database database = null;
+    try {
+      DatabaseFactory databaseFactory = DatabaseFactory.getInstance();
+      database = databaseFactory.findCorrectDatabaseImplementation(connection);
+    } catch(JDBCException ex) {
+      throw new RuntimeException("Could not create version table", ex);
+    }
+
+    CreateTableChange createVersionTable = new CreateTableChange();
+    createVersionTable.setTableName("version");
+    createVersionTable.addColumn(createColumn("major", "java.sql.Types.INTEGER", false));
+    createVersionTable.addColumn(createColumn("minor", "java.sql.Types.INTEGER", false));
+    createVersionTable.addColumn(createColumn("micro", "java.sql.Types.INTEGER", false));
+    createVersionTable.addColumn(createColumn("qualifier", "java.sql.Types.VARCHAR(50)", true));
+    createVersionTable.addColumn(createColumn("version_string", "java.sql.Types.VARCHAR(50)", false));
+
+    // Create the version table.
+    try {
+      List<SqlVisitor> sqlVisitors = new ArrayList<SqlVisitor>();
+      sqlVisitors.add(new CreateInnoDBTableSqlVisitor());
+      createVersionTable.executeStatements(database, sqlVisitors);
+
+      log.info("Successfully created the version table.");
+    } catch(Exception ex) {
+      throw new RuntimeException("Could not create version table", ex);
+    }
+  }
+
+  private ColumnConfig createColumn(String columnName, String columnType, boolean nullable) {
+    ColumnConfig column = new ColumnConfig();
+    column.setName(columnName);
+    column.setType(columnType);
+
+    ConstraintsConfig constraints = new ConstraintsConfig();
+    constraints.setNullable(nullable);
+    column.setConstraints(constraints);
+
+    return column;
+  }
+
+  private class CreateInnoDBTableSqlVisitor implements SqlVisitor {
+
+    public String getTagName() {
+      return "createInnoDBTableSqlVisitor";
+    }
+
+    @SuppressWarnings("unchecked")
+    public void setApplicableDbms(Collection applicableDbms) {
+      // no-op
+    }
+
+    public boolean isApplicable(Database database) {
+      return database.getTypeName().equals("mysql");
+    }
+
+    public String modifySql(String sql, Database database) {
+      if(sql.toUpperCase().startsWith("CREATE TABLE")) {
+        sql += CREATE_INNODB_TABLE_SUFFIX;
+      }
+
+      return sql;
     }
   }
 }
