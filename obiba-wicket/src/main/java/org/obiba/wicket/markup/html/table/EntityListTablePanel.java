@@ -16,7 +16,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.IBehavior;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.HeaderlessColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
@@ -34,7 +33,7 @@ import org.apache.wicket.util.resource.IResourceStream;
 import org.obiba.core.domain.IEntity;
 import org.obiba.core.service.EntityQueryService;
 import org.obiba.wicket.markup.html.ResourceGetter;
-import org.obiba.wicket.markup.html.panel.ConfirmImageLinkPanel;
+import org.obiba.wicket.markup.html.panel.ImageLabelLinkPanel;
 import org.obiba.wicket.util.resource.CsvResourceStream;
 
 
@@ -49,6 +48,7 @@ public class EntityListTablePanel<T> extends Panel {
   private Map<Serializable, EntitySelection> selections = new HashMap<Serializable, EntitySelection>();
 
   private IColumnProvider columnProvider;
+  private IColumnProvider csvColumnProvider;
 
   private SortableDataProvider dataProvider;
 
@@ -272,12 +272,24 @@ public class EntityListTablePanel<T> extends Panel {
   }
 
   /**
-   * Get the command that export table content to a csv file, with the default image.
+   * Get the command that export table content to a csv file, with the default image and text. Kept for backward compatibility, as the default message is not localized.
    * @param panelId
    * @return
    */
+  @Deprecated
   public Panel getExportCommandPanel(String panelId) {
-    return getExportCommandPanel(panelId, ResourceGetter.getImage("document_out.gif"));
+    return getExportCommandPanel(panelId, ResourceGetter.getImage("document_out.gif"), new Model("Export "));
+  }
+  
+  /**
+   * Get the command that export table content to a csv file, with the default text. Kept for backward compatibility, as the default message is not localized.
+   * @param panelId
+   * @param image
+   * @return
+   */
+  @Deprecated
+  public Panel getExportCommandPanel(String panelId, Resource image) {
+    return getExportCommandPanel(panelId, image, new Model("Export "));
   }
   
   /**
@@ -286,9 +298,9 @@ public class EntityListTablePanel<T> extends Panel {
    * @param image
    * @return
    */
-  @SuppressWarnings("serial")
-  public Panel getExportCommandPanel(String panelId, Resource image) {
-    ConfirmImageLinkPanel pane = new ConfirmImageLinkPanel(panelId, image, new Model("Export ")) {
+  public Panel getExportCommandPanel(String panelId, Resource image, IModel<String> linkLabel) {
+    ImageLabelLinkPanel panel = new ImageLabelLinkPanel(panelId, image, linkLabel, ImageLabelLinkPanel.ImageLocation.left) {
+      private static final long serialVersionUID = 8347134007933182401L;
 
       @Override
       public void onClick() {
@@ -298,7 +310,16 @@ public class EntityListTablePanel<T> extends Panel {
             SimpleDateFormat formater = new SimpleDateFormat("yyyyMMdd_HHmm");
             String name = formater.format(new Date());
             
-            String header = EntityListTablePanel.this.get("entityName").getDefaultModelObjectAsString();
+            String header;
+            //Supporting the old way of defining the filename for a CSV.
+            Component entityNameComponent = EntityListTablePanel.this.get("entityName");
+            if (entityNameComponent != null) {
+              header = entityNameComponent.getDefaultModelObjectAsString();              
+            }
+            else {
+              header = EntityListTablePanel.this.dataTable.getTitleModel().toString();              
+            }
+            
             name = "_" + header;
             name = name.replace(' ', '_');
             
@@ -309,8 +330,9 @@ public class EntityListTablePanel<T> extends Panel {
       
     };
     
-    return pane;
+    return panel;
   }
+  
   
   /**
    * Get the stream of list data in a csv file.
@@ -320,6 +342,13 @@ public class EntityListTablePanel<T> extends Panel {
     CsvResourceStream csv = new CsvResourceStream();
     
     List<IColumn> columns = columnProvider.getDefaultColumns();
+    if (csvColumnProvider != null) {
+      columns = csvColumnProvider.getDefaultColumns();
+    }
+    else {
+      columns = columnProvider.getDefaultColumns();
+    }
+    
     
     for (String name : getColumnHeaderNames(columns)) {
       csv.append(name);
@@ -549,6 +578,14 @@ public class EntityListTablePanel<T> extends Panel {
       this.selected = selected;
     }
     
+  }
+
+  public IColumnProvider getCsvColumnProvider() {
+    return csvColumnProvider;
+  }
+
+  public void setCsvColumnProvider(IColumnProvider csvColumnProvider) {
+    this.csvColumnProvider = csvColumnProvider;
   }
   
 }
