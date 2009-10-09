@@ -63,7 +63,6 @@ public class PersistenceManagerHibernateImpl extends DefaultPersistenceManagerIm
     return AssociationCriteria.create(type, getSession()).addPagingClause(paging).addSortingClauses(clauses).getCriteria().list();
   }
 
-  @SuppressWarnings("unchecked")
   public <T> List<T> list(Class<T> type, SortingClause... clauses) {
     return this.list(type, null, clauses);
   }

@@ -55,6 +55,8 @@ public class XStreamFactoryBean implements FactoryBean, ApplicationContextAware 
     return doCreateXStream();
   }
 
+  @Override
+  @SuppressWarnings("unchecked")
   public Class getObjectType() {
     return XStream.class;
   }

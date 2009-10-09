@@ -36,7 +36,6 @@ public class XstreamResourceDatabaseSeed implements DatabaseSeed, InitializingBe
 
   private boolean developmentSeed = false;
 
-  @SuppressWarnings("unchecked")
   @Transactional
   public void seedDatabase(WebApplication application) {
     if(shouldSeed(application) == false) {

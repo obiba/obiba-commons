@@ -84,8 +84,6 @@ public class MessageSourceResolvableStringModel extends AbstractReadOnlyModel {
     Application application = Application.get();
     if(application instanceof ISpringWebApplication) {
       return ((ISpringWebApplication) application).getSpringContextLocator().getSpringContext();
-    } else if(application instanceof SpringWebApplication) {
-      return ((SpringWebApplication) application).getSpringContextLocator().getSpringContext();
     }
 
     throw new IllegalStateException("Cannot find MessageSource. Application must either implement ISpringWebApplication or extend SpringWebApplication.");

@@ -31,8 +31,8 @@ public class SortableDataProviderEntityServiceImpl<T> extends AbstractSortableDa
     return getQueryService().list(type, paging, clauses);
   }
 
-  public IModel makeModel(final T object) {
-    return new DetachableEntityModel(getQueryService(), object);
+  public IModel<T> makeModel(final T object) {
+    return new DetachableEntityModel<T>(getQueryService(), object);
   }
 
   public int size() {

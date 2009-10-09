@@ -4,14 +4,14 @@ import java.util.List;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 
-public interface IColumnProvider {
+public interface IColumnProvider<T> {
 
   public List<String> getColumnHeaderNames();
 
-  public List<IColumn> getRequiredColumns();
+  public List<IColumn<T>> getRequiredColumns();
   
-  public List<IColumn> getDefaultColumns();
+  public List<IColumn<T>> getDefaultColumns();
   
-  public List<IColumn> getAdditionalColumns();
+  public List<IColumn<T>> getAdditionalColumns();
 
 }

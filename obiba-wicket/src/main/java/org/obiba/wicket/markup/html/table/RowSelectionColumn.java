@@ -15,7 +15,7 @@ import org.obiba.wicket.markup.html.panel.CheckBoxPanel;
 import org.obiba.wicket.markup.html.table.EntityListTablePanel.EntitySelection;
 
 
-public class RowSelectionColumn extends HeaderlessColumn {
+public class RowSelectionColumn extends HeaderlessColumn<Boolean> {
 
   private static final long serialVersionUID = 1L;
 
@@ -54,7 +54,7 @@ public class RowSelectionColumn extends HeaderlessColumn {
 
   @Override
   public Component getHeader(String componentId) {
-    CheckBoxPanel cbPanel = new CheckBoxPanel(componentId, new PropertyModel(table, "allSelected"));
+    CheckBoxPanel cbPanel = new CheckBoxPanel(componentId, new PropertyModel<Boolean>(table, "allSelected"));
     cbPanel.add(new AjaxEventBehavior("onclick") {
 
       private static final long serialVersionUID = 1L;

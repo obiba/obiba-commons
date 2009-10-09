@@ -14,28 +14,28 @@ import org.apache.wicket.model.StringResourceModel;
  * to one of the bundles. For example, using the prefix <code>StudyDesign</code> and <code>design</code> as the property expression, 
  * the generated key would be <code>StudyDesign.${design}</code>. Refer to the {@link StringResourceModel} for more information.
  */
-public class StringResourcePropertyColumn extends PropertyColumn {
+public class StringResourcePropertyColumn<T> extends PropertyColumn<T> {
   
   private static final long serialVersionUID = -1672283569335782243L;
 
   private Component component;
   private String resourceKey;
 
-  public StringResourcePropertyColumn(IModel displayModel, String propertyExpression, Component component, String resourceKeyPrefix) {
+  public StringResourcePropertyColumn(IModel<String> displayModel, String propertyExpression, Component component, String resourceKeyPrefix) {
     super(displayModel, propertyExpression);
     this.component = component;
     this.resourceKey = resourceKeyPrefix + ".${"+propertyExpression+"}";
   }
 
-  public StringResourcePropertyColumn(IModel displayModel, String sortProperty, String propertyExpression, Component component, String resourceKeyPrefix) {
+  public StringResourcePropertyColumn(IModel<String> displayModel, String sortProperty, String propertyExpression, Component component, String resourceKeyPrefix) {
     super(displayModel, sortProperty, propertyExpression);
     this.component = component;
     this.resourceKey = resourceKeyPrefix + ".${"+propertyExpression+"}";
   }
 
   @Override
-  protected IModel createLabelModel(IModel embeddedModel) {
-    IModel propertyModel = super.createLabelModel(embeddedModel);
+  protected IModel<?> createLabelModel(IModel<T> embeddedModel) {
+    IModel<?> propertyModel = super.createLabelModel(embeddedModel);
     if(propertyModel.getObject() != null) {
       return new StringResourceModel(resourceKey, component, embeddedModel, propertyModel.getObject().toString());
     } else {
