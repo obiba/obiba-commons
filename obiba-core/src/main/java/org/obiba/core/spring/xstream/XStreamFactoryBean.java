@@ -22,6 +22,8 @@ import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
 public class XStreamFactoryBean implements FactoryBean, ApplicationContextAware {
 
   private boolean injecting = true;
+  
+  private int autowireType = -1;
 
   private ApplicationContext applicationContext;
 
@@ -37,6 +39,10 @@ public class XStreamFactoryBean implements FactoryBean, ApplicationContextAware 
 
   public void setInjecting(boolean injecting) {
     this.injecting = injecting;
+  }
+  
+  public void setAutowireType(int autowireType) {
+    this.autowireType = autowireType;
   }
 
   public void setAliasMap(Map<String, Class<?>> aliasMap) {
@@ -55,7 +61,6 @@ public class XStreamFactoryBean implements FactoryBean, ApplicationContextAware 
     return doCreateXStream();
   }
 
-  @Override
   @SuppressWarnings("unchecked")
   public Class getObjectType() {
     return XStream.class;
@@ -72,7 +77,11 @@ public class XStreamFactoryBean implements FactoryBean, ApplicationContextAware 
   protected ReflectionProvider doCreateReflectionProvider() {
     ReflectionProvider provider = new XStream().getReflectionProvider();
     if(injecting) {
-      provider = new InjectingReflectionProviderWrapper(provider, applicationContext);
+      InjectingReflectionProviderWrapper injecting = new InjectingReflectionProviderWrapper(provider, applicationContext);
+      if(autowireType > -1) {
+        injecting.setAutowireType(autowireType);
+      }
+      provider = injecting;
     }
     return provider;
   }
