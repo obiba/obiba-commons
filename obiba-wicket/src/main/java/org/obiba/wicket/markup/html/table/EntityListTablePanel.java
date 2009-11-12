@@ -307,23 +307,7 @@ public class EntityListTablePanel<T> extends Panel {
         getRequestCycle().setRequestTarget(new ResourceStreamRequestTarget(getReportStream()) {
           @Override
           public String getFileName() {
-            SimpleDateFormat formater = new SimpleDateFormat("yyyyMMdd_HHmm");
-            String name = formater.format(new Date());
-            
-            String header;
-            //Supporting the old way of defining the filename for a CSV.
-            Component entityNameComponent = EntityListTablePanel.this.get("entityName");
-            if (entityNameComponent != null) {
-              header = entityNameComponent.getDefaultModelObjectAsString();              
-            }
-            else {
-              header = EntityListTablePanel.this.dataTable.getTitleModel().toString();              
-            }
-            
-            name = "_" + header;
-            name = name.replace(' ', '_');
-            
-            return name + "." + CsvResourceStream.FILE_SUFFIX;
+            return getCsvFileName();
           }
         });
       }
@@ -331,6 +315,31 @@ public class EntityListTablePanel<T> extends Panel {
     };
     
     return panel;
+  }
+  
+  
+  /**
+   * Returns the filename of the generated CSV file. 
+   * @return
+   */
+  public String getCsvFileName() {
+    SimpleDateFormat formater = new SimpleDateFormat("yyyyMMdd_HHmm");
+    String name = formater.format(new Date());
+    
+    String header;
+    //Supporting the old way of defining the filename for a CSV.
+    Component entityNameComponent = EntityListTablePanel.this.get("entityName");
+    if (entityNameComponent != null) {
+      header = entityNameComponent.getDefaultModelObjectAsString();              
+    }
+    else {
+      header = EntityListTablePanel.this.dataTable.getTitleModel().toString();              
+    }
+    
+    name = "_" + header;
+    name = name.replace(' ', '_');
+    
+    return name + "." + CsvResourceStream.FILE_SUFFIX;
   }
   
   
