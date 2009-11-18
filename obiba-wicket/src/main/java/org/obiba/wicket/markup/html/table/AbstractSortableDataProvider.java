@@ -14,7 +14,7 @@ import org.obiba.core.service.SortingClause;
  * Helper class that converts the {@link SortParam} to a {@link SortingClause} instance without any modification to the
  * property name.
  */
-abstract public class AbstractSortableDataProvider<T> extends SortableDataProvider {
+abstract public class AbstractSortableDataProvider<T> extends SortableDataProvider<T> {
 
   private static final long serialVersionUID = 1L;
 

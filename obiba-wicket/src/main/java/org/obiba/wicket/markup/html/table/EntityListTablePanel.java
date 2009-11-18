@@ -15,6 +15,7 @@ import org.apache.wicket.Resource;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.IBehavior;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
+import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.HeaderlessColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
@@ -28,7 +29,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.target.resource.ResourceStreamRequestTarget;
-import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.resource.IResourceStream;
 import org.obiba.core.domain.IEntity;
 import org.obiba.core.service.EntityQueryService;
@@ -47,21 +47,18 @@ public class EntityListTablePanel<T> extends Panel {
 
   private Map<Serializable, EntitySelection> selections = new HashMap<Serializable, EntitySelection>();
 
-  private IColumnProvider columnProvider;
-  private IColumnProvider csvColumnProvider;
+  private IColumnProvider<T> columnProvider;
+  private IColumnProvider<T> csvColumnProvider;
 
-  private SortableDataProvider dataProvider;
+  private SortableDataProvider<T> dataProvider;
 
-  private AjaxDataTable dataTable;
+  private AjaxDataTable<T> dataTable;
 
-  private ColumnSelectorPanel selector;
+  private ColumnSelectorPanel<T> selector;
 
-  private RowSelectionColumn rowSelectionColumn;
+  private RowSelectionColumn<T> rowSelectionColumn;
 
   private boolean displayRowSelectionColumn = false;
-
-  @SpringBean
-  private EntityQueryService queryService;
 
   /**
    * Constructor with the default title, rows per page and {@link SortableDataProviderEntityServiceImpl}. 
@@ -69,8 +66,8 @@ public class EntityListTablePanel<T> extends Panel {
    * @param service
    * @param columns
    */
-  public EntityListTablePanel(String id, Class<T> type, IColumnProvider columns) {
-    this(id, type, columns, new Model(type.getSimpleName()), DEFAULT_ROWS_PER_PAGE);
+  public EntityListTablePanel(String id, EntityQueryService queryService, Class<T> type, IColumnProvider<T> columns) {
+    this(id, queryService, type, columns, new Model<String>(type.getSimpleName()), DEFAULT_ROWS_PER_PAGE);
   }
 
   /**
@@ -80,8 +77,8 @@ public class EntityListTablePanel<T> extends Panel {
    * @param columns
    * @param entityNameModel
    */
-  public EntityListTablePanel(String id, Class<T> type, IColumnProvider columns, IModel entityNameModel) {
-    this(id, type, columns, entityNameModel, DEFAULT_ROWS_PER_PAGE);
+  public EntityListTablePanel(String id, EntityQueryService queryService, Class<T> type, IColumnProvider<T> columns, IModel<String> entityNameModel) {
+    this(id, queryService, type, columns, entityNameModel, DEFAULT_ROWS_PER_PAGE);
   }
 
   /**
@@ -92,7 +89,7 @@ public class EntityListTablePanel<T> extends Panel {
    * @param entityNameModel
    * @param rowsPerPage
    */
-  public EntityListTablePanel(String id, Class<T> type, IColumnProvider columns, IModel entityNameModel, int rowsPerPage) {
+  public EntityListTablePanel(String id, EntityQueryService queryService, Class<T> type, IColumnProvider<T> columns, IModel<String> entityNameModel, int rowsPerPage) {
     super(id);
     internalConstruct(new SortableDataProviderEntityServiceImpl<T>(queryService, type), columns, entityNameModel, rowsPerPage);
   }
@@ -104,8 +101,8 @@ public class EntityListTablePanel<T> extends Panel {
    * @param template
    * @param columns
    */
-  public EntityListTablePanel(String id, T template, IColumnProvider columns) {
-    this(id, template, columns, new Model(template.getClass().getSimpleName()), DEFAULT_ROWS_PER_PAGE);
+  public EntityListTablePanel(String id, EntityQueryService queryService, T template, IColumnProvider<T> columns) {
+    this(id, queryService, template, columns, new Model<String>(template.getClass().getSimpleName()), DEFAULT_ROWS_PER_PAGE);
   }
 
   /**
@@ -116,8 +113,8 @@ public class EntityListTablePanel<T> extends Panel {
    * @param columns
    * @param entityNameModel
    */
-  public EntityListTablePanel(String id, T template, IColumnProvider columns, IModel entityNameModel) {
-    this(id, template, columns, entityNameModel, DEFAULT_ROWS_PER_PAGE);
+  public EntityListTablePanel(String id, EntityQueryService queryService, T template, IColumnProvider<T> columns, IModel<String> entityNameModel) {
+    this(id, queryService, template, columns, entityNameModel, DEFAULT_ROWS_PER_PAGE);
   }
 
   /**
@@ -129,7 +126,7 @@ public class EntityListTablePanel<T> extends Panel {
    * @param entityNameModel
    * @param rowsPerPage
    */
-  public EntityListTablePanel(String id, T template, IColumnProvider columns, IModel entityNameModel, int rowsPerPage) {
+  public EntityListTablePanel(String id, EntityQueryService queryService, T template, IColumnProvider<T> columns, IModel<String> entityNameModel, int rowsPerPage) {
     super(id);
     internalConstruct(new FilteredSortableDataProviderEntityServiceImpl<T>(queryService, template), columns, entityNameModel, rowsPerPage);
   }
@@ -143,19 +140,21 @@ public class EntityListTablePanel<T> extends Panel {
    * @param entityNameModel
    * @param rowsPerPage
    */
-  public EntityListTablePanel(String id, SortableDataProvider dataProvider, IColumnProvider columns, IModel entityNameModel, int rowsPerPage) {
+  public EntityListTablePanel(String id, SortableDataProvider<T> dataProvider, IColumnProvider<T> columns, IModel<String> entityNameModel, int rowsPerPage) {
     super(id);
     internalConstruct(dataProvider, columns, entityNameModel, rowsPerPage);
   }
 
-  private void internalConstruct(SortableDataProvider dataProvider, IColumnProvider columns, IModel entityNameModel, int rowsPerPage) {
+  private void internalConstruct(SortableDataProvider<T> dataProvider, IColumnProvider<T> columns, IModel<String> entityNameModel, int rowsPerPage) {
     setOutputMarkupId(true);
     this.columnProvider = columns;
     this.dataProvider = dataProvider;
 
-    List<IColumn> displayableColumns = columnProvider.getDefaultColumns();
-    selector = new ColumnSelectorPanel("commands", this);
-    add(this.dataTable = new AjaxDataTable("list", entityNameModel, displayableColumns, dataProvider, selector, rowsPerPage) {
+    List<IColumn<T>> displayableColumns = columnProvider.getDefaultColumns();
+    selector = new ColumnSelectorPanel<T>("commands", this);
+    add(this.dataTable = new AjaxDataTable<T>("list", entityNameModel, displayableColumns, dataProvider, selector, rowsPerPage) {
+      private static final long serialVersionUID = 1L;
+
       @Override
       protected void onPageChanged() {
         super.onPageChanged();
@@ -180,23 +179,25 @@ public class EntityListTablePanel<T> extends Panel {
     return this;
   }
 
-  public IColumnProvider getColumnProvider() {
+  public IColumnProvider<T> getColumnProvider() {
     return columnProvider;
   }
 
   @SuppressWarnings("unchecked")
-  void updateColumns(List<IColumn> columns, AjaxRequestTarget target) {
+  void updateColumns(List<IColumn<T>> columns, AjaxRequestTarget target) {
     if(this.displayRowSelectionColumn == true) {
       if(this.rowSelectionColumn == null) {
         this.rowSelectionColumn = new RowSelectionColumn(this);
       }
-      columns = new ArrayList<IColumn>(columns);
+      columns = new ArrayList<IColumn<T>>(columns);
       columns.add(0, this.rowSelectionColumn);
     }
 
     List<IBehavior> behaviours = this.dataTable.getBehaviors();
     int currentPage = this.dataTable.getCurrentPage();
-    this.dataTable = new AjaxDataTable("list", this.dataTable.getTitleModel(), columns, dataProvider, selector, this.dataTable.getRowsPerPage()) {
+    this.dataTable = new AjaxDataTable<T>("list", this.dataTable.getTitleModel(), columns, dataProvider, selector, this.dataTable.getRowsPerPage()) {
+      private static final long serialVersionUID = 1L;
+
       @Override
       protected void onPageChanged() {
         super.onPageChanged();
@@ -268,28 +269,7 @@ public class EntityListTablePanel<T> extends Panel {
   }
   
   public Panel getDefaultCommandPanel(String panelId) {
-    return getExportCommandPanel(panelId);
-  }
-
-  /**
-   * Get the command that export table content to a csv file, with the default image and text. Kept for backward compatibility, as the default message is not localized.
-   * @param panelId
-   * @return
-   */
-  @Deprecated
-  public Panel getExportCommandPanel(String panelId) {
-    return getExportCommandPanel(panelId, ResourceGetter.getImage("document_out.gif"), new Model("Export "));
-  }
-  
-  /**
-   * Get the command that export table content to a csv file, with the default text. Kept for backward compatibility, as the default message is not localized.
-   * @param panelId
-   * @param image
-   * @return
-   */
-  @Deprecated
-  public Panel getExportCommandPanel(String panelId, Resource image) {
-    return getExportCommandPanel(panelId, image, new Model("Export "));
+    return getExportCommandPanel(panelId, ResourceGetter.getImage("document_out.gif"), new Model<String>("Export "));
   }
   
   /**
@@ -350,7 +330,7 @@ public class EntityListTablePanel<T> extends Panel {
   public IResourceStream getReportStream() {
     CsvResourceStream csv = new CsvResourceStream();
     
-    List<IColumn> columns = columnProvider.getDefaultColumns();
+    List<IColumn<T>> columns = columnProvider.getDefaultColumns();
     if (csvColumnProvider != null) {
       columns = csvColumnProvider.getDefaultColumns();
     }
@@ -364,22 +344,20 @@ public class EntityListTablePanel<T> extends Panel {
     }
     csv.appendLine();
     
-    SortableDataProvider dataProvider = this.dataProvider; 
+    SortableDataProvider<T> dataProvider = this.dataProvider; 
     int size = dataProvider.size();
-    //System.out.println("list.size=" + size);
     
     int from = 0;
     int to = (DEFAULT_ROWS_PER_PAGE > size) ? size : DEFAULT_ROWS_PER_PAGE;
     int idx = from;
     while (from<to & to<=size) {
-      //System.out.println("from=" + from + " to=" + to);
-      Iterator iter = dataProvider.iterator(from, to);
+      Iterator<? extends T> iter = dataProvider.iterator(from, to);
       while (iter.hasNext()) {
-        IModel model = dataProvider.model(iter.next());
+        IModel<T> model = dataProvider.model(iter.next());
         int pos=0;
-        for (IColumn col : columns) {
-          if (!(col instanceof HeaderlessColumn)) {
-            Item cellItem = new Item("dummy",idx,null);
+        for (IColumn<T> col : columns) {
+          if (!(col instanceof HeaderlessColumn<?>)) {
+            Item<ICellPopulator<T>> cellItem = new Item<ICellPopulator<T>>("dummy",idx,null);
             col.populateItem(cellItem, "dummy", model);
             Component comp = cellItem.get("dummy");
             
@@ -392,7 +370,6 @@ public class EntityListTablePanel<T> extends Panel {
           }
         }
         idx++;
-        //System.out.println("idx=" + idx);
         csv.appendLine();
       }
       from = idx;
@@ -401,8 +378,6 @@ public class EntityListTablePanel<T> extends Panel {
         to = size;
     }
     csv.appendEnd();
-    
-    //System.out.print(csv.toString());
     
     return csv;
   }
@@ -413,12 +388,12 @@ public class EntityListTablePanel<T> extends Panel {
    * @param columns
    * @return
    */
-  protected List<String> getColumnHeaderNames(List<IColumn> columns) {
+  protected List<String> getColumnHeaderNames(List<IColumn<T>> columns) {
     List<String> names = new ArrayList<String>();
     
-    for (IColumn col : columns) {
-      if (col instanceof AbstractColumn && !(col instanceof HeaderlessColumn))
-        names.add(getColumnHeaderName((AbstractColumn)col));
+    for (IColumn<T> col : columns) {
+      if (col instanceof AbstractColumn<?> && !(col instanceof HeaderlessColumn<?>))
+        names.add(getColumnHeaderName(col));
     }
     
     return names;
@@ -429,11 +404,11 @@ public class EntityListTablePanel<T> extends Panel {
    * @param column
    * @return
    */
-  String getColumnHeaderName(IColumn column) {
+  String getColumnHeaderName(IColumn<T> column) {
     String n = null;
 
-    if(column instanceof AbstractColumn && column instanceof HeaderlessColumn == false) {
-      IModel displayModel = ((AbstractColumn)column).getDisplayModel();
+    if(column instanceof AbstractColumn<?> && column instanceof HeaderlessColumn<?> == false) {
+      IModel<String> displayModel = ((AbstractColumn<T>)column).getDisplayModel();
       if(displayModel != null) {
         if (displayModel instanceof StringResourceModel) {
           n = ((StringResourceModel)displayModel).getString();
@@ -445,7 +420,6 @@ public class EntityListTablePanel<T> extends Panel {
     return n;
   }
 
-  @SuppressWarnings("unchecked")
   public void setCellSpacing(int value) {
     for (IBehavior behaviour : (List<IBehavior>)dataTable.getBehaviors()) {
       if(behaviour instanceof SimpleAttributeModifier) {
@@ -487,7 +461,7 @@ public class EntityListTablePanel<T> extends Panel {
    * @param model
    * @return
    */
-  protected EntitySelection getSelection(IModel model) {
+  protected EntitySelection getSelection(IModel<T> model) {
     if (model == null)
       return null;
     
@@ -509,7 +483,7 @@ public class EntityListTablePanel<T> extends Panel {
    * Sets the checkbox of the row corresponding to the given model to "selected".
    * @param model the targeted row's model
    */
-  public void setSelected(IModel model) {
+  public void setSelected(IModel<T> model) {
     EntitySelection es = getSelection(model);
     es.setSelected(true);
   }
@@ -519,7 +493,7 @@ public class EntityListTablePanel<T> extends Panel {
    * Sets the checkbox of the row corresponding to the given model to "deselected".
    * @param model the targeted row's model
    */
-  public void setDeselected(IModel model) {
+  public void setDeselected(IModel<T> model) {
     EntitySelection es = getSelection(model);
     es.setSelected(false);
   }
@@ -555,19 +529,19 @@ public class EntityListTablePanel<T> extends Panel {
 
     private static final long serialVersionUID = 1L;
 
-    private IModel model;
+    private IModel<T> model;
     private boolean selected = false;
 
-    public EntitySelection(IModel model, boolean selected) {
+    public EntitySelection(IModel<T> model, boolean selected) {
       this.model = model;
       this.selected = selected;
     }
 
-    public EntitySelection(IModel model) {
+    public EntitySelection(IModel<T> model) {
       this(model, allSelected);
     }
 
-    public IModel getModel() {
+    public IModel<T> getModel() {
       return model;
     }
     
@@ -589,11 +563,11 @@ public class EntityListTablePanel<T> extends Panel {
     
   }
 
-  public IColumnProvider getCsvColumnProvider() {
+  public IColumnProvider<T> getCsvColumnProvider() {
     return csvColumnProvider;
   }
 
-  public void setCsvColumnProvider(IColumnProvider csvColumnProvider) {
+  public void setCsvColumnProvider(IColumnProvider<T> csvColumnProvider) {
     this.csvColumnProvider = csvColumnProvider;
   }
   

@@ -11,13 +11,12 @@ import org.apache.wicket.model.Model;
 import org.obiba.wicket.extensions.ajax.markup.html.AjaxDropDownMultipleChoice;
 
 
-class ColumnSelectorPanel extends Panel {
-
+class ColumnSelectorPanel<T> extends Panel {
   private static final long serialVersionUID = 1L;
 
-  private EntityListTablePanel<?> table;
+  private EntityListTablePanel<T> table;
 
-  public ColumnSelectorPanel(String id, EntityListTablePanel<?> tablePanel) {
+  public ColumnSelectorPanel(String id, EntityListTablePanel<T> tablePanel) {
     super(id);
     this.table = tablePanel;
     final ColumnSelectionModel model = new ColumnSelectionModel(table.getColumnProvider());
@@ -28,7 +27,7 @@ class ColumnSelectorPanel extends Panel {
       @SuppressWarnings("unchecked")
       @Override
       protected void onSelectionUpdate(List selected, Object selection, AjaxRequestTarget target) {
-        List<IColumn> columns = new ArrayList<IColumn>(selected.size());
+        List<IColumn<T>> columns = new ArrayList<IColumn<T>>(selected.size());
         // Add all the required columns.
         columns.addAll(table.getColumnProvider().getRequiredColumns());
         // Add the selected columns
@@ -106,15 +105,15 @@ class ColumnSelectorPanel extends Panel {
 
     private static final long serialVersionUID = 1L;
 
-    private IColumn column;
+    private IColumn<T> column;
     private int position;
     private boolean selected = true;
 
-    public SelectableColumn(IColumn column, int position) {
+    public SelectableColumn(IColumn<T> column, int position) {
       this(column, position, true);
     }
 
-    public SelectableColumn(IColumn column, int position, boolean selected) {
+    public SelectableColumn(IColumn<T> column, int position, boolean selected) {
       this.column = column;
       this.position = position;
       this.selected = selected;

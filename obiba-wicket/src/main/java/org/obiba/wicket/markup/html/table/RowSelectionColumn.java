@@ -7,23 +7,23 @@ import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.HeaderlessColumn;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.obiba.wicket.markup.html.panel.CheckBoxPanel;
-import org.obiba.wicket.markup.html.table.EntityListTablePanel.EntitySelection;
 
 
-public class RowSelectionColumn extends HeaderlessColumn<Boolean> {
+public class RowSelectionColumn<T> extends HeaderlessColumn<T> {
 
   private static final long serialVersionUID = 1L;
 
-  private EntityListTablePanel<?> table;
+  private EntityListTablePanel<T> table;
   
   private List<CheckBoxPanel> checkboxes = new ArrayList<CheckBoxPanel>();
 
-  public RowSelectionColumn(EntityListTablePanel<?> table) {
+  public RowSelectionColumn(EntityListTablePanel<T> table) {
     this.table = table;
   }
 
@@ -31,12 +31,12 @@ public class RowSelectionColumn extends HeaderlessColumn<Boolean> {
   public String getCssClass() {
     return "rowSelector";
   }
+  
+  @Override
+  public void populateItem(final Item<ICellPopulator<T>> cellItem, final String componentId, final IModel<T> rowModel) {
+    final EntityListTablePanel<T>.EntitySelection selection = table.getSelection(rowModel);
 
-  @SuppressWarnings("unchecked")
-  public void populateItem(Item item, String componentId, IModel model) {
-    final EntitySelection selection = table.getSelection(model);
-
-    final CheckBoxPanel cbPanel = new CheckBoxPanel(componentId, new PropertyModel(selection, "selected"));
+    final CheckBoxPanel cbPanel = new CheckBoxPanel(componentId, new PropertyModel<Boolean>(selection, "selected"));
     cbPanel.setOutputMarkupId(true);
     cbPanel.add(new AjaxEventBehavior("onclick") {
 
@@ -48,7 +48,7 @@ public class RowSelectionColumn extends HeaderlessColumn<Boolean> {
       }
 
     });
-    item.add(cbPanel);
+    cellItem.add(cbPanel);
     checkboxes.add(cbPanel);
   }
 

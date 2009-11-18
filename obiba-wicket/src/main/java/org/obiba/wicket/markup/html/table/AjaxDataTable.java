@@ -15,17 +15,17 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
 
-public class AjaxDataTable extends DataTable {
+public class AjaxDataTable<T> extends DataTable<T> {
 
   private static final long serialVersionUID = 1L;
 
   private IModel titleModel;
 
-  public AjaxDataTable(String id, IModel titleModel, final List<IColumn> columns, ISortableDataProvider dataProvider, Component commands, int rowsPerPage) {
+  public AjaxDataTable(String id, IModel titleModel, final List<IColumn<T>> columns, ISortableDataProvider<T> dataProvider, Component commands, int rowsPerPage) {
     this(id, titleModel, (IColumn[]) columns.toArray(new IColumn[columns.size()]), dataProvider, commands, rowsPerPage);
   }
 
-  public AjaxDataTable(String id, IModel titleModel, final IColumn[] columns, ISortableDataProvider dataProvider,  Component commands, int rowsPerPage) {
+  public AjaxDataTable(String id, IModel titleModel, final IColumn<T>[] columns, ISortableDataProvider<T> dataProvider,  Component commands, int rowsPerPage) {
     super(id, columns, dataProvider, rowsPerPage);
     setOutputMarkupId(true);
     setVersioned(false);
