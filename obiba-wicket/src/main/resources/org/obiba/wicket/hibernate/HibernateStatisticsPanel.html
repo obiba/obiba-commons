@@ -1,0 +1,242 @@
+<html>
+<body>
+<wicket:panel>
+  <div wicket:id="stats">
+  <div id="header">Session Factory Statistics</div>
+  <table>
+    <tbody>
+      <tr>
+        <td>isStatisticsEnabled</td>
+        <td><span wicket:id="isStatisticsEnabled" /></td>
+      </tr>
+      <tr>
+        <td>startTime</td>
+        <td><span wicket:id="startTime" /></td>
+      </tr>
+      <tr>
+        <td>sessionOpenCount</td>
+        <td><span wicket:id="sessionOpenCount" /></td>
+      </tr>
+      <tr>
+        <td>sessionCloseCount</td>
+        <td><span wicket:id="sessionCloseCount" /></td>
+      </tr>
+      <tr>
+        <td>flushCount</td>
+        <td><span wicket:id="flushCount" /></td>
+      </tr>
+      <tr>
+        <td>connectCount</td>
+        <td><span wicket:id="connectCount" /></td>
+      </tr>
+      <tr>
+        <td>prepareStatementCount</td>
+        <td><span wicket:id="prepareStatementCount" /></td>
+      </tr>
+      <tr>
+        <td>closeStatementCount</td>
+        <td><span wicket:id="closeStatementCount" /></td>
+      </tr>
+      <tr>
+        <td>entityLoadCount</td>
+        <td><span wicket:id="entityLoadCount" /></td>
+      </tr>
+      <tr>
+        <td>entityUpdateCount</td>
+        <td><span wicket:id="entityUpdateCount" /></td>
+      </tr>
+      <tr>
+        <td>entityInsertCount</td>
+        <td><span wicket:id="entityInsertCount" /></td>
+      </tr>
+      <tr>
+        <td>entityDeleteCount</td>
+        <td><span wicket:id="entityDeleteCount" /></td>
+      </tr>
+      <tr>
+        <td>entityFetchCount</td>
+        <td><span wicket:id="entityFetchCount" /></td>
+      </tr>
+      <tr>
+        <td>collectionLoadCount</td>
+        <td><span wicket:id="collectionLoadCount" /></td>
+      </tr>
+      <tr>
+        <td>collectionUpdateCount</td>
+        <td><span wicket:id="collectionUpdateCount" /></td>
+      </tr>
+      <tr>
+        <td>collectionRemoveCount</td>
+        <td><span wicket:id="collectionRemoveCount" /></td>
+      </tr>
+      <tr>
+        <td>collectionRecreateCount</td>
+        <td><span wicket:id="collectionRecreateCount" /></td>
+      </tr>
+      <tr>
+        <td>collectionFetchCount</td>
+        <td><span wicket:id="collectionFetchCount" /></td>
+      </tr>
+      <tr>
+        <td>secondLevelCacheHitCount</td>
+        <td><span wicket:id="secondLevelCacheHitCount" /></td>
+      </tr>
+      <tr>
+        <td>secondLevelCacheMissCount</td>
+        <td><span wicket:id="secondLevelCacheMissCount" /></td>
+      </tr>
+      <tr>
+        <td>secondLevelCachePutCount</td>
+        <td><span wicket:id="secondLevelCachePutCount" /></td>
+      </tr>
+      <tr>
+        <td>queryExecutionCount</td>
+        <td><span wicket:id="queryExecutionCount" /></td>
+      </tr>
+      <tr>
+        <td>queryExecutionMaxTime</td>
+        <td><span wicket:id="queryExecutionMaxTime" /></td>
+      </tr>
+      <tr>
+        <td>queryExecutionMaxTimeQueryString</td>
+        <td><span wicket:id="queryExecutionMaxTimeQueryString" /></td>
+      </tr>
+      <tr>
+        <td>queryCacheHitCount</td>
+        <td><span wicket:id="queryCacheHitCount" /></td>
+      </tr>
+      <tr>
+        <td>queryCacheMissCount</td>
+        <td><span wicket:id="queryCacheMissCount" /></td>
+      </tr>
+      <tr>
+        <td>queryCachePutCount</td>
+        <td><span wicket:id="queryCachePutCount" /></td>
+      </tr>
+      <tr>
+        <td>commitedTransactionCount</td>
+        <td><span wicket:id="commitedTransactionCount" /></td>
+      </tr>
+      <tr>
+        <td>transactionCount</td>
+        <td><span wicket:id="transactionCount" /></td>
+      </tr>
+      <tr>
+        <td>optimisticFailureCount</td>
+        <td><span wicket:id="optimisticFailureCount" /></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div id="header">Entity Statistics</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Entity</th>
+        <th>Load Count</th>
+        <th>Fetch Count</th>
+        <th>Insert Count</th>
+        <th>Delete Count</th>
+        <th>Update Count</th>
+        <th>Optimistic Failure Count</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr wicket:id="entities">
+        <td><span wicket:id="entityName" /></td>
+        <td><span wicket:id="loadCount" /></td>
+        <td><span wicket:id="fetchCount" /></td>
+        <td><span wicket:id="insertCount" /></td>
+        <td><span wicket:id="deleteCount" /></td>
+        <td><span wicket:id="updateCount" /></td>
+        <td><span wicket:id="optimisticFailureCount" /></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div id="header">Collection Statistics</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Collection</th>
+        <th>Load Count</th>
+        <th>Fetch Count</th>
+        <th>Recreate Count</th>
+        <th>Remove Count</th>
+        <th>Update Count</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr wicket:id="collections">
+        <td><span wicket:id="collName" /></td>
+        <td><span wicket:id="loadCount" /></td>
+        <td><span wicket:id="fetchCount" /></td>
+        <td><span wicket:id="recreateCount" /></td>
+        <td><span wicket:id="removeCount" /></td>
+        <td><span wicket:id="updateCount" /></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div id="header">Query Statistics</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Query</th>
+        <th>Execution Count</th>
+        <th>Execution Row Count</th>
+        <th>Avg Time</th>
+        <th>Min Time</th>
+        <th>Max Time</th>
+        <th>Cache Hit Count</th>
+        <th>Cache Miss Count</th>
+        <th>Cache Put Count</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr wicket:id="queries">
+        <td><span wicket:id="categoryName" /></td>
+        <td><span wicket:id="executionCount" /></td>
+        <td><span wicket:id="executionRowCount" /></td>
+        <td><span wicket:id="executionAvgTime" /></td>
+        <td><span wicket:id="executionMinTime" /></td>
+        <td><span wicket:id="executionMaxTime" /></td>
+        <td><span wicket:id="cacheHitCount" /></td>
+        <td><span wicket:id="cacheMissCount" /></td>
+        <td><span wicket:id="cachePutCount" /></td>
+      </tr>
+    </tbody>
+  </table>
+
+
+  <div id="header">Cache Statistics</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Cache</th>
+        <th>Hit Count</th>
+        <th>Miss Count</th>
+        <th>Put Count</th>
+        <th>Elements in Memory</th>
+        <th>Elements on Disk</th>
+        <th>Size in Memory</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr wicket:id="caches">
+        <td><span wicket:id="categoryName" /></td>
+        <td><span wicket:id="hitCount" /></td>
+        <td><span wicket:id="missCount" /></td>
+        <td><span wicket:id="putCount" /></td>
+        <td><span wicket:id="elementCountInMemory" /></td>
+        <td><span wicket:id="elementCountOnDisk" /></td>
+        <td><span wicket:id="sizeInMemory" /></td>
+      </tr>
+    </tbody>
+  </table>
+
+</wicket:panel>
+</body>
+</html>
+
