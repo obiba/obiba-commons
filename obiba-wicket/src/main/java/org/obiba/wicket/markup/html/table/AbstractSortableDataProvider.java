@@ -39,7 +39,7 @@ abstract public class AbstractSortableDataProvider<T> extends SortableDataProvid
   }
 
   @SuppressWarnings("unchecked")
-  public IModel model(final Object object) {
+  public IModel<T> model(final Object object) {
     return makeModel((T) object);
   }
 
@@ -47,6 +47,6 @@ abstract public class AbstractSortableDataProvider<T> extends SortableDataProvid
 
   abstract public int size();
 
-  abstract protected IModel makeModel(final T object);
+  abstract protected IModel<T> makeModel(final T object);
 
 }
