@@ -38,9 +38,9 @@ abstract public class AbstractSortableDataProvider<T> extends SortableDataProvid
     return getList(PagingClause.create(first, count), sort).iterator();
   }
 
-  @SuppressWarnings("unchecked")
-  public IModel<T> model(final Object object) {
-    return makeModel((T) object);
+  @Override
+  public IModel<T> model(T object) {
+    return makeModel(object);
   }
 
   abstract protected List<T> getList(PagingClause paging, SortingClause... clauses);
