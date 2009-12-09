@@ -17,6 +17,7 @@ import javax.sql.DataSource;
 
 import liquibase.change.AddNotNullConstraintChange;
 import liquibase.change.Change;
+import liquibase.change.DropColumnChange;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.database.sql.visitor.SqlVisitor;
@@ -62,12 +63,12 @@ public abstract class LiquiBaseUpgradeStep extends AbstractUpgradeStep {
   }
 
   /**
-   * Creates a not-null constraints for the specified table column.
+   * Creates a "change" consisting of the adding of not-null constraints for the specified table column.
    * 
    * @param databaseSnapshot database snapshot
    * @param table table
    * @param column column
-   * @return not-null constraint
+   * @return not-null constraint change
    */
   public AddNotNullConstraintChange createAddNotNullConstraintChange(DatabaseSnapshot databaseSnapshot, String table, String column) {
     AddNotNullConstraintChange change = new AddNotNullConstraintChange();
@@ -82,6 +83,22 @@ public abstract class LiquiBaseUpgradeStep extends AbstractUpgradeStep {
     return change;
   }
 
+  /**
+   * Creates a "change" consisting of dropping the specified table column.
+   * 
+   * @param databaseSnapshot database snapshot
+   * @param table table
+   * @param column column
+   * @return drop column change
+   */
+  public DropColumnChange createDropColumnChange(DatabaseSnapshot databaseSnapshot, String table, String column) {
+    DropColumnChange change = new DropColumnChange();
+    change.setTableName(table);
+    change.setColumnName(column);
+    
+    return change;
+  }
+  
   public Database getDatabase() {
     // Get a connection to the dataSource.
     Connection connection = null;
