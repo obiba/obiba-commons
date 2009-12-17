@@ -42,7 +42,7 @@ public class XstreamResourceDatabaseSeed implements DatabaseSeed, InitializingBe
       return;
     }
 
-    if(xstreamResource != null) {
+    if(xstreamResource != null && xstreamResource.exists()) {
       Object result = handleXtreamResource(xstreamResource);
       handleXstreamResult(result);
     }
