@@ -36,7 +36,7 @@ public class MockSpringApplication extends WebApplication implements ISpringWebA
   @Override
   protected void init() {
     super.init();
-    super.addComponentInstantiationListener(new SpringComponentInjector(this, this.context));
+    super.addComponentInstantiationListener(new SpringComponentInjector(this, this.context, true));
     getResourceSettings().setThrowExceptionOnMissingResource(false);
   }
 

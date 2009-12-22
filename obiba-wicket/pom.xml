@@ -149,7 +149,7 @@
   </build>
 
   <properties>
-    <wicket.version>1.4.3</wicket.version>
+    <wicket.version>1.4.5</wicket.version>
     <jetty.version>6.1.17</jetty.version>
   </properties>
 
