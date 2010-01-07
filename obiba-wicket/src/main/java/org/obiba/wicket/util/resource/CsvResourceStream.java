@@ -35,6 +35,8 @@ public class CsvResourceStream implements IResourceStream {
   private File tmpFile;
   private BufferedOutputStream buffer;
   
+  private Boolean isLineFirstValue = true;
+  
   public CsvResourceStream() {
     
     try {
@@ -52,7 +54,16 @@ public class CsvResourceStream implements IResourceStream {
    * @param o
    */
   public void append(Object o) {
-   internalAppend(formatCsvString(o) + "\t");
+    //Separate value if it is not the first one one the current line.
+    String appendedValue = "";
+    if (!isLineFirstValue) {
+      appendedValue = getValueSeparator();
+    }
+    else {
+      isLineFirstValue = false;
+    }
+    appendedValue += formatCsvString(o);
+    internalAppend(appendedValue);
   }
   
   /**
@@ -60,7 +71,8 @@ public class CsvResourceStream implements IResourceStream {
    *
    */
   public void appendLine() {
-    internalAppend("\r\n");
+    internalAppend(getLineSeparator());
+    isLineFirstValue = true;
   }
   
   /**
@@ -144,5 +156,13 @@ public class CsvResourceStream implements IResourceStream {
       return "no file resource";
     else
       return getContentType() + " " + fileResource.getFile().getAbsolutePath();
+  }
+  
+  protected String getValueSeparator() {
+    return "\t";
+  }
+  
+  protected String getLineSeparator() {
+    return "\r\n";
   }
 }

@@ -328,7 +328,7 @@ public class EntityListTablePanel<T> extends Panel {
    * @return
    */
   public IResourceStream getReportStream() {
-    CsvResourceStream csv = new CsvResourceStream();
+    CsvResourceStream csv = getCsvResourceStream();
     
     List<IColumn<T>> columns = columnProvider.getDefaultColumns();
     if (csvColumnProvider != null) {
@@ -380,6 +380,14 @@ public class EntityListTablePanel<T> extends Panel {
     csv.appendEnd();
     
     return csv;
+  }
+  
+  /**
+   * Gets the CsvResourceStream instance used to stream the CSV document. It is protected to allow overriding, for example to change the value separating character of the resulting CSV file.
+   * @return
+   */
+  protected CsvResourceStream getCsvResourceStream() {
+    return new CsvResourceStream();
   }
 
 
