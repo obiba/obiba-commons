@@ -328,7 +328,7 @@ public class EntityListTablePanel<T> extends Panel {
    * @return
    */
   public IResourceStream getReportStream() {
-    CsvResourceStream csv = new CsvResourceStream();
+    CsvResourceStream csv = getCsvResourceStream();
     
     List<IColumn<T>> columns = columnProvider.getDefaultColumns();
     if (csvColumnProvider != null) {
@@ -344,14 +344,14 @@ public class EntityListTablePanel<T> extends Panel {
     }
     csv.appendLine();
     
-    SortableDataProvider<T> dataProvider = this.dataProvider; 
-    int size = dataProvider.size();
+    SortableDataProvider<T> dataProvider = this.dataProvider;
     
+    int size = dataProvider.size();
     int from = 0;
-    int to = (DEFAULT_ROWS_PER_PAGE > size) ? size : DEFAULT_ROWS_PER_PAGE;
-    int idx = from;
-    while (from<to & to<=size) {
-      Iterator<? extends T> iter = dataProvider.iterator(from, to);
+    int count = (DEFAULT_ROWS_PER_PAGE > size) ? size : DEFAULT_ROWS_PER_PAGE;
+    int idx = 0;
+    while (from < size) {
+      Iterator<? extends T> iter = dataProvider.iterator(from, count);
       while (iter.hasNext()) {
         IModel<T> model = dataProvider.model(iter.next());
         int pos=0;
@@ -373,13 +373,24 @@ public class EntityListTablePanel<T> extends Panel {
         csv.appendLine();
       }
       from = idx;
-      to = idx + DEFAULT_ROWS_PER_PAGE;
-      if (to > size)
-        to = size;
+      if ((from + DEFAULT_ROWS_PER_PAGE) > size) {
+        count = size - from;
+      }
+      else {
+        count = from + DEFAULT_ROWS_PER_PAGE;
+      }
     }
     csv.appendEnd();
     
     return csv;
+  }
+  
+  /**
+   * Gets the CsvResourceStream instance used to stream the CSV document. It is protected to allow overriding, for example to change the value separating character of the resulting CSV file.
+   * @return
+   */
+  protected CsvResourceStream getCsvResourceStream() {
+    return new CsvResourceStream();
   }
 
 
