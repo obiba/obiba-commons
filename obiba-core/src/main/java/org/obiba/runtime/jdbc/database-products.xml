@@ -1,0 +1,74 @@
+<set>
+  <!-- These were taken from sql-error-codes.xml in spring-jdbc.jar -->
+  <org.obiba.runtime.jdbc.DatabaseProduct>
+    <normalizedName>db2</normalizedName>
+    <databaseProductNames>
+      <string>DB2*</string>
+    </databaseProductNames>
+  </org.obiba.runtime.jdbc.DatabaseProduct>
+
+  <org.obiba.runtime.jdbc.DatabaseProduct>
+    <normalizedName>derby</normalizedName>
+    <databaseProductNames>
+      <string>Apache Derby</string>
+    </databaseProductNames>
+  </org.obiba.runtime.jdbc.DatabaseProduct>
+
+  <org.obiba.runtime.jdbc.DatabaseProduct>
+    <normalizedName>h2</normalizedName>
+    <databaseProductNames>
+      <string>H2</string>
+    </databaseProductNames>
+  </org.obiba.runtime.jdbc.DatabaseProduct>
+
+  <org.obiba.runtime.jdbc.DatabaseProduct>
+    <normalizedName>hsql</normalizedName>
+    <databaseProductNames>
+      <string>HSQL Database Engine</string>
+    </databaseProductNames>
+  </org.obiba.runtime.jdbc.DatabaseProduct>
+
+  <org.obiba.runtime.jdbc.DatabaseProduct>
+    <normalizedName>informix</normalizedName>
+    <databaseProductNames>
+      <string>Informix Dynamic Server</string>
+    </databaseProductNames>
+  </org.obiba.runtime.jdbc.DatabaseProduct>
+
+  <org.obiba.runtime.jdbc.DatabaseProduct>
+    <normalizedName>sqlserver</normalizedName>
+    <databaseProductNames>
+      <string>Microsoft SQL Server</string>
+    </databaseProductNames>
+  </org.obiba.runtime.jdbc.DatabaseProduct>
+
+  <org.obiba.runtime.jdbc.DatabaseProduct>
+    <normalizedName>mysql</normalizedName>
+    <databaseProductNames>
+      <string>MySQL</string>
+    </databaseProductNames>
+  </org.obiba.runtime.jdbc.DatabaseProduct>
+
+  <org.obiba.runtime.jdbc.DatabaseProduct>
+    <normalizedName>oracle</normalizedName>
+    <databaseProductNames>
+      <string>Oracle</string>
+    </databaseProductNames>
+  </org.obiba.runtime.jdbc.DatabaseProduct>
+
+  <org.obiba.runtime.jdbc.DatabaseProduct>
+    <normalizedName>pgsql</normalizedName>
+    <databaseProductNames>
+      <string>PostgreSQL</string>
+    </databaseProductNames>
+  </org.obiba.runtime.jdbc.DatabaseProduct>
+
+  <org.obiba.runtime.jdbc.DatabaseProduct>
+    <normalizedName>sybase</normalizedName>
+    <databaseProductNames>
+      <string>Sybase SQL Server</string>
+      <string>Adaptive Server Enterprise</string>
+    </databaseProductNames>
+  </org.obiba.runtime.jdbc.DatabaseProduct>
+
+</set>
