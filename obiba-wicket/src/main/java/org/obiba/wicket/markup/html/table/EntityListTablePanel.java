@@ -582,4 +582,9 @@ public class EntityListTablePanel<T> extends Panel {
     this.csvColumnProvider = csvColumnProvider;
   }
   
+  protected AjaxDataTable<T> getDataTable() {
+	  return dataTable;
+  }
+  
+  
 }
