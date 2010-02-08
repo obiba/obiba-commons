@@ -53,7 +53,7 @@ public class EntityListTablePanel<T> extends Panel {
   private SortableDataProvider<T> dataProvider;
 
   private AjaxDataTable<T> dataTable;
-
+  
   private ColumnSelectorPanel<T> selector;
 
   private RowSelectionColumn<T> rowSelectionColumn;
@@ -580,6 +580,10 @@ public class EntityListTablePanel<T> extends Panel {
 
   public void setCsvColumnProvider(IColumnProvider<T> csvColumnProvider) {
     this.csvColumnProvider = csvColumnProvider;
+  }
+  
+  protected AjaxDataTable<T> getDataTable(){
+	  return dataTable;
   }
   
 }
