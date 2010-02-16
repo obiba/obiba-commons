@@ -509,6 +509,15 @@ public class EntityListTablePanel<T> extends Panel {
     es.setSelected(false);
   }
   
+  /**
+   * "Deselects" all rows on the table. (Resets the list of selections to an empty list).
+   * @param model the targeted row's model
+   */
+  public void emptySelections() {
+    setAllSelected(false);
+    selections.clear();
+  }
+  
 
   /**
    * Get the ids that where selected in the selection column.
