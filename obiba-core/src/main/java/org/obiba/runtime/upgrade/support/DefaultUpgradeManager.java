@@ -1,23 +1,9 @@
 package org.obiba.runtime.upgrade.support;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
-import javax.sql.DataSource;
-
-import liquibase.change.ColumnConfig;
-import liquibase.change.ConstraintsConfig;
-import liquibase.change.CreateTableChange;
-import liquibase.database.Database;
-import liquibase.database.DatabaseFactory;
-import liquibase.database.sql.visitor.SqlVisitor;
-import liquibase.exception.JDBCException;
 
 import org.obiba.core.util.ComparableComparator;
 import org.obiba.runtime.Version;
@@ -29,26 +15,17 @@ import org.obiba.runtime.upgrade.VersionModifier;
 import org.obiba.runtime.upgrade.VersionProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 public class DefaultUpgradeManager implements UpgradeManager {
   //
   // Constants
   //
 
-  @SuppressWarnings("unused")
   private static final Logger log = LoggerFactory.getLogger(DefaultUpgradeManager.class);
-
-  private static final String CREATE_VERSION_TABLE_SQL = "create table version (major int, minor int, micro int, qualifier varchar(50), version_string varchar(50))";
-
-  private static final String CREATE_INNODB_TABLE_SUFFIX = " ENGINE=InnoDB DEFAULT CHARSET=latin1";
 
   //
   // Instance Variables
   //
-
-  private JdbcTemplate jdbcTemplate;
-
   /**
    * Used to obtain and modify the current version.
    */
@@ -58,6 +35,12 @@ public class DefaultUpgradeManager implements UpgradeManager {
    * Used to obtain the current runtime version.
    */
   private VersionProvider runtimeVersionProvider;
+
+  /**
+   * Strategy that determines if the manager should go through the list of intall steps instead of the list of upgrade
+   * steps.
+   */
+  private NewInstallationDetectionStrategy newInstallationDetectionStrategy;
 
   /**
    * A list of all required installation steps.
@@ -93,11 +76,15 @@ public class DefaultUpgradeManager implements UpgradeManager {
   //
 
   public void executeUpgrade() throws UpgradeException {
-    // Is this a new installation, or an upgrade of an existing installation?
-    if(isNewInstallation()) {
-      // New installation: Create version table and execute configured installation steps.
-      createVersionTable();
+    if(currentVersionProvider == null) throw new IllegalStateException("currentVersionProvider is required");
+    if(runtimeVersionProvider == null) throw new IllegalStateException("runtimeVersionProvider is required");
+    if(newInstallationDetectionStrategy == null) throw new IllegalStateException("newInstallationDetectionStrategy is required");
+    if(installSteps == null) throw new IllegalStateException("newInstallationDetectionStrategy is required");
+    if(upgradeSteps == null) throw new IllegalStateException("newInstallationDetectionStrategy is required");
 
+    // Is this a new installation, or an upgrade of an existing installation?
+    if(newInstallationDetectionStrategy.isNewInstallation(runtimeVersionProvider)) {
+      // New installation : execute configured install steps.
       for(InstallStep installStep : installSteps) {
         try {
           notifyBeforeStep(installStep);
@@ -143,8 +130,8 @@ public class DefaultUpgradeManager implements UpgradeManager {
   }
 
   /**
-   * Returns true when {@code #getCurrentVersion()} is less than {@code #getRuntimeVersion()} using
-   * {@code #versionComparator}.
+   * Returns true when {@code #getCurrentVersion()} is less than {@code #getRuntimeVersion()} using {@code
+   * #versionComparator}.
    */
   public boolean requiresUpgrade() {
     return versionComparator.compare(getCurrentVersion(), getRuntimeVersion()) < 0;
@@ -154,16 +141,19 @@ public class DefaultUpgradeManager implements UpgradeManager {
   // Methods
   //
 
-  public void setDataSource(DataSource dataSource) {
-    jdbcTemplate = new JdbcTemplate(dataSource);
-  }
-
   public void setCurrentVersionProvider(VersionModifier currentVersionProvider) {
+    if(currentVersionProvider == null) throw new IllegalArgumentException("currentVersionProvider cannot be null");
     this.currentVersionProvider = currentVersionProvider;
   }
 
   public void setRuntimeVersionProvider(VersionProvider runtimeVersionProvider) {
+    if(runtimeVersionProvider == null) throw new IllegalArgumentException("runtimeVersionProvider cannot be null");
     this.runtimeVersionProvider = runtimeVersionProvider;
+  }
+
+  public void setNewInstallationDetectionStrategy(NewInstallationDetectionStrategy newInstallationDetectionStrategy) {
+    if(newInstallationDetectionStrategy == null) throw new IllegalArgumentException("newInstallationDetectionStrategy cannot be null");
+    this.newInstallationDetectionStrategy = newInstallationDetectionStrategy;
   }
 
   public void setInstallSteps(List<InstallStep> installSteps) {
@@ -181,6 +171,7 @@ public class DefaultUpgradeManager implements UpgradeManager {
   }
 
   public void setVersionComparator(Comparator<Version> versionComparator) {
+    if(versionComparator == null) throw new IllegalArgumentException("versionComparator cannot be null");
     this.versionComparator = versionComparator;
   }
 
@@ -261,105 +252,4 @@ public class DefaultUpgradeManager implements UpgradeManager {
     return applicableSteps;
   }
 
-  /**
-   * Indicates whether a new installation is being deployed.
-   * 
-   * Detects a new installation by checking whether ANY tables exist (zero tables = new installation). Note that the
-   * absence of the VERSION table alone does not imply a new installation; it might be an old installation of the
-   * application, one without the Upgrade Management feature.)
-   */
-  protected boolean isNewInstallation() {
-    try {
-      ResultSet tables = jdbcTemplate.getDataSource().getConnection().getMetaData().getTables(null, null, null, null);
-      if(!tables.next()) {
-        log.info("New installation detected (no tables found)");
-        return true;
-      }
-    } catch(SQLException ex) {
-      throw new RuntimeException("Could not determine whether or not this is a new installation");
-    }
-
-    return false;
-  }
-
-  /**
-   * Creates the <code>version</code> table used to keep track of the currently installed version.
-   * 
-   * This method is called in the case of a new installation (in which the table would be missing).
-   */
-  protected void createVersionTable() {
-    log.info("Creating version table...");
-
-    // Get a connection to the dataSource.
-    Connection connection = null;
-    try {
-      connection = jdbcTemplate.getDataSource().getConnection();
-    } catch(SQLException ex) {
-      throw new RuntimeException("Could not create version table", ex);
-    }
-
-    // Find an appropriate database instance for the connection.
-    Database database = null;
-    try {
-      DatabaseFactory databaseFactory = DatabaseFactory.getInstance();
-      database = databaseFactory.findCorrectDatabaseImplementation(connection);
-    } catch(JDBCException ex) {
-      throw new RuntimeException("Could not create version table", ex);
-    }
-
-    CreateTableChange createVersionTable = new CreateTableChange();
-    createVersionTable.setTableName("version");
-    createVersionTable.addColumn(createColumn("major", "java.sql.Types.INTEGER", false));
-    createVersionTable.addColumn(createColumn("minor", "java.sql.Types.INTEGER", false));
-    createVersionTable.addColumn(createColumn("micro", "java.sql.Types.INTEGER", false));
-    createVersionTable.addColumn(createColumn("qualifier", "java.sql.Types.VARCHAR(50)", true));
-    createVersionTable.addColumn(createColumn("version_string", "java.sql.Types.VARCHAR(50)", false));
-
-    // Create the version table.
-    try {
-      List<SqlVisitor> sqlVisitors = new ArrayList<SqlVisitor>();
-      sqlVisitors.add(new CreateInnoDBTableSqlVisitor());
-      createVersionTable.executeStatements(database, sqlVisitors);
-
-      log.info("Successfully created the version table.");
-    } catch(Exception ex) {
-      throw new RuntimeException("Could not create version table", ex);
-    }
-  }
-
-  private ColumnConfig createColumn(String columnName, String columnType, boolean nullable) {
-    ColumnConfig column = new ColumnConfig();
-    column.setName(columnName);
-    column.setType(columnType);
-
-    ConstraintsConfig constraints = new ConstraintsConfig();
-    constraints.setNullable(nullable);
-    column.setConstraints(constraints);
-
-    return column;
-  }
-
-  private class CreateInnoDBTableSqlVisitor implements SqlVisitor {
-
-    public String getTagName() {
-      return "createInnoDBTableSqlVisitor";
-    }
-
-    @SuppressWarnings("unchecked")
-    public void setApplicableDbms(Collection applicableDbms) {
-      // no-op
-    }
-
-    public boolean isApplicable(Database database) {
-      return database.getTypeName().equals("mysql");
-    }
-
-    public String modifySql(String sql, Database database) {
-      if(sql.toUpperCase().startsWith("CREATE TABLE")) {
-        sql += CREATE_INNODB_TABLE_SUFFIX;
-      }
-
-      return sql;
-    }
-  }
 }

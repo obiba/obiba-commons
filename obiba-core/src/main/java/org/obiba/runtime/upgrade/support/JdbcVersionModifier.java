@@ -6,7 +6,7 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  **********************************************************************************************************************/
-package org.obiba.runtime.upgrade;
+package org.obiba.runtime.upgrade.support;
 
 import java.util.List;
 import java.util.Map;
@@ -14,6 +14,7 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.obiba.runtime.Version;
+import org.obiba.runtime.upgrade.VersionModifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -29,12 +30,6 @@ public class JdbcVersionModifier implements VersionModifier, InitializingBean {
   private JdbcTemplate jdbcTemplate;
 
   private Version version;
-
-  private Version versionBeingInstalled;
-
-  public void setVersionBeingInstalled(Version versionBeingInstalled) {
-    this.versionBeingInstalled = versionBeingInstalled;
-  }
 
   public Version getVersion() {
     return version;
