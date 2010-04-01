@@ -15,8 +15,8 @@ import org.dbunit.operation.DatabaseOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.TestContext;
-import org.springframework.test.context.TestExecutionListener;
 import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.support.AbstractTestExecutionListener;
 
 /**
  * TestExecutionListener implementation that handles the {@link Dataset} annotation. 
@@ -24,7 +24,7 @@ import org.springframework.test.context.TestExecutionListeners;
  * Using this listener (through {@link TestExecutionListeners} allows seeding a test 
  * database before executing unit test methods.
  */
-public class DbUnitAwareTestExecutionListener implements TestExecutionListener {
+public class DbUnitAwareTestExecutionListener extends AbstractTestExecutionListener {
 
   private final Logger log = LoggerFactory.getLogger(DbUnitAwareTestExecutionListener.class);
 
