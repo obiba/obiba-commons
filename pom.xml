@@ -8,7 +8,7 @@
   <groupId>org.obiba</groupId>
   <artifactId>obiba-commons</artifactId>
   <packaging>pom</packaging>
-  <version>1.2-SNAPSHOT</version>
+  <version>1.3-SNAPSHOT</version>
 
   <modules>
     <module>obiba-core</module>
@@ -404,8 +404,8 @@
   </distributionManagement>
 
   <scm>
-    <connection>scm:svn:http://svn.obiba.org/obiba-commons/branches/obiba-commons-1.2.x</connection>
-    <developerConnection>scm:svn:https://svn.obiba.org/obiba-commons/branches/obiba-commons-1.2.x</developerConnection>
+    <connection>scm:svn:http://svn.obiba.org/obiba-commons/branches/obiba-commons-1.1.x</connection>
+    <developerConnection>scm:svn:https://svn.obiba.org/obiba-commons/branches/obiba-commons-1.1.x</developerConnection>
   </scm>
 
   <issueManagement>
