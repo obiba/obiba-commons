@@ -404,8 +404,8 @@
   </distributionManagement>
 
   <scm>
-    <connection>scm:svn:http://svn.obiba.org/obiba-commons/branches/obiba-commons-1.1.x</connection>
-    <developerConnection>scm:svn:https://svn.obiba.org/obiba-commons/branches/obiba-commons-1.1.x</developerConnection>
+    <connection>scm:svn:http://svn.obiba.org/obiba-commons/branches/obiba-commons-1.2.x</connection>
+    <developerConnection>scm:svn:https://svn.obiba.org/obiba-commons/branches/obiba-commons-1.2.x</developerConnection>
   </scm>
 
   <issueManagement>
