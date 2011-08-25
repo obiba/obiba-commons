@@ -57,9 +57,14 @@ public class SqlScriptUpgradeStep extends AbstractUpgradeStep {
 
   @Override
   public void execute(Version currentVersion) {
+    log.info("Applying script {} to database.", script.getFilename());
+    executeScript(dataSource, script);
+  }
+
+  protected void executeScript(DataSource dataSource, Resource script) {
     SimpleJdbcTestUtils.executeSqlScript(new SimpleJdbcTemplate(dataSource), script, false);
   }
-  
+
   protected DatabaseProduct getDatabaseProduct(DataSource dataSource) {
     return new DatabaseProductRegistry().getDatabaseProduct(dataSource);
   }
