@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -305,7 +305,7 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>findbugs-maven-plugin</artifactId>
-          <version>2.5.2</version>
+          <version>${maven-findbugs-plugin.version}</version>
           <configuration>
             <xmlOutput>true</xmlOutput>
           </configuration>
@@ -314,10 +314,11 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
+          <version>${maven-compiler-plugin.version}</version>
           <configuration>
-            <source>1.6</source>
-            <target>1.6</target>
-            <encoding>ISO-8859-1</encoding>
+            <source>${java.version}</source>
+            <target>${java.version}</target>
+            <encoding>${project.build.sourceEncoding}</encoding>
           </configuration>
         </plugin>
       </plugins>
@@ -327,7 +328,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>2.2</version>
+        <version>${maven-source-plugin.version}</version>
         <executions>
           <execution>
             <id>attach-sources</id>
@@ -342,6 +343,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
+        <version>${maven-release-plugin.version}</version>
         <configuration>
           <tagBase>https://svn.obiba.org/obiba-commons/tags/releases</tagBase>
           <autoVersionSubmodules>true</autoVersionSubmodules>
@@ -447,8 +449,8 @@
   </distributionManagement>
 
   <scm>
-    <connection>scm:svn:http://svn.obiba.org/obiba-commons/branches/obiba-commons-1.3.x</connection>
-    <developerConnection>scm:svn:https://svn.obiba.org/obiba-commons/branches/obiba-commons-1.3.x</developerConnection>
+    <connection>scm:svn:http://svn.obiba.org/obiba-commons/trunk</connection>
+    <developerConnection>scm:svn:https://svn.obiba.org/obiba-commons/trunk</developerConnection>
   </scm>
 
   <issueManagement>
@@ -462,6 +464,10 @@
   </ciManagement>
 
   <properties>
+
+    <java.version>1.6</java.version>
+    <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+
     <commons-beanutils.version>1.7.0</commons-beanutils.version>
     <commons-dbcp.version>1.3</commons-dbcp.version>
     <crowd.version>2.5.1</crowd.version>
@@ -479,6 +485,13 @@
     <slf4j.version>1.7.1</slf4j.version>
     <spring.version>3.0.5.RELEASE</spring.version>
     <xstream.version>1.4.2</xstream.version>
+
+    <!-- maven plugins -->
+    <maven-source-plugin.version>2.2</maven-source-plugin.version>
+    <maven-compiler-plugin.version>2.5.1</maven-compiler-plugin.version>
+    <maven-release-plugin.version>2.3.2</maven-release-plugin.version>
+    <maven-findbugs-plugin.version>2.5.2</maven-findbugs-plugin.version>
+
   </properties>
 
 </project>
