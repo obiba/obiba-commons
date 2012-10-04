@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/obiba-commons.iml" filepath="$PROJECT_DIR$/obiba-commons.iml" />
+      <module fileurl="file://$PROJECT_DIR$/obiba-core/obiba-core.iml" filepath="$PROJECT_DIR$/obiba-core/obiba-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/obiba-wicket/obiba-wicket.iml" filepath="$PROJECT_DIR$/obiba-wicket/obiba-wicket.iml" />
+    </modules>
+  </component>
+</project>
+
