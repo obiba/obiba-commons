@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
  *   ldapRealm.searchBase = dc=example,dc=com
  *   ldapRealm.userGroupAttribute = memberUid
  *   ldapRealm.groupNameAttribute = cn
+ *   # Specify mapping between LDAP groups and your application roles
  *   ldapRealm.groupRolesMap = group1:SYSTEM_ADMINISTRATOR, group2:PARTICIPANT_MANAGER, group3:DATA_COLLECTION_OPERATOR
  * </pre>
  */
@@ -112,6 +113,11 @@ public class LdapRealm extends org.apache.shiro.realm.ldap.JndiLdapRealm {
     this.groupNameAttribute = groupNameAttribute;
   }
 
+  /**
+   * Set mapping between LDAP groups and application roles
+   *
+   * @param groupRolesMap
+   */
   public void setGroupRolesMap(Map<String, String> groupRolesMap) {
     this.groupRolesMap = groupRolesMap;
   }

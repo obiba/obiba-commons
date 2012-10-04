@@ -67,6 +67,7 @@ import org.slf4j.LoggerFactory;
  *        </constructor-arg>
  *      </bean>
  *    </property>
+ *    <!-- Specify mapping between Crowd groups/roles and your application roles -->
  *    <property name="groupRolesMap">
  *      <map>
  *        <entry key="group1" value="SYSTEM_ADMINISTRATOR" />
@@ -109,8 +110,7 @@ import org.slf4j.LoggerFactory;
  *    <artifactId>crowd-integration-client</artifactId>
  *    <version>2.5.1</version>
  *  </dependency>
- *  }
- * </pre>
+ *  }</pre>
  *
  * @version $Rev: 1026849 $ $Date: 2010-10-24 11:08:56 -0700 (Sun, 24 Oct 2010) $
  * @see <a href="https://confluence.atlassian.com/display/CROWD/The+crowd.properties+File">https://confluence.atlassian.com/display/CROWD/The+crowd.properties+File</a>
@@ -178,6 +178,11 @@ public class CrowdRealm extends AuthorizingRealm {
     this.roleSources = roleSources;
   }
 
+  /**
+   * Set mapping between Crowd groups/roles and application roles
+   *
+   * @param groupRolesMap
+   */
   public void setGroupRolesMap(Map<String, String> groupRolesMap) {
     this.groupRolesMap = groupRolesMap;
   }
