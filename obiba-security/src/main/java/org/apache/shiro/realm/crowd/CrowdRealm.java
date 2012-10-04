@@ -110,6 +110,12 @@ import org.slf4j.LoggerFactory;
  *    <artifactId>crowd-integration-client</artifactId>
  *    <version>2.5.1</version>
  *  </dependency>
+ *  <!-- Need to define this manually because of Maven bug -->
+ *  <dependency>
+ *    <groupId>org.codehaus.xfire</groupId>
+ *    <artifactId>xfire-aegis</artifactId>
+ *    <version>1.2.6</version>
+ *  </dependency>
  *  }</pre>
  *
  * @version $Rev: 1026849 $ $Date: 2010-10-24 11:08:56 -0700 (Sun, 24 Oct 2010) $
