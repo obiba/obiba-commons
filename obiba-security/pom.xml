@@ -28,6 +28,7 @@
     <dependency>
       <groupId>com.atlassian.crowd</groupId>
       <artifactId>crowd-integration-client</artifactId>
+      <optional>true</optional>
     </dependency>
 
     <dependency>
