@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/obiba-commons.iml" filepath="$PROJECT_DIR$/obiba-commons.iml" />
       <module fileurl="file://$PROJECT_DIR$/obiba-core/obiba-core.iml" filepath="$PROJECT_DIR$/obiba-core/obiba-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/obiba-security/obiba-security.iml" filepath="$PROJECT_DIR$/obiba-security/obiba-security.iml" />
       <module fileurl="file://$PROJECT_DIR$/obiba-wicket/obiba-wicket.iml" filepath="$PROJECT_DIR$/obiba-wicket/obiba-wicket.iml" />
     </modules>
   </component>

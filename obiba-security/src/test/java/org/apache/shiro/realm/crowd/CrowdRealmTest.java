@@ -26,6 +26,7 @@ import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.junit.Assert;
 import org.junit.Test;
 
 import static org.easymock.EasyMock.createStrictMock;
@@ -60,7 +61,7 @@ public class CrowdRealmTest {
     PrincipalCollection collection = authenticationInfo.getPrincipals();
     assertNotNull(collection);
     assertTrue(!collection.isEmpty());
-    assertEquals("yoko", collection.getPrimaryPrincipal());
+    Assert.assertEquals("yoko", collection.getPrimaryPrincipal());
     assertTrue(!collection.getRealmNames().isEmpty());
     assertTrue(collection.getRealmNames().contains("NutHouse"));
     assertTrue(!collection.fromRealm("NutHouse").isEmpty());
@@ -170,7 +171,7 @@ public class CrowdRealmTest {
     PrincipalCollection collection = authenticationInfo.getPrincipals();
     assertNotNull(collection);
     assertTrue(!collection.isEmpty());
-    assertEquals("yoko", collection.getPrimaryPrincipal());
+    Assert.assertEquals("yoko", collection.getPrimaryPrincipal());
     assertTrue(!collection.getRealmNames().isEmpty());
     assertTrue(collection.getRealmNames().contains("NutHouse"));
     assertTrue(!collection.fromRealm("NutHouse").isEmpty());
