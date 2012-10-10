@@ -344,7 +344,7 @@
         <artifactId>maven-release-plugin</artifactId>
         <version>${maven-release-plugin.version}</version>
         <configuration>
-          <!--tagBase>https://svn.obiba.org/obiba-commons/tags/releases</tagBase-->
+          <tagBase>https://svn.obiba.org/obiba-commons/tags/releases</tagBase>
           <autoVersionSubmodules>true</autoVersionSubmodules>
         </configuration>
       </plugin>
