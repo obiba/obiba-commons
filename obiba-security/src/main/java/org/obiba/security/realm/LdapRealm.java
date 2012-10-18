@@ -9,15 +9,17 @@
  ******************************************************************************/
 package org.obiba.security.realm;
 
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import javax.naming.AuthenticationException;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 import javax.naming.ldap.LdapContext;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
@@ -92,11 +94,13 @@ public class LdapRealm extends org.apache.shiro.realm.ldap.JndiLdapRealm {
         }
       }
 
+    } catch(AuthenticationException e) {
+      // do nothing as the principal was not authenticated on LDAP
     } finally {
       LdapUtils.closeContext(systemLdapCtx);
     }
 
-    logger.info("Role for {}: {}", username, roleNames);
+    logger.debug("Role for {}: {}", username, roleNames);
 
     return new SimpleAuthorizationInfo(roleNames);
   }
