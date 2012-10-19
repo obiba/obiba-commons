@@ -8,6 +8,11 @@ Reusable code for persistence (hibernate), security, spring and wicket.
 Have a bug? Please create an issue on [OBiBa JIRA](http://jira.obiba.org/jira/browse/COM).
 
 
+## Continuous integration
+
+See [OBiBa Jenkins](http://ci.obiba.org/view/OBiBa%20Commons).
+
+
 ## Mailing list
 
 Have a question? Ask on our mailing list!
