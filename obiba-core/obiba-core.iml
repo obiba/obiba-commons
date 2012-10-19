@@ -8,6 +8,9 @@
         </fileset>
       </configuration>
     </facet>
+    <facet type="WebBeans" name="CDI">
+      <configuration />
+    </facet>
   </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_6" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/target/classes" />
