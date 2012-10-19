@@ -426,12 +426,6 @@
   </repositories>
 
   <distributionManagement>
-    <!-- Site deployment location -->
-    <site>
-      <id>deploy.obiba.org</id>
-      <url>${obiba.site.url}/${obiba.site.context}</url>
-    </site>
-
     <!-- URL used to deploy the release artifacts -->
     <repository>
       <id>deploy.obiba.org</id>
