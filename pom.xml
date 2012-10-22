@@ -472,8 +472,9 @@
   </distributionManagement>
 
   <scm>
-    <connection>scm:svn:http://svn.obiba.org/obiba-commons/trunk</connection>
-    <developerConnection>scm:svn:https://svn.obiba.org/obiba-commons/trunk</developerConnection>
+    <connection>scm:git:git://github.com/obiba/obiba-commons.git</connection>
+    <developerConnection>scm:git:https://github.com/obiba/obiba-commons.git</developerConnection>
+    <url>https://github.com/obiba/obiba-commons</url>
   </scm>
 
   <issueManagement>
@@ -482,8 +483,8 @@
   </issueManagement>
 
   <ciManagement>
-    <system>hudson</system>
-    <url>http://hudson.obiba.org/hudson/job/Obiba Commons/</url>
+    <system>jenkins</system>
+    <url>http://ci.obiba.org/view/OBiBa Commons</url>
   </ciManagement>
 
   <properties>
