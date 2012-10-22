@@ -342,11 +342,6 @@
       </plugin>
 
       <plugin>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>${maven-javadoc-plugin.version}</version>
-      </plugin>
-
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
         <version>${maven-release-plugin.version}</version>
@@ -454,11 +449,6 @@
   </repositories>
 
   <distributionManagement>
-    <!-- Site deployment location -->
-    <site>
-      <id>deploy.obiba.org</id>
-      <url>${obiba.site.url}/${obiba.site.context}</url>
-    </site>
 
     <!-- URL used to deploy the release artifacts -->
     <repository>
@@ -473,6 +463,7 @@
       <url>${obiba.deploy.url}/maven2-snapshots</url>
       <uniqueVersion>true</uniqueVersion>
     </snapshotRepository>
+
   </distributionManagement>
 
   <scm>
@@ -520,7 +511,6 @@
     <maven-buildnumber-plugin.version>1.2</maven-buildnumber-plugin.version>
     <maven-compiler-plugin.version>2.5.1</maven-compiler-plugin.version>
     <maven-findbugs-plugin.version>2.5.2</maven-findbugs-plugin.version>
-    <maven-javadoc-plugin.version>2.7</maven-javadoc-plugin.version>
     <maven-release-plugin.version>2.3.2</maven-release-plugin.version>
     <maven-source-plugin.version>2.2</maven-source-plugin.version>
 
