@@ -1,4 +1,4 @@
-# Obiba Commons 1.3.x
+# Obiba Commons 1.3.x [![Build Status](http://ci.obiba.org/view/OBiBa%20Commons/job/Obiba%20Commons%201.3.x/badge/icon)](http://ci.obiba.org/view/OBiBa%20Commons/job/Obiba%20Commons%201.3.x/)
 
 Reusable code for persistence (hibernate), security, spring and wicket.
 
