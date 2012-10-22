@@ -342,6 +342,11 @@
       </plugin>
 
       <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>${maven-javadoc-plugin.version}</version>
+      </plugin>
+
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
         <version>${maven-release-plugin.version}</version>
@@ -453,6 +458,7 @@
     <!-- URL used to deploy the release artifacts -->
     <repository>
       <id>deploy.obiba.org</id>
+      <!--suppress MavenModelInspection -->
       <url>${obiba.deploy.url}/maven2</url>
       <uniqueVersion>false</uniqueVersion>
     </repository>
@@ -460,6 +466,7 @@
     <!-- URL used to deploy the SNAPSHOTS artifacts -->
     <snapshotRepository>
       <id>deploy.obiba.org</id>
+      <!--suppress MavenModelInspection -->
       <url>${obiba.deploy.url}/maven2-snapshots</url>
       <uniqueVersion>true</uniqueVersion>
     </snapshotRepository>
@@ -481,6 +488,35 @@
     <system>jenkins</system>
     <url>http://ci.obiba.org/view/OBiBa%20Commons/job/Obiba%20Commons%201.3.x</url>
   </ciManagement>
+
+  <profiles>
+    <profile>
+      <id>javadoc</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>jar</goal>
+                  <goal>aggregate</goal>
+                  <goal>aggregate-jar</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <reportOutputDirectory>${obiba.docs.url}</reportOutputDirectory>
+              <destDir>${project.artifactId}</destDir>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
   <properties>
 
@@ -511,6 +547,7 @@
     <maven-buildnumber-plugin.version>1.2</maven-buildnumber-plugin.version>
     <maven-compiler-plugin.version>2.5.1</maven-compiler-plugin.version>
     <maven-findbugs-plugin.version>2.5.2</maven-findbugs-plugin.version>
+    <maven-javadoc-plugin.version>2.9</maven-javadoc-plugin.version>
     <maven-release-plugin.version>2.3.2</maven-release-plugin.version>
     <maven-source-plugin.version>2.2</maven-source-plugin.version>
 
