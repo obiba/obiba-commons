@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -324,6 +325,7 @@
     </pluginManagement>
 
     <plugins>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
@@ -348,6 +350,28 @@
           <autoVersionSubmodules>true</autoVersionSubmodules>
         </configuration>
       </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>buildnumber-maven-plugin</artifactId>
+        <version>${maven-buildnumber-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>createBuildNumber</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>create</goal>
+            </goals>
+            <configuration>
+              <format>{0,date,yyyyMMddHHmmss}</format>
+              <items>
+                <item>timestamp</item>
+              </items>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
 
     <resources>
@@ -426,6 +450,12 @@
   </repositories>
 
   <distributionManagement>
+    <!-- Site deployment location -->
+    <site>
+      <id>deploy.obiba.org</id>
+      <url>${obiba.site.url}/${obiba.site.context}</url>
+    </site>
+
     <!-- URL used to deploy the release artifacts -->
     <repository>
       <id>deploy.obiba.org</id>
@@ -442,8 +472,9 @@
   </distributionManagement>
 
   <scm>
-    <connection>scm:svn:http://svn.obiba.org/obiba-commons/branches/obiba-commons-1.3.x</connection>
-    <developerConnection>scm:svn:https://svn.obiba.org/obiba-commons/branches/obiba-commons-1.3.x</developerConnection>
+    <connection>scm:git:git://github.com/obiba/obiba-commons.git</connection>
+    <developerConnection>scm:git:https://github.com/obiba/obiba-commons.git</developerConnection>
+    <url>https://github.com/obiba/obiba-commons</url>
   </scm>
 
   <issueManagement>
@@ -452,8 +483,8 @@
   </issueManagement>
 
   <ciManagement>
-    <system>hudson</system>
-    <url>http://hudson.obiba.org/hudson/job/Obiba Commons/</url>
+    <system>jenkins</system>
+    <url>http://ci.obiba.org/view/OBiBa Commons</url>
   </ciManagement>
 
   <properties>
@@ -482,10 +513,11 @@
     <xstream.version>1.4.2</xstream.version>
 
     <!-- maven plugins -->
-    <maven-source-plugin.version>2.2</maven-source-plugin.version>
+    <maven-buildnumber-plugin.version>1.2</maven-buildnumber-plugin.version>
     <maven-compiler-plugin.version>2.5.1</maven-compiler-plugin.version>
-    <maven-release-plugin.version>2.3.2</maven-release-plugin.version>
     <maven-findbugs-plugin.version>2.5.2</maven-findbugs-plugin.version>
+    <maven-release-plugin.version>2.3.2</maven-release-plugin.version>
+    <maven-source-plugin.version>2.2</maven-source-plugin.version>
 
   </properties>
 
