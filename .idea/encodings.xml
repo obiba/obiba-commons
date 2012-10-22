@@ -4,7 +4,6 @@
     <file url="file://$PROJECT_DIR$" charset="ISO-8859-1" />
     <file url="file://$PROJECT_DIR$/obiba-core" charset="ISO-8859-1" />
     <file url="file://$PROJECT_DIR$/obiba-security" charset="ISO-8859-1" />
-    <file url="file://$PROJECT_DIR$/obiba-security/src/main/java/org/obiba/security/realm/LdapRealm.java" charset="ISO-8859-1" />
     <file url="file://$PROJECT_DIR$/obiba-wicket" charset="ISO-8859-1" />
   </component>
 </project>
