@@ -485,13 +485,21 @@
   </issueManagement>
 
   <ciManagement>
-    <system>jenkins</system>
+    <system>Jenkins</system>
     <url>http://ci.obiba.org/view/OBiBa%20Commons/job/Obiba%20Commons%201.3.x</url>
   </ciManagement>
 
+  <mailingLists>
+    <mailingList>
+      <name>OBiBa Users</name>
+      <post>obiba-users@googlegroups.com</post>
+      <archive>https://groups.google.com/forum/?fromgroups#!forum/obiba-users</archive>
+    </mailingList>
+  </mailingLists>
+
   <profiles>
     <profile>
-      <id>javadoc</id>
+      <id>release</id>
       <build>
         <plugins>
           <plugin>
