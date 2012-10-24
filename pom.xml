@@ -11,6 +11,13 @@
   <packaging>pom</packaging>
   <version>1.4-SNAPSHOT</version>
 
+  <licenses>
+    <license>
+      <name>GNU Public License version 3</name>
+      <url>http://www.obiba.org/node/62</url>
+    </license>
+  </licenses>
+
   <modules>
     <module>obiba-core</module>
     <module>obiba-wicket</module>
@@ -321,6 +328,19 @@
             <encoding>${project.build.sourceEncoding}</encoding>
           </configuration>
         </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>${maven-javadoc-plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>${maven-deploy-plugin.version}</version>
+        </plugin>
+
       </plugins>
     </pluginManagement>
 
@@ -339,11 +359,6 @@
             </goals>
           </execution>
         </executions>
-      </plugin>
-
-      <plugin>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>${maven-javadoc-plugin.version}</version>
       </plugin>
 
       <plugin>
@@ -486,7 +501,7 @@
 
   <ciManagement>
     <system>Jenkins</system>
-    <url>http://ci.obiba.org/view/OBiBa%20Commons/job/Obiba%20Commons/</url>
+    <url>http://ci.obiba.org/view/OBiBa%20Commons/job/Obiba%20Commons</url>
   </ciManagement>
 
   <mailingLists>
@@ -507,19 +522,36 @@
             <artifactId>maven-javadoc-plugin</artifactId>
             <executions>
               <execution>
-                <id>attach-javadocs</id>
+                <id>html-aggregate-javadocs</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>aggregate</goal>
+                </goals>
+                <configuration>
+                  <reportOutputDirectory>${obiba.docs.url}</reportOutputDirectory>
+                  <destDir>${project.artifactId}</destDir>
+                </configuration>
+              </execution>
+              <execution>
+                <id>jar-javadocs</id>
                 <phase>verify</phase>
                 <goals>
                   <goal>jar</goal>
-                  <goal>aggregate</goal>
                   <goal>aggregate-jar</goal>
                 </goals>
               </execution>
             </executions>
-            <configuration>
-              <reportOutputDirectory>${obiba.docs.url}</reportOutputDirectory>
-              <destDir>${project.artifactId}</destDir>
-            </configuration>
+          </plugin>
+          <plugin>
+            <!-- Deploy javadoc and sources: explicitly define maven-deploy-plugin after other to force exec order -->
+            <artifactId>maven-deploy-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>deploy</id>
+                <phase>deploy</phase>
+                <goals><goal>deploy</goal></goals>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
       </build>
@@ -554,6 +586,7 @@
     <!-- maven plugins -->
     <maven-buildnumber-plugin.version>1.2</maven-buildnumber-plugin.version>
     <maven-compiler-plugin.version>2.5.1</maven-compiler-plugin.version>
+    <maven-deploy-plugin.version>2.7</maven-deploy-plugin.version>
     <maven-findbugs-plugin.version>2.5.2</maven-findbugs-plugin.version>
     <maven-javadoc-plugin.version>2.9</maven-javadoc-plugin.version>
     <maven-release-plugin.version>2.3.2</maven-release-plugin.version>
