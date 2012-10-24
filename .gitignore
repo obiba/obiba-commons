@@ -1,2 +1,7 @@
-.idea/workspace.xml
-target
+target/
+.idea/
+.idea/*
+.idea/**/*.*
+*.iml
+atlassian-ide-plugin.xml
+
