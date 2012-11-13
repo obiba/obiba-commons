@@ -447,17 +447,6 @@
       </snapshots>
     </repository>
 
-    <repository>
-      <id>central</id>
-      <url>https://m2proxy.atlassian.com/repository/public</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-    </repository>
-
   </repositories>
 
   <distributionManagement>
