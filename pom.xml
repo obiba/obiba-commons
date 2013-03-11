@@ -341,6 +341,20 @@
           <version>${maven-deploy-plugin.version}</version>
         </plugin>
 
+        <plugin>
+          <artifactId>maven-pmd-plugin</artifactId>
+          <version>${maven-pmd-plugin.version}</version>
+          <configuration>
+            <linkXref>false</linkXref>
+            <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
+            <minimumTokens>30</minimumTokens>
+            <targetJdk>${maven.compiler.target}</targetJdk>
+            <rulesets>
+              <ruleset>https://github.com/obiba/conventions/raw/master/obiba-pmd-ruleset.xml</ruleset>
+            </rulesets>
+          </configuration>
+        </plugin>
+
       </plugins>
     </pluginManagement>
 
@@ -524,7 +538,9 @@
               <execution>
                 <id>deploy</id>
                 <phase>deploy</phase>
-                <goals><goal>deploy</goal></goals>
+                <goals>
+                  <goal>deploy</goal>
+                </goals>
               </execution>
             </executions>
           </plugin>
@@ -564,6 +580,7 @@
     <maven-deploy-plugin.version>2.7</maven-deploy-plugin.version>
     <maven-findbugs-plugin.version>2.5.2</maven-findbugs-plugin.version>
     <maven-javadoc-plugin.version>2.9</maven-javadoc-plugin.version>
+    <maven-pmd-plugin.version>3.0</maven-pmd-plugin.version>
     <maven-release-plugin.version>2.3.2</maven-release-plugin.version>
     <maven-source-plugin.version>2.2</maven-source-plugin.version>
 
