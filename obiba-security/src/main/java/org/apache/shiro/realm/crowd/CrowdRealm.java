@@ -21,13 +21,6 @@ import java.rmi.RemoteException;
 import java.util.EnumSet;
 import java.util.Map;
 
-import com.atlassian.crowd.exception.ApplicationAccessDeniedException;
-import com.atlassian.crowd.exception.ExpiredCredentialException;
-import com.atlassian.crowd.exception.InactiveAccountException;
-import com.atlassian.crowd.exception.InvalidAuthenticationException;
-import com.atlassian.crowd.exception.InvalidAuthorizationTokenException;
-import com.atlassian.crowd.exception.UserNotFoundException;
-import com.atlassian.crowd.service.soap.client.SecurityServerClient;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -44,6 +37,14 @@ import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.atlassian.crowd.exception.ApplicationAccessDeniedException;
+import com.atlassian.crowd.exception.ExpiredCredentialException;
+import com.atlassian.crowd.exception.InactiveAccountException;
+import com.atlassian.crowd.exception.InvalidAuthenticationException;
+import com.atlassian.crowd.exception.InvalidAuthorizationTokenException;
+import com.atlassian.crowd.exception.UserNotFoundException;
+import com.atlassian.crowd.service.soap.client.SecurityServerClient;
 
 /**
  * A realm that authenticates and obtains its roles from a Atlassian Crowd server.
@@ -123,12 +124,15 @@ import org.slf4j.LoggerFactory;
  * @see <a href="https://confluence.atlassian.com/display/CROWD024/Passing+the+crowd.properties+File+as+an+Environment+Variable">https://confluence.atlassian.com/display/CROWD024/Passing+the+crowd.properties+File+as+an+Environment+Variable</a>
  * @see <a href="https://code.google.com/a/apache-extras.org/p/atlassian-crowd-realm">https://code.google.com/a/apache-extras.org/p/atlassian-crowd-realm</a>
  */
+@SuppressWarnings("UnusedDeclaration")
 public class CrowdRealm extends AuthorizingRealm {
 
-  private static final Logger LOG = LoggerFactory.getLogger(CrowdRealm.class);
+  private static final Logger log = LoggerFactory.getLogger(CrowdRealm.class);
 
   private SecurityServerClient securityServerClient;
+
   private EnumSet<RoleSource> roleSources = EnumSet.of(RoleSource.ROLES_FROM_CROWD_ROLES);
+
   private Map<String, String> groupRolesMap;
 
   /**
@@ -196,36 +200,26 @@ public class CrowdRealm extends AuthorizingRealm {
   /**
    * {@inheritDoc}
    */
+  @Override
   protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
 
-    LOG.trace("Collecting authorization info from realm {}", getName());
+    log.trace("Collecting authorization info from realm {}", getName());
 
     SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
 
     for(Object principal : principalCollection.fromRealm(getName())) {
-      LOG.trace("Collecting roles from {}", principal);
+      log.trace("Collecting roles from {}", principal);
 
       try {
-        if(roleSources.contains(RoleSource.ROLES_FROM_CROWD_ROLES)) {
-          LOG.trace("Collecting Shiro roles from Crowd role memberships");
-          for(String role : securityServerClient.findRoleMemberships(principal.toString())) {
-            addRole(authorizationInfo, role);
-          }
-        }
-
-        if(roleSources.contains(RoleSource.ROLES_FROM_CROWD_GROUPS)) {
-          LOG.trace("Collecting Shiro roles from Crowd group memberships");
-          for(String group : securityServerClient.findGroupMemberships(principal.toString())) {
-            addRole(authorizationInfo, group);
-          }
-        }
+        collectCrowdRoles(authorizationInfo, principal);
+        collectCrowdGroups(authorizationInfo, principal);
       } catch(RemoteException re) {
         throw new AuthorizationException("Unable to obtain Crowd group memberships for principal " + principal + ".",
             re);
-      } catch(com.atlassian.crowd.exception.InvalidAuthenticationException e) {
+      } catch(InvalidAuthenticationException e) {
         throw new AuthorizationException("Unable to obtain Crowd group memberships for principal " + principal + ".",
             e);
-      } catch(com.atlassian.crowd.exception.InvalidAuthorizationTokenException e) {
+      } catch(InvalidAuthorizationTokenException e) {
         throw new AuthorizationException("Unable to obtain Crowd group memberships for principal " + principal + ".",
             e);
       } catch(UserNotFoundException e) {
@@ -237,16 +231,38 @@ public class CrowdRealm extends AuthorizingRealm {
     return authorizationInfo;
   }
 
+  private void collectCrowdGroups(SimpleAuthorizationInfo authorizationInfo, Object principal)
+      throws RemoteException, InvalidAuthorizationTokenException, UserNotFoundException,
+      InvalidAuthenticationException {
+    if(roleSources.contains(RoleSource.ROLES_FROM_CROWD_GROUPS)) {
+      log.trace("Collecting Shiro roles from Crowd group memberships");
+      for(String group : securityServerClient.findGroupMemberships(principal.toString())) {
+        addRole(authorizationInfo, group);
+      }
+    }
+  }
+
+  private void collectCrowdRoles(SimpleAuthorizationInfo authorizationInfo, Object principal)
+      throws RemoteException, InvalidAuthorizationTokenException, UserNotFoundException,
+      InvalidAuthenticationException {
+    if(roleSources.contains(RoleSource.ROLES_FROM_CROWD_ROLES)) {
+      log.trace("Collecting Shiro roles from Crowd role memberships");
+      for(String role : securityServerClient.findRoleMemberships(principal.toString())) {
+        addRole(authorizationInfo, role);
+      }
+    }
+  }
+
   private void addRole(SimpleAuthorizationInfo authorizationInfo, String role) {
     if(groupRolesMap == null) {
-      LOG.trace("Adding role {}", role);
+      log.trace("Adding role {}", role);
       authorizationInfo.addRole(role);
     } else {
       String mappedRole = groupRolesMap.get(role);
       if(mappedRole == null) {
-        LOG.warn("Role {} is not mapped", role);
+        log.warn("Role {} is not mapped", role);
       } else {
-        LOG.trace("Adding role {} (mapped from {})", mappedRole, role);
+        log.trace("Adding role {} (mapped from {})", mappedRole, role);
         authorizationInfo.addRole(mappedRole);
       }
     }
@@ -255,16 +271,18 @@ public class CrowdRealm extends AuthorizingRealm {
   /**
    * {@inheritDoc}
    */
-  protected AuthenticationInfo doGetAuthenticationInfo(
-      AuthenticationToken authenticationToken) throws AuthenticationException {
+  @Override
+  @SuppressWarnings("PMD.NcssMethodCount")
+  protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken)
+      throws AuthenticationException {
 
-    LOG.trace("Collecting authentication info from realm {}", getName());
-    LOG.trace("securityServerClient: {}", securityServerClient);
+    log.trace("Collecting authentication info from realm {}", getName());
+    log.trace("securityServerClient: {}", securityServerClient);
 
     if(!(authenticationToken instanceof UsernamePasswordToken)) {
       throw new UnsupportedTokenException(
-          "Unsupported token of type " + authenticationToken.getClass().getName() + ".  " + UsernamePasswordToken.class
-              .getName() + " is required.");
+          "Unsupported token of type " + authenticationToken.getClass().getName() + ".  " +
+              UsernamePasswordToken.class.getName() + " is required.");
     }
 
     UsernamePasswordToken token = (UsernamePasswordToken) authenticationToken;

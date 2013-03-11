@@ -25,6 +25,7 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+@SuppressWarnings("UnusedDeclaration")
 public class ObjectValidationInspector {
 
   private final static Logger log = LoggerFactory.getLogger(ObjectValidationInspector.class);
@@ -55,60 +56,49 @@ public class ObjectValidationInspector {
     return entityQueryService;
   }
 
-  private void inspectObjectProperties(final Object arg, final List<Errors> errors) {
+  private void inspectObjectProperties(Object arg, List<Errors> errors) {
     // Inspect supported properties.
-    final PropertyDescriptor[] propertyDescriptors = PropertyUtils.getPropertyDescriptors(arg.getClass());
-    for(final PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+    PropertyDescriptor[] propertyDescriptors = PropertyUtils.getPropertyDescriptors(arg.getClass());
+    for(PropertyDescriptor propertyDescriptor : propertyDescriptors) {
       Object propertyValue;
       try {
         propertyValue = propertyDescriptor.getReadMethod().invoke(arg);
         if(propertyValue != null && isArrayOrCollection(propertyValue.getClass())) {
           if(propertyValue.getClass().isArray()) {
-            for(final Object propertyElementValue : ((Object[]) propertyValue)) {
-              for(final Validator validator : getValidators()) {
-                if(validator.supports(propertyElementValue.getClass())) {
-                  log.debug("Validator supported: " + propertyElementValue.getClass());
-                  validateAndAddErrors(propertyElementValue, validator, errors);
-                  inspectObjectProperties(propertyElementValue, errors);
-                }
-              }
+            for(Object propertyElementValue : (Object[]) propertyValue) {
+              validate(errors, propertyElementValue);
             }
           } else {
-            for(final Object propertyElementValue : ((Collection<?>) propertyValue)) {
-              for(final Validator validator : getValidators()) {
-                if(validator.supports(propertyElementValue.getClass())) {
-                  log.debug("Validator supported: " + propertyElementValue.getClass());
-                  validateAndAddErrors(propertyElementValue, validator, errors);
-                  inspectObjectProperties(propertyElementValue, errors);
-                }
-              }
+            for(Object propertyElementValue : (Collection<?>) propertyValue) {
+              validate(errors, propertyElementValue);
             }
           }
         } else if(propertyValue != null) {
           // Non-Scalar property
-          for(final Validator validator : getValidators()) {
-            if(validator.supports(propertyValue.getClass())) {
-              log.debug("Validator supported: " + propertyValue.getClass());
-              validateAndAddErrors(propertyValue, validator, errors);
-              inspectObjectProperties(propertyValue, errors);
-            }
-          }
+          validate(errors, propertyValue);
         }
       } catch(IllegalArgumentException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        log.error("IllegalArgumentException", e);
       } catch(IllegalAccessException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        log.error("IllegalAccessException", e);
       } catch(InvocationTargetException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        log.error("InvocationTargetException", e);
       }
     }
   }
 
-  private Errors validateAndAddErrors(final Object arg, final Validator validator, final List<Errors> errors) {
-    final BindException objErrors = new BindException(arg, arg.getClass().getName());
+  private void validate(List<Errors> errors, Object propertyValue) {
+    for(Validator validator : getValidators()) {
+      if(validator.supports(propertyValue.getClass())) {
+        log.debug("Validator supported: {}", propertyValue.getClass());
+        validateAndAddErrors(propertyValue, validator, errors);
+        inspectObjectProperties(propertyValue, errors);
+      }
+    }
+  }
+
+  private Errors validateAndAddErrors(Object arg, Validator validator, Collection<Errors> errors) {
+    Errors objErrors = new BindException(arg, arg.getClass().getName());
     validator.validate(arg, objErrors);
     if(objErrors.hasErrors()) {
       errors.add(objErrors);
@@ -116,20 +106,25 @@ public class ObjectValidationInspector {
     return objErrors;
   }
 
-  public void inspectObject(final List<Errors> errors, final Object arg) {
-    for(final Validator validator : getValidators()) {
+  public void inspectObject(List<Errors> errors, Object arg) {
+    for(Validator validator : getValidators()) {
       if(validator.supports(arg.getClass())) {
         if(entityQueryService != null && validator instanceof AbstractPersistenceAwareClassValidator) {
           ((AbstractPersistenceAwareClassValidator) validator).setEntityQueryService(entityQueryService);
         }
-        log.debug("Validator supported: " + arg.getClass());
+        log.debug("Validator supported: {}", arg.getClass());
         validateAndAddErrors(arg, validator, errors);
         inspectObjectProperties(arg, errors);
       }
     }
   }
 
-  private boolean isArrayOrCollection(final Class<?> clazz) {
-    return (clazz.isArray() || clazz.isAssignableFrom(List.class) || clazz.isAssignableFrom(ArrayList.class) || clazz.isAssignableFrom(Set.class) || clazz.isAssignableFrom(SortedSet.class) || clazz.isAssignableFrom(AbstractCollection.class) || clazz.isAssignableFrom(AbstractList.class) || clazz.isAssignableFrom(AbstractSet.class) || clazz.isAssignableFrom(HashSet.class) || clazz.isAssignableFrom(LinkedHashSet.class) || clazz.isAssignableFrom(LinkedList.class) || clazz.isAssignableFrom(TreeSet.class) || clazz.isAssignableFrom(Vector.class));
+  private boolean isArrayOrCollection(Class<?> clazz) {
+    return clazz.isArray() || clazz.isAssignableFrom(List.class) || clazz.isAssignableFrom(ArrayList.class) ||
+        clazz.isAssignableFrom(Set.class) || clazz.isAssignableFrom(SortedSet.class) ||
+        clazz.isAssignableFrom(AbstractCollection.class) || clazz.isAssignableFrom(AbstractList.class) ||
+        clazz.isAssignableFrom(AbstractSet.class) || clazz.isAssignableFrom(HashSet.class) ||
+        clazz.isAssignableFrom(LinkedHashSet.class) || clazz.isAssignableFrom(LinkedList.class) ||
+        clazz.isAssignableFrom(TreeSet.class) || clazz.isAssignableFrom(Vector.class);
   }
 }

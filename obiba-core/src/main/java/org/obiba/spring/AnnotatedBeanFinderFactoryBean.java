@@ -1,6 +1,7 @@
 package org.obiba.spring;
 
 import java.lang.annotation.Annotation;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
@@ -23,7 +24,7 @@ import org.springframework.util.StringUtils;
  * but can be used to find classes that match any annotations. This code is based on William Mo's
  * <code>EntityBeanFinderFactoryBean</code>.
  * </p>
- * 
+ * <p/>
  * <p>Example bean definition:
  * <pre>
  * &lt;bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean"&gt;
@@ -67,23 +68,22 @@ import org.springframework.util.StringUtils;
  * &lt;/bean&gt;
  * </pre>
  * </p>
- * 
+ * <p/>
  * <p>This class is for automatic searching annotated entity classes (i.e. classes with <code>Entity</code> annotation)
- * for Hibernate's <code>SessionFacotry</code> in the Spring application context.</p>
- * 
+ * for Hibernate's <code>SessionFactory</code> in the Spring application context.</p>
+ *
  * @author William Mo
- * @version Original version downloaded, Jan 29, 2008
- * @see http://forum.springframework.org/showthread.php?t=46630
- * 
  * @author Oren E. Livne
  * @version added supported for other Hibernate annotations, Jan 29, 2008
+ * @see http://forum.springframework.org/showthread.php?t=46630
  */
-public class AnnotatedBeanFinderFactoryBean implements ResourceLoaderAware, FactoryBean {
-  
+@SuppressWarnings("UnusedDeclaration")
+public class AnnotatedBeanFinderFactoryBean implements ResourceLoaderAware, FactoryBean<Object> {
+
   /**
    * A logger that helps identify this class' printouts.
    */
-  private final Logger log = LoggerFactory.getLogger(getClass());
+  private static final Logger log = LoggerFactory.getLogger(AnnotatedBeanFinderFactoryBean.class);
 
   /**
    * Resource resolver.
@@ -108,7 +108,7 @@ public class AnnotatedBeanFinderFactoryBean implements ResourceLoaderAware, Fact
   /**
    * The output set of annotated classes.
    */
-  private final Set<Class<?>> annotatedClasses = new HashSet<Class<?>>();
+  private final Collection<Class<?>> annotatedClasses = new HashSet<Class<?>>();
 
   public AnnotatedBeanFinderFactoryBean() {
     // default accepted class name pattern is all
@@ -117,23 +117,25 @@ public class AnnotatedBeanFinderFactoryBean implements ResourceLoaderAware, Fact
 
   /**
    * Inject the resource loader.
-   * 
+   *
    * @param resourceLoader
    * @see org.springframework.context.ResourceLoaderAware#setResourceLoader(org.springframework.core.io.ResourceLoader)
    */
+  @Override
   public void setResourceLoader(ResourceLoader resourceLoader) {
     resolver = (ResourcePatternResolver) resourceLoader;
   }
 
   /**
    * Return an instance (possibly shared or independent) of the object managed by this factory.
-   * <p>
+   * <p/>
    * As with a BeanFactory, this allows support for both the Singleton and Prototype design pattern.
-   * 
+   *
    * @return instance of the object managed by this factory
    * @throws Exception in case of creation errors
    * @see org.springframework.beans.factory.FactoryBean#getObject()
    */
+  @Override
   public Object getObject() throws Exception {
     if(annotatedClasses.isEmpty()) {
       searchAnnotatedEntityClasses();
@@ -144,20 +146,22 @@ public class AnnotatedBeanFinderFactoryBean implements ResourceLoaderAware, Fact
 
   /**
    * Return the type of product made by this factory. In this cases, a class.
-   * 
+   *
    * @return he type of object that this FactoryBean creates, in this case, a class
    * @see org.springframework.beans.factory.FactoryBean#getObjectType()
    */
+  @Override
   public Class<?> getObjectType() {
     return annotatedClasses.getClass();
   }
 
   /**
    * Indicates that this bean is a singleton.
-   * 
+   *
    * @return true
    * @see org.springframework.beans.factory.FactoryBean#isSingleton()
    */
+  @Override
   public boolean isSingleton() {
     return true;
   }
@@ -167,23 +171,14 @@ public class AnnotatedBeanFinderFactoryBean implements ResourceLoaderAware, Fact
    */
   private void searchAnnotatedEntityClasses() {
     // Search resources by every search pattern.
-    log.info("searchAnnotatedEntityClasses in " + searchPatterns);
+    log.info("searchAnnotatedEntityClasses in {}", searchPatterns);
     for(String searchPattern : searchPatterns) {
       try {
         Resource[] resources = resolver.getResources(searchPattern);
-
         if(resources != null) {
           // Parse every resource.
           for(Resource res : resources) {
-            String path = res.getURL().getPath();
-            // Path name string should not be empty.
-            if(!path.equals("")) {
-              if(path.endsWith(".class")) {
-                dealWithClasses(path);
-              } else if(path.endsWith(".jar")) {
-                dealWithJars(res);
-              }
-            }
+            dealWithResource(res);
           }
         }
       } catch(Exception ignore) {
@@ -191,8 +186,20 @@ public class AnnotatedBeanFinderFactoryBean implements ResourceLoaderAware, Fact
       }
     }
     if(log.isInfoEnabled()) {
-      log.info("Annotations to look for: " + annotationClasses);
-      log.info("Annotated classes found: " + annotatedClasses);
+      log.info("Annotations to look for: {}", annotationClasses);
+      log.info("Annotated classes found: {}", annotatedClasses);
+    }
+  }
+
+  private void dealWithResource(Resource res) throws Exception {
+    String path = res.getURL().getPath();
+    // Path name string should not be empty.
+    if(!"".equals(path)) {
+      if(path.endsWith(".class")) {
+        dealWithClasses(path);
+      } else if(path.endsWith(".jar")) {
+        dealWithJars(res);
+      }
     }
   }
 
@@ -239,15 +246,15 @@ public class AnnotatedBeanFinderFactoryBean implements ResourceLoaderAware, Fact
       String name = jarEntries.nextElement().getName();
 
       // If the entry is a class, deal with it.
-      if(name.endsWith(".class") && !name.equals("")) {
+      if(name.endsWith(".class") && !"".equals(name)) {
         // Format the path first.
         name = pathToQualifiedClassName(name);
 
         // Apply the qualified class name pattern to improve the
         // searching performance.
         if(matchQualifiedClassNamePatterns(name))
-        // This is the qualified class name, so add it.
-        addPossibleClasses(name);
+          // This is the qualified class name, so add it.
+          addPossibleClasses(name);
       }
     }
   }
@@ -267,7 +274,7 @@ public class AnnotatedBeanFinderFactoryBean implements ResourceLoaderAware, Fact
 
     // Add the path parts one by one from the end of the array to the
     // beginning.
-    StringBuffer qName = new StringBuffer();
+    StringBuilder qName = new StringBuilder();
     for(int i = pathParts.length - 1; i >= 0; i--) {
       qName.insert(0, pathParts[i]);
       qualifiedClassNames.add(qName.toString());
@@ -287,7 +294,7 @@ public class AnnotatedBeanFinderFactoryBean implements ResourceLoaderAware, Fact
 
   /**
    * Match a path against a set of qualified class name patterns.
-   * 
+   *
    * @param path path to match
    * @return result of matching
    */
@@ -302,7 +309,7 @@ public class AnnotatedBeanFinderFactoryBean implements ResourceLoaderAware, Fact
 
   /**
    * Check whether the class implements at least one of the specified annotation types.
-   * 
+   *
    * @param clazz class to check
    * @return <code>true</code> if and only if the class implements at least one of the specified annotation types
    */
@@ -310,7 +317,7 @@ public class AnnotatedBeanFinderFactoryBean implements ResourceLoaderAware, Fact
     for(Class<? extends Annotation> annotationClass : annotationClasses) {
       if(clazz.getAnnotation(annotationClass) != null) {
         if(log.isDebugEnabled()) {
-          log.debug("Found class " + clazz.getSimpleName() + " annotation @" + annotationClass.getSimpleName());
+          log.debug("Found class {} annotation @{}", clazz.getSimpleName(), annotationClass.getSimpleName());
         }
         return true;
       }
@@ -320,7 +327,7 @@ public class AnnotatedBeanFinderFactoryBean implements ResourceLoaderAware, Fact
 
   /**
    * Clean and trim a string read from the context file.
-   * 
+   *
    * @param string string to clean
    * @return cleaned string
    */
@@ -330,7 +337,7 @@ public class AnnotatedBeanFinderFactoryBean implements ResourceLoaderAware, Fact
 
   /**
    * Returns the set of resource search patterns.
-   * 
+   *
    * @return the set of resource search patterns
    */
   public Set<String> getSearchPatterns() {
@@ -339,7 +346,7 @@ public class AnnotatedBeanFinderFactoryBean implements ResourceLoaderAware, Fact
 
   /**
    * Returns the the set of qualified class name patterns.
-   * 
+   *
    * @return the the set of qualified class name patterns
    */
   public Set<String> getQualifiedClassNamePatterns() {
@@ -348,7 +355,7 @@ public class AnnotatedBeanFinderFactoryBean implements ResourceLoaderAware, Fact
 
   /**
    * Returns the the set of annotation types.
-   * 
+   *
    * @return the the set of annotation types
    */
   public Set<Class<? extends Annotation>> getAnnotationClasses() {
@@ -357,10 +364,10 @@ public class AnnotatedBeanFinderFactoryBean implements ResourceLoaderAware, Fact
 
   /**
    * Inject the set of resource search patterns.
-   * 
+   *
    * @param searchPatterns the set of resource search patterns to set
    */
-  public void setSearchPatterns(Set<String> searchPatterns) {
+  public void setSearchPatterns(Iterable<String> searchPatterns) {
     // Regular expression are sensitive with special characters.
     for(String pattern : searchPatterns) {
       this.searchPatterns.add(cleanString(pattern));
@@ -369,10 +376,10 @@ public class AnnotatedBeanFinderFactoryBean implements ResourceLoaderAware, Fact
 
   /**
    * Inject the set of qualified class name patterns.
-   * 
+   *
    * @param qualifiedClassNamePatterns the set of qualified class name patterns to set
    */
-  public void setQualifiedClassNamePatterns(Set<String> qualifiedClassNamePatterns) {
+  public void setQualifiedClassNamePatterns(Collection<String> qualifiedClassNamePatterns) {
     // Regular expression are sensitive with special characters.
     // Clear default value
     if(qualifiedClassNamePatterns.size() > 0) this.qualifiedClassNamePatterns.clear();
@@ -383,11 +390,11 @@ public class AnnotatedBeanFinderFactoryBean implements ResourceLoaderAware, Fact
 
   /**
    * Injects the set of annotation types.
-   * 
+   *
    * @param annotationClasses the set of qualified annotation class names to set.
    */
   @SuppressWarnings("unchecked")
-  public void setAnnotationClasses(Set<String> annotationClasses) {
+  public void setAnnotationClasses(Iterable<String> annotationClasses) {
     // Filter tabs and new lines
     for(String annotationClass : annotationClasses) {
       Class<? extends Annotation> clazz;
@@ -395,11 +402,15 @@ public class AnnotatedBeanFinderFactoryBean implements ResourceLoaderAware, Fact
         clazz = (Class<? extends Annotation>) Class.forName(cleanString(annotationClass));
         this.annotationClasses.add(clazz);
       } catch(NoClassDefFoundError ignore) {
-        throw new FatalBeanException("The class " + annotationClass + " in the annotatedClasses property of the sessionFactory declaration is not an annotation type.");
+        throw new FatalBeanException("The class " + annotationClass +
+            " in the annotatedClasses property of the sessionFactory declaration is not an annotation type.");
       } catch(ClassCastException e) {
-        throw new FatalBeanException("Could not find annotation class " + annotationClass + " in the annotatedClasses property of the sessionFactory declaration.");
+        throw new FatalBeanException("Could not find annotation class " + annotationClass +
+            " in the annotatedClasses property of the sessionFactory declaration.");
       } catch(Throwable throwable) {
-        throw new FatalBeanException("Could not add annotation class " + annotationClass + " to the list of annotations in the annotatedClasses property of the sessionFactory declaration: " + throwable);
+        throw new FatalBeanException("Could not add annotation class " + annotationClass +
+            " to the list of annotations in the annotatedClasses property of the sessionFactory declaration: " +
+            throwable);
       }
     }
   }

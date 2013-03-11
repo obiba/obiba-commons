@@ -9,6 +9,7 @@
  ******************************************************************************/
 package org.obiba.security.realm;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -23,6 +24,7 @@ import javax.naming.ldap.LdapContext;
 
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
+import org.apache.shiro.realm.ldap.JndiLdapRealm;
 import org.apache.shiro.realm.ldap.LdapContextFactory;
 import org.apache.shiro.realm.ldap.LdapUtils;
 import org.apache.shiro.subject.PrincipalCollection;
@@ -30,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * LDAP {@link org.apache.shiro.realm.ldap.JndiLdapRealm} implementation that supports authorization.
+ * LDAP {@link JndiLdapRealm} implementation that supports authorization.
  * <p/>
  * Here is a sample config for shiro.ini for a basic OpenLDAP config:
  * <pre>
@@ -48,19 +50,23 @@ import org.slf4j.LoggerFactory;
  *   ldapRealm.groupRolesMap = group1:SYSTEM_ADMINISTRATOR, group2:PARTICIPANT_MANAGER, group3:DATA_COLLECTION_OPERATOR
  * </pre>
  */
-public class LdapRealm extends org.apache.shiro.realm.ldap.JndiLdapRealm {
+@SuppressWarnings("UnusedDeclaration")
+public class LdapRealm extends JndiLdapRealm {
 
   private final static Logger logger = LoggerFactory.getLogger(LdapRealm.class);
 
   private String searchBase;
+
   private String userGroupAttribute;
+
   private String groupNameAttribute;
+
   private Map<String, String> groupRolesMap;
 
   /**
    * Get groups from LDAP.
    *
-   * @param principals         the principals of the Subject whose AuthenticationInfo should be queried from the LDAP server.
+   * @param principals the principals of the Subject whose AuthenticationInfo should be queried from the LDAP server.
    * @param ldapContextFactory factory used to retrieve LDAP connections.
    * @return an {@link AuthorizationInfo} instance containing information retrieved from the LDAP server.
    * @throws NamingException if any LDAP errors occur during the search.
@@ -79,19 +85,9 @@ public class LdapRealm extends org.apache.shiro.realm.ldap.JndiLdapRealm {
       SearchControls constraints = new SearchControls();
       constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
-      NamingEnumeration answer = systemLdapCtx.search(searchBase, userGroupAttribute + "=" + username, constraints);
+      NamingEnumeration<?> answer = systemLdapCtx.search(searchBase, userGroupAttribute + "=" + username, constraints);
       while(answer.hasMore()) {
-        SearchResult sr = (SearchResult) answer.next();
-        for(NamingEnumeration attributesEnum = sr.getAttributes().getAll(); attributesEnum.hasMore(); ) {
-          Attribute attr = (Attribute) attributesEnum.next();
-          if(attr.getID().equalsIgnoreCase(groupNameAttribute)) {
-            NamingEnumeration e = attr.getAll();
-            while(e.hasMore()) {
-              String role = groupRolesMap.get(e.next());
-              if(role != null) roleNames.add(role);
-            }
-          }
-        }
+        queryResult(roleNames, (SearchResult) answer.next());
       }
 
     } catch(AuthenticationException e) {
@@ -103,6 +99,19 @@ public class LdapRealm extends org.apache.shiro.realm.ldap.JndiLdapRealm {
     logger.debug("Role for {}: {}", username, roleNames);
 
     return new SimpleAuthorizationInfo(roleNames);
+  }
+
+  private void queryResult(Collection<String> roleNames, SearchResult sr) throws NamingException {
+    for(NamingEnumeration<?> attributesEnum = sr.getAttributes().getAll(); attributesEnum.hasMore(); ) {
+      Attribute attr = (Attribute) attributesEnum.next();
+      if(attr.getID().equalsIgnoreCase(groupNameAttribute)) {
+        NamingEnumeration<?> e = attr.getAll();
+        while(e.hasMore()) {
+          String role = groupRolesMap.get(e.next());
+          if(role != null) roleNames.add(role);
+        }
+      }
+    }
   }
 
   public void setSearchBase(String searchBase) {

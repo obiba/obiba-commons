@@ -19,28 +19,28 @@ import org.apache.wicket.model.StringResourceModel;
 
 /**
  * A convenient class for generating tables of key/value pairs.
- * <p>
+ * <p/>
  * Data is presented in a two column table. The first column contains the keys and the second contains the values. Rows
  * are added by using one of the <code>addRow()</code> methods.
  */
+@SuppressWarnings("UnusedDeclaration")
 public class KeyValueDataPanel extends Panel {
 
   private static final long serialVersionUID = 5705222737293170400L;
 
   RepeatingView view;
 
-  ListView myListView;
+  ListView<?> myListView;
 
   int rowCounter = 0;
 
-  private WebMarkupContainer noDataRow = new WebMarkupContainer("noDataRow");
+  private final WebMarkupContainer noDataRow = new WebMarkupContainer("noDataRow");
 
   public KeyValueDataPanel(String id) {
     this(id, (Component) null);
   }
 
   /**
-   * 
    * @param id
    * @param header use {@link #getHeaderId()} to put the right id to the component
    */
@@ -54,7 +54,7 @@ public class KeyValueDataPanel extends Panel {
     noDataRow.setVisible(false);
   }
 
-  public KeyValueDataPanel(String id, IModel header) {
+  public KeyValueDataPanel(String id, IModel<?> header) {
     this(id, new Label(getHeaderId(), header));
   }
 
@@ -72,16 +72,16 @@ public class KeyValueDataPanel extends Panel {
 
   /**
    * Set/replace the current header label.
-   * 
+   *
    * @param header
    */
-  public void setHeader(IModel header) {
+  public void setHeader(IModel<?> header) {
     setHeader(new Label(getHeaderId(), header));
   }
 
   /**
    * Set/replace the current header.
-   * 
+   *
    * @param header
    */
   public void setHeader(Component header) {
@@ -92,7 +92,7 @@ public class KeyValueDataPanel extends Panel {
   /**
    * When set to true, a row that spans both columns is made visible. Its content is a message that states that no data
    * was found to display. The resource key <code>datatable.no-records-found</code> is used to generate the message.
-   * 
+   *
    * @param show determines whether or not to show the row.
    */
   public void showNoDataRow(boolean show) {
@@ -101,53 +101,53 @@ public class KeyValueDataPanel extends Panel {
 
   /**
    * Add labels, with authorization filter.
-   * 
+   *
    * @param key
    * @param value
    * @param rowAuth
    */
-  public void addRow(IModel key, IModel value, RowAuthorization... rowAuth) {
+  public void addRow(IModel<?> key, IModel<?> value, RowAuthorization... rowAuth) {
     addRow(key, value, false, rowAuth);
   }
 
   /**
    * Add labels, with key indentation and authorization filter.
-   * 
+   *
    * @param key
    * @param value
    * @param indent
    * @param rowAuth
    */
-  public void addRow(IModel key, IModel value, boolean indent, RowAuthorization... rowAuth) {
+  public void addRow(IModel<?> key, IModel<?> value, boolean indent, RowAuthorization... rowAuth) {
     addRow(new Label(getRowKeyId(), key), createValueLabel(value), indent, rowAuth);
   }
 
   /**
    * Add components row, with authorization filter.
-   * 
+   *
    * @param key
    * @param value
    * @param rowAuth
    */
-  public void addRow(IModel key, Component value, RowAuthorization... rowAuth) {
+  public void addRow(IModel<?> key, Component value, RowAuthorization... rowAuth) {
     addRow(key, value, false, rowAuth);
   }
 
   /**
    * Add components row, with key indentation and authorization filter.
-   * 
+   *
    * @param key
    * @param value
    * @param indent
    * @param rowAuth
    */
-  public void addRow(IModel key, Component value, boolean indent, RowAuthorization... rowAuth) {
+  public void addRow(IModel<?> key, Component value, boolean indent, RowAuthorization... rowAuth) {
     addRow(new Label(getRowKeyId(), key), value, indent, rowAuth);
   }
 
   /**
-   * Add components row, with autorization filter.
-   * 
+   * Add components row, with authorization filter.
+   *
    * @param key
    * @param value
    * @param rowAuth
@@ -158,11 +158,12 @@ public class KeyValueDataPanel extends Panel {
 
   /**
    * Add components row, with authorization filter.
-   * 
+   *
    * @param key
    * @param value
    * @param rowAuth
    */
+  @SuppressWarnings({ "AssignmentToMethodParameter", "PMD.AvoidReassigningParameters" })
   public void addRow(Component key, Component value, final boolean indent, RowAuthorization... rowAuth) {
     rowCounter++;
     WebMarkupContainer item = new WebMarkupContainer(view.newChildId());
@@ -173,8 +174,9 @@ public class KeyValueDataPanel extends Panel {
     key.add(new AttributeModifier("class", true, new AbstractReadOnlyModel() {
       private static final long serialVersionUID = 825034630638663648L;
 
+      @Override
       public Object getObject() {
-        return (indent) ? getKeyIndentCssClass() : getKeyCssClass();
+        return indent ? getKeyIndentCssClass() : getKeyCssClass();
       }
     }));
 
@@ -187,8 +189,8 @@ public class KeyValueDataPanel extends Panel {
     item.add(value);
 
     if(rowAuth != null) {
-      for(int i = 0; i < rowAuth.length; i++) {
-        MetaDataRoleAuthorizationStrategy.authorize(item, rowAuth[i].getAction(), rowAuth[i].getRoles());
+      for(RowAuthorization aRowAuth : rowAuth) {
+        MetaDataRoleAuthorizationStrategy.authorize(item, aRowAuth.getAction(), aRowAuth.getRoles());
       }
     }
 
@@ -197,8 +199,9 @@ public class KeyValueDataPanel extends Panel {
 
       int rowIndex = rowCounter;
 
+      @Override
       public Object getObject() {
-        return (rowIndex % 2 == 1) ? getValueOddCssClass() : getValueEvenCssClass();
+        return rowIndex % 2 == 1 ? getValueOddCssClass() : getValueEvenCssClass();
       }
     }));
 
@@ -221,9 +224,9 @@ public class KeyValueDataPanel extends Panel {
   }
 
   public static class RowAuthorization {
-    private Action action;
+    private final Action action;
 
-    private String roles;
+    private final String roles;
 
     public RowAuthorization(Action action, String roles) {
       this.action = action;
@@ -241,6 +244,7 @@ public class KeyValueDataPanel extends Panel {
 
   /**
    * Creates a label for the value cell of a row, if an <tt>IModel</tt> was provided instead of a <tt>Component</tt>.
+   *
    * @param value the model to use for the value cell.
    * @return the label generated from the model, or null if the model contained a null value.
    */
@@ -252,7 +256,7 @@ public class KeyValueDataPanel extends Panel {
     // life-cycle.
 
     // TODO: find a way to fix the display issue instead of hacking the models (ie: use css)
-    return new Label(getRowValueId(), new Model(value) {
+    return new Label(getRowValueId(), new Model<Serializable>(value) {
 
       private static final long serialVersionUID = 7669446358458768567L;
 
@@ -260,9 +264,9 @@ public class KeyValueDataPanel extends Panel {
       public Serializable getObject() {
         IModel<?> o = (IModel<?>) super.getObject();
         if(o.getObject() == null) return " ";
-        return (Serializable)o.getObject();
+        return (Serializable) o.getObject();
       }
-      
+
     });
   }
 
@@ -270,10 +274,10 @@ public class KeyValueDataPanel extends Panel {
 
     private static final long serialVersionUID = -6785397649238353097L;
 
-    public KeyValueDataPanelHeaderFragment(Component titleComponent) {
+    private KeyValueDataPanelHeaderFragment(Component titleComponent) {
       super("header", "headerFragment", KeyValueDataPanel.this);
       if(titleComponent != null) {
-        if(titleComponent.getId().equals(getHeaderId()) == false) {
+        if(!titleComponent.getId().equals(getHeaderId())) {
           throw new IllegalArgumentException("KeyValueDataPanel header Component's id must be '" + getHeaderId() + "'");
         }
         add(titleComponent);
@@ -287,7 +291,7 @@ public class KeyValueDataPanel extends Panel {
   private class EmptyCellFragment extends Fragment {
     private static final long serialVersionUID = -1448002319546204879L;
 
-    public EmptyCellFragment(String id) {
+    private EmptyCellFragment(String id) {
       super(id, "emptyCellFragment", KeyValueDataPanel.this);
     }
 

@@ -5,79 +5,83 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
 
+@SuppressWarnings("UnusedDeclaration")
 public class ValidationRuntimeException extends RuntimeException {
 
-	/**
-	 * Generated serialVersion
-	 */
-	private static final long serialVersionUID = 2605997256235741510L;
-	private List<Errors> errors;
-  private Object nullTarget = new Object();
+  /**
+   * Generated serialVersion
+   */
+  private static final long serialVersionUID = 2605997256235741510L;
 
-	public ValidationRuntimeException(final List<Errors> errors) {
-		this.errors = errors;
-	}
-  
-  public ValidationRuntimeException() {
-    this.errors = new LinkedList<Errors>();
+  private static final Object NULL_TARGET = new Object();
+
+  private List<Errors> errors;
+
+  public ValidationRuntimeException(List<Errors> errors) {
+    this.errors = errors;
   }
-  
+
+  public ValidationRuntimeException() {
+    errors = new LinkedList<Errors>();
+  }
+
   public ValidationRuntimeException(Object target, String errorCode, String defaultMessage) {
-    this.errors = new LinkedList<Errors>();
+    errors = new LinkedList<Errors>();
     reject(target, errorCode, defaultMessage);
   }
 
   public ValidationRuntimeException(Object target, String errorCode, Object[] errorArgs, String defaultMessage) {
-    this.errors = new LinkedList<Errors>();
+    errors = new LinkedList<Errors>();
     reject(target, errorCode, errorArgs, defaultMessage);
   }
-  
+
   public ValidationRuntimeException(String errorCode, String defaultMessage) {
-    this.errors = new LinkedList<Errors>();
+    errors = new LinkedList<Errors>();
     reject(null, errorCode, defaultMessage);
   }
-  
+
   public ValidationRuntimeException(String errorCode, Object[] errorArgs, String defaultMessage) {
-    this.errors = new LinkedList<Errors>();
+    errors = new LinkedList<Errors>();
     reject(null, errorCode, errorArgs, defaultMessage);
   }
 
-	/**
-	 * @return Returns the errors.
-	 */
-	public List<Errors> getErrors() {
-		return errors;
-	}
+  /**
+   * @return Returns the errors.
+   */
+  public List<Errors> getErrors() {
+    return errors;
+  }
 
-	/**
-	 * @param errors The errors to set.
-	 */
-	public void setErrors(final List<Errors> errors) {
-		this.errors = errors;
-	}
+  /**
+   * @param errors The errors to set.
+   */
+  public void setErrors(List<Errors> errors) {
+    this.errors = errors;
+  }
 
   /**
    * Get the object errors in a flat list.
+   *
    * @return
    */
   public List<ObjectError> getAllObjectErrors() {
     List<ObjectError> allErrors = new ArrayList<ObjectError>();
-    
-    if (errors != null) {
-      for (Errors err : errors) {
-        for (Object oerr : err.getAllErrors()) {
-          if (oerr instanceof ObjectError)
-            allErrors.add((ObjectError)oerr);
+
+    if(errors != null) {
+      for(Errors err : errors) {
+        for(Object oerr : err.getAllErrors()) {
+          if(oerr instanceof ObjectError) allErrors.add((ObjectError) oerr);
         }
       }
     }
-    
+
     return allErrors;
   }
-  
+
   public void reject(Object target, String errorCode) {
     Errors error = getTargetErrors(target);
     error.reject(errorCode);
@@ -95,7 +99,7 @@ public class ValidationRuntimeException extends RuntimeException {
     error.reject(errorCode, errorArgs, defaultMessage);
     errors.add(error);
   }
-  
+
   public void reject(String errorCode) {
     reject(null, errorCode);
   }
@@ -107,23 +111,17 @@ public class ValidationRuntimeException extends RuntimeException {
   public void reject(String errorCode, Object[] errorArgs, String defaultMessage) {
     reject(null, errorCode, errorArgs, defaultMessage);
   }
-  
+
   private Errors getTargetErrors(Object target) {
-    if (target == null)
-      target = nullTarget;
-    
-    for (Errors error : errors) {
-      if (error instanceof BindException) {
-        if (target != null && target.equals(((BindException)error).getTarget()))
-          return error;
-        else if (target == null && ((BindException)error).getTarget() == null)
-          return error;
+    Object nonNullTarget = target == null ? NULL_TARGET : target;
+    for(Errors error : errors) {
+      if(error instanceof BindException) {
+        if(nonNullTarget.equals(((BindingResult) error).getTarget())) return error;
       }
     }
-    
-    return new BindException(target, target.getClass().getName());
+    return new BindException(nonNullTarget, nonNullTarget.getClass().getName());
   }
-  
+
   @Override
   public String toString() {
     return errors.toString();

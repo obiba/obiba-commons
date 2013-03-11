@@ -265,6 +265,12 @@
         <version>${shiro.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>com.google.code.findbugs</groupId>
+        <artifactId>jsr305</artifactId>
+        <version>${jsr305.version}</version>
+      </dependency>
+
     </dependencies>
 
   </dependencyManagement>
@@ -303,6 +309,13 @@
       <groupId>org.easymock</groupId>
       <artifactId>easymock</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -565,8 +578,9 @@
     <hibernate-core.version>3.3.2.GA</hibernate-core.version>
     <hsqldb.version>1.8.0.7</hsqldb.version>
     <jetty.version>6.1.17</jetty.version>
-    <junit.version>4.7</junit.version>
+    <jsr305.version>2.0.1</jsr305.version>
     <jta.version>1.0.1B</jta.version>
+    <junit.version>4.7</junit.version>
     <liquibase.version>1.9.4</liquibase.version>
     <mysql-connector-java.version>5.1.6</mysql-connector-java.version>
     <shiro.version>1.2.1</shiro.version>

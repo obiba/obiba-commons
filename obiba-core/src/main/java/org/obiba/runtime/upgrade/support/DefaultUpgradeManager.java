@@ -1,9 +1,13 @@
 package org.obiba.runtime.upgrade.support;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.obiba.core.util.ComparableComparator;
 import org.obiba.runtime.Version;
@@ -16,6 +20,7 @@ import org.obiba.runtime.upgrade.VersionProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings("UnusedDeclaration")
 public class DefaultUpgradeManager implements UpgradeManager {
   //
   // Constants
@@ -26,40 +31,48 @@ public class DefaultUpgradeManager implements UpgradeManager {
   //
   // Instance Variables
   //
+
   /**
    * Used to obtain and modify the current version.
    */
+  @Nonnull
   private VersionModifier currentVersionProvider;
 
   /**
    * Used to obtain the current runtime version.
    */
+  @Nonnull
   private VersionProvider runtimeVersionProvider;
 
   /**
-   * Strategy that determines if the manager should go through the list of intall steps instead of the list of upgrade
+   * Strategy that determines if the manager should go through the list of install steps instead of the list of upgrade
    * steps.
    */
+  @Nonnull
   private NewInstallationDetectionStrategy newInstallationDetectionStrategy;
 
   /**
    * A list of all required installation steps.
    */
-  private List<InstallStep> installSteps;
+  @Nonnull
+  private final List<InstallStep> installSteps;
 
   /**
    * A list of all available upgrade steps.
    */
-  private List<UpgradeStep> upgradeSteps;
+  @Nonnull
+  private final List<UpgradeStep> upgradeSteps;
 
   /**
    * A list of listeners to be notified of step executions.
    */
+  @Nullable
   private List<UpgradeManagerListener> stepListeners;
 
   /**
    * The comparator implementation to use for comparing two versions.
    */
+  @Nonnull
   private Comparator<Version> versionComparator = new ComparableComparator<Version>();
 
   //
@@ -75,44 +88,21 @@ public class DefaultUpgradeManager implements UpgradeManager {
   // UpgradeManager Methods
   //
 
+  @Override
   public void executeUpgrade() throws UpgradeException {
     if(currentVersionProvider == null) throw new IllegalStateException("currentVersionProvider is required");
     if(runtimeVersionProvider == null) throw new IllegalStateException("runtimeVersionProvider is required");
-    if(newInstallationDetectionStrategy == null) throw new IllegalStateException("newInstallationDetectionStrategy is required");
+    if(newInstallationDetectionStrategy == null) {
+      throw new IllegalStateException("newInstallationDetectionStrategy is required");
+    }
     if(installSteps == null) throw new IllegalStateException("newInstallationDetectionStrategy is required");
     if(upgradeSteps == null) throw new IllegalStateException("newInstallationDetectionStrategy is required");
 
     // Is this a new installation, or an upgrade of an existing installation?
     if(newInstallationDetectionStrategy.isNewInstallation(runtimeVersionProvider)) {
-      // New installation : execute configured install steps.
-      for(InstallStep installStep : installSteps) {
-        try {
-          notifyBeforeStep(installStep);
-          installStep.execute(getCurrentVersion());
-          notifyAfterStep(installStep);
-        } catch(Exception e) {
-          notifyFailedStep(installStep, e);
-          throw new UpgradeException(e);
-        }
-      }
+      executeNewInstallation();
     } else {
-      // Upgrade of existing installation: Execute configured upgrade steps.
-      for(UpgradeStep step : getApplicableSteps()) {
-        try {
-          notifyBeforeStep(step);
-
-          step.execute(getCurrentVersion());
-
-          // Update the current version.
-          currentVersionProvider.setVersion(step.getAppliesTo());
-
-          notifyAfterStep(step);
-        } catch(Exception e) {
-          notifyFailedStep(step, e);
-
-          throw new UpgradeException(e);
-        }
-      }
+      upgradeExistingInstallation();
     }
 
     // After completing the installation/upgrade, set the current version to the
@@ -121,10 +111,44 @@ public class DefaultUpgradeManager implements UpgradeManager {
     currentVersionProvider.setVersion(getRuntimeVersion());
   }
 
+  private void upgradeExistingInstallation() throws UpgradeException {
+    for(UpgradeStep step : getApplicableSteps()) {
+      try {
+        notifyBeforeStep(step);
+
+        step.execute(getCurrentVersion());
+
+        // Update the current version.
+        currentVersionProvider.setVersion(step.getAppliesTo());
+
+        notifyAfterStep(step);
+      } catch(Exception e) {
+        notifyFailedStep(step, e);
+
+        throw new UpgradeException(e);
+      }
+    }
+  }
+
+  private void executeNewInstallation() throws UpgradeException {
+    for(InstallStep installStep : installSteps) {
+      try {
+        notifyBeforeStep(installStep);
+        installStep.execute(getCurrentVersion());
+        notifyAfterStep(installStep);
+      } catch(Exception e) {
+        notifyFailedStep(installStep, e);
+        throw new UpgradeException(e);
+      }
+    }
+  }
+
+  @Override
   public Version getCurrentVersion() {
     return currentVersionProvider.getVersion();
   }
 
+  @Override
   public Version getRuntimeVersion() {
     return runtimeVersionProvider.getVersion();
   }
@@ -133,6 +157,7 @@ public class DefaultUpgradeManager implements UpgradeManager {
    * Returns true when {@code #getCurrentVersion()} is less than {@code #getRuntimeVersion()} using {@code
    * #versionComparator}.
    */
+  @Override
   public boolean requiresUpgrade() {
     return versionComparator.compare(getCurrentVersion(), getRuntimeVersion()) < 0;
   }
@@ -141,41 +166,44 @@ public class DefaultUpgradeManager implements UpgradeManager {
   // Methods
   //
 
-  public void setCurrentVersionProvider(VersionModifier currentVersionProvider) {
+  public void setCurrentVersionProvider(@Nonnull VersionModifier currentVersionProvider) {
     if(currentVersionProvider == null) throw new IllegalArgumentException("currentVersionProvider cannot be null");
     this.currentVersionProvider = currentVersionProvider;
   }
 
-  public void setRuntimeVersionProvider(VersionProvider runtimeVersionProvider) {
+  public void setRuntimeVersionProvider(@Nonnull VersionProvider runtimeVersionProvider) {
     if(runtimeVersionProvider == null) throw new IllegalArgumentException("runtimeVersionProvider cannot be null");
     this.runtimeVersionProvider = runtimeVersionProvider;
   }
 
-  public void setNewInstallationDetectionStrategy(NewInstallationDetectionStrategy newInstallationDetectionStrategy) {
-    if(newInstallationDetectionStrategy == null) throw new IllegalArgumentException("newInstallationDetectionStrategy cannot be null");
+  public void setNewInstallationDetectionStrategy(
+      @Nonnull NewInstallationDetectionStrategy newInstallationDetectionStrategy) {
+    if(newInstallationDetectionStrategy == null) {
+      throw new IllegalArgumentException("newInstallationDetectionStrategy cannot be null");
+    }
     this.newInstallationDetectionStrategy = newInstallationDetectionStrategy;
   }
 
-  public void setInstallSteps(List<InstallStep> installSteps) {
+  public void setInstallSteps(@Nullable Collection<InstallStep> installSteps) {
     if(installSteps != null) {
       this.installSteps.clear();
       this.installSteps.addAll(installSteps);
     }
   }
 
-  public void setUpgradeSteps(List<UpgradeStep> upgradeSteps) {
+  public void setUpgradeSteps(@Nullable Collection<UpgradeStep> upgradeSteps) {
     if(upgradeSteps != null) {
       this.upgradeSteps.clear();
       this.upgradeSteps.addAll(upgradeSteps);
     }
   }
 
-  public void setVersionComparator(Comparator<Version> versionComparator) {
+  public void setVersionComparator(@Nonnull Comparator<Version> versionComparator) {
     if(versionComparator == null) throw new IllegalArgumentException("versionComparator cannot be null");
     this.versionComparator = versionComparator;
   }
 
-  public void setStepListeners(List<UpgradeManagerListener> stepListeners) {
+  public void setStepListeners(@Nullable List<UpgradeManagerListener> stepListeners) {
     this.stepListeners = stepListeners;
   }
 
@@ -231,9 +259,10 @@ public class DefaultUpgradeManager implements UpgradeManager {
    * Extracts all applicable upgrade steps from the list of possible steps. An applicable step is a step instance that
    * has a {@code Version} that is greater than {@code Version} returned by {@code #getCurrentVersion()}, determined
    * using the {@code #versionComparator}.
-   * 
+   *
    * @return a new list containing all the applicable steps.
    */
+  @Nonnull
   protected List<UpgradeStep> getApplicableSteps() {
     List<UpgradeStep> applicableSteps = new ArrayList<UpgradeStep>();
     for(UpgradeStep step : upgradeSteps) {
@@ -245,7 +274,8 @@ public class DefaultUpgradeManager implements UpgradeManager {
 
     // Make sure we apply upgrade steps in order of the version they apply to.
     Collections.sort(applicableSteps, new Comparator<UpgradeStep>() {
-      public int compare(UpgradeStep step1, UpgradeStep step2) {
+      @Override
+      public int compare(@Nonnull UpgradeStep step1, @Nonnull UpgradeStep step2) {
         return versionComparator.compare(step1.getAppliesTo(), step2.getAppliesTo());
       }
     });

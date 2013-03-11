@@ -11,12 +11,12 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
  */
 public interface IColumnProvider<T> {
 
-  public List<String> getColumnHeaderNames();
+  List<String> getColumnHeaderNames();
 
-  public List<IColumn<T>> getRequiredColumns();
-  
-  public List<IColumn<T>> getDefaultColumns();
-  
-  public List<IColumn<T>> getAdditionalColumns();
+  List<IColumn<T>> getRequiredColumns();
+
+  List<IColumn<T>> getDefaultColumns();
+
+  List<IColumn<T>> getAdditionalColumns();
 
 }

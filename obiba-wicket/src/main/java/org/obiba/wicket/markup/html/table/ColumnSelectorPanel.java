@@ -10,15 +10,14 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.obiba.wicket.extensions.ajax.markup.html.AjaxDropDownMultipleChoice;
 
-
 class ColumnSelectorPanel<T> extends Panel {
   private static final long serialVersionUID = 1L;
 
-  private EntityListTablePanel<T> table;
+  private final EntityListTablePanel<T> table;
 
-  public ColumnSelectorPanel(String id, EntityListTablePanel<T> tablePanel) {
+  ColumnSelectorPanel(String id, EntityListTablePanel<T> tablePanel) {
     super(id);
-    this.table = tablePanel;
+    table = tablePanel;
     final ColumnSelectionModel model = new ColumnSelectionModel(table.getColumnProvider());
     add(new AjaxDropDownMultipleChoice("selector", model.getSelectable(), model.getSelected()) {
 
@@ -31,7 +30,7 @@ class ColumnSelectorPanel<T> extends Panel {
         // Add all the required columns.
         columns.addAll(table.getColumnProvider().getRequiredColumns());
         // Add the selected columns
-        for(SelectableColumn selectable : (List<SelectableColumn>)selected) {
+        for(SelectableColumn selectable : (List<SelectableColumn>) selected) {
           columns.add(selectable.column);
         }
         table.updateColumns(columns, target);
@@ -43,30 +42,33 @@ class ColumnSelectorPanel<T> extends Panel {
 
     private static final long serialVersionUID = 1L;
 
-    private ArrayList<SelectableColumn> selected;
-    private ArrayList<SelectableColumn> unselected;
+    private final List<SelectableColumn> selected;
 
-    private ArrayList<SelectableColumn> selectable;
+    private final List<SelectableColumn> unselected;
+
+    private final List<SelectableColumn> selectable;
 
     public ColumnSelectionModel(IColumnProvider provider) {
       List<IColumn> required = provider.getRequiredColumns();
       List<IColumn> defaultSelected = provider.getDefaultColumns();
       List<IColumn> available = provider.getAdditionalColumns();
-      int size = (defaultSelected != null ? defaultSelected.size() : 5) + (available != null ? available.size() : 5);
+      int size = (defaultSelected == null ? 5 : defaultSelected.size()) + (available == null ? 5 : available.size());
       selected = new ArrayList<SelectableColumn>(size);
       unselected = new ArrayList<SelectableColumn>(size);
       selectable = new ArrayList<SelectableColumn>(size);
 
       int index = 0;
-      for (IColumn column : defaultSelected) {
-        if(required.contains(column)) continue;
-        String name = table.getColumnHeaderName(column);
-        if(name != null) {
-          selected.add(new SelectableColumn(column, index++, true));
+      if(defaultSelected != null) {
+        for(IColumn column : defaultSelected) {
+          if(required.contains(column)) continue;
+          String name = table.getColumnHeaderName(column);
+          if(name != null) {
+            selected.add(new SelectableColumn(column, index++, true));
+          }
         }
       }
       if(available != null) {
-        for (IColumn column : available) {
+        for(IColumn column : available) {
           String name = table.getColumnHeaderName(column);
           if(name != null) {
             unselected.add(new SelectableColumn(column, index++, false));
@@ -77,11 +79,11 @@ class ColumnSelectorPanel<T> extends Panel {
       selectable.addAll(selected);
       selectable.addAll(unselected);
     }
-    
+
     public List<SelectableColumn> getSelected() {
       return selected;
     }
-    
+
     public List<SelectableColumn> getUnselected() {
       return unselected;
     }
@@ -89,7 +91,7 @@ class ColumnSelectorPanel<T> extends Panel {
     public List<SelectableColumn> getSelectable() {
       return selectable;
     }
-    
+
     public boolean isSelected(SelectableColumn column) {
       return selected.contains(column);
     }
@@ -105,8 +107,10 @@ class ColumnSelectorPanel<T> extends Panel {
 
     private static final long serialVersionUID = 1L;
 
-    private IColumn<T> column;
-    private int position;
+    private final IColumn<T> column;
+
+    private final int position;
+
     private boolean selected = true;
 
     public SelectableColumn(IColumn<T> column, int position) {
@@ -118,16 +122,16 @@ class ColumnSelectorPanel<T> extends Panel {
       this.position = position;
       this.selected = selected;
     }
-    
+
     protected boolean isSelected() {
       return selected;
     }
-    
+
     protected void setSelected(boolean selected) {
       this.selected = selected;
     }
 
-    protected IColumn getColumn() {
+    protected IColumn<T> getColumn() {
       return column;
     }
 
