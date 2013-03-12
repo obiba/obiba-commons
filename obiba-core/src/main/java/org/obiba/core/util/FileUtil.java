@@ -77,14 +77,13 @@ public final class FileUtil {
    * @param dest
    * @throws IOException
    */
-  @SuppressWarnings("ResultOfMethodCallIgnored")
   public static void moveFile(File source, File dest) throws IOException {
-
     File destFile = dest.isDirectory() ? new File(dest, source.getName()) : dest;
-
     if(!source.renameTo(destFile)) {
       copyFile(source, destFile);
-      source.delete();
+      if(!source.delete()) {
+        throw new IOException("Cannot delete source file " + source.getAbsolutePath());
+      }
     }
   }
 

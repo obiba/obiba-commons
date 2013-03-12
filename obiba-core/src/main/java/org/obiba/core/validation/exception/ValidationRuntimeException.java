@@ -4,17 +4,16 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
 
-@SuppressWarnings("UnusedDeclaration")
+@SuppressWarnings({ "UnusedDeclaration", "ClassWithTooManyConstructors" })
 public class ValidationRuntimeException extends RuntimeException {
 
-  /**
-   * Generated serialVersion
-   */
   private static final long serialVersionUID = 2605997256235741510L;
 
   private static final Object NULL_TARGET = new Object();
@@ -70,15 +69,13 @@ public class ValidationRuntimeException extends RuntimeException {
    */
   public List<ObjectError> getAllObjectErrors() {
     List<ObjectError> allErrors = new ArrayList<ObjectError>();
-
     if(errors != null) {
       for(Errors err : errors) {
-        for(Object oerr : err.getAllErrors()) {
-          if(oerr instanceof ObjectError) allErrors.add((ObjectError) oerr);
+        for(ObjectError objectError : err.getAllErrors()) {
+          allErrors.add(objectError);
         }
       }
     }
-
     return allErrors;
   }
 
@@ -88,13 +85,13 @@ public class ValidationRuntimeException extends RuntimeException {
     errors.add(error);
   }
 
-  public void reject(Object target, String errorCode, String defaultMessage) {
+  public void reject(@Nullable Object target, @Nullable String errorCode, String defaultMessage) {
     Errors error = getTargetErrors(target);
     error.reject(errorCode, defaultMessage);
     errors.add(error);
   }
 
-  public void reject(Object target, String errorCode, Object[] errorArgs, String defaultMessage) {
+  public void reject(@Nullable Object target, String errorCode, Object[] errorArgs, String defaultMessage) {
     Errors error = getTargetErrors(target);
     error.reject(errorCode, errorArgs, defaultMessage);
     errors.add(error);
@@ -104,7 +101,7 @@ public class ValidationRuntimeException extends RuntimeException {
     reject(null, errorCode);
   }
 
-  public void reject(String errorCode, String defaultMessage) {
+  public void reject(@Nullable String errorCode, String defaultMessage) {
     reject(null, errorCode, defaultMessage);
   }
 
@@ -112,7 +109,7 @@ public class ValidationRuntimeException extends RuntimeException {
     reject(null, errorCode, errorArgs, defaultMessage);
   }
 
-  private Errors getTargetErrors(Object target) {
+  private Errors getTargetErrors(@Nullable Object target) {
     Object nonNullTarget = target == null ? NULL_TARGET : target;
     for(Errors error : errors) {
       if(error instanceof BindException) {

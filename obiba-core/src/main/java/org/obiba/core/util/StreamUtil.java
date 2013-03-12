@@ -11,6 +11,8 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 @SuppressWarnings("UnusedDeclaration")
 public final class StreamUtil {
 
@@ -25,7 +27,7 @@ public final class StreamUtil {
    *
    * @param closeable the instance to safely and silently close
    */
-  public static void silentSafeClose(Closeable closeable) {
+  public static void silentSafeClose(@Nullable Closeable closeable) {
     try {
       if(closeable != null) {
         closeable.close();
