@@ -16,6 +16,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.beanutils.PropertyUtils;
 import org.obiba.core.service.EntityQueryService;
 import org.obiba.core.validation.validator.AbstractPersistenceAwareClassValidator;
@@ -60,23 +62,8 @@ public class ObjectValidationInspector {
     // Inspect supported properties.
     PropertyDescriptor[] propertyDescriptors = PropertyUtils.getPropertyDescriptors(arg.getClass());
     for(PropertyDescriptor propertyDescriptor : propertyDescriptors) {
-      Object propertyValue;
       try {
-        propertyValue = propertyDescriptor.getReadMethod().invoke(arg);
-        if(propertyValue != null && isArrayOrCollection(propertyValue.getClass())) {
-          if(propertyValue.getClass().isArray()) {
-            for(Object propertyElementValue : (Object[]) propertyValue) {
-              validate(errors, propertyElementValue);
-            }
-          } else {
-            for(Object propertyElementValue : (Collection<?>) propertyValue) {
-              validate(errors, propertyElementValue);
-            }
-          }
-        } else if(propertyValue != null) {
-          // Non-Scalar property
-          validate(errors, propertyValue);
-        }
+        inspectPropertyValue(errors, propertyDescriptor.getReadMethod().invoke(arg));
       } catch(IllegalArgumentException e) {
         log.error("IllegalArgumentException", e);
       } catch(IllegalAccessException e) {
@@ -87,7 +74,25 @@ public class ObjectValidationInspector {
     }
   }
 
-  private void validate(List<Errors> errors, Object propertyValue) {
+  private void inspectPropertyValue(List<Errors> errors, Object propertyValue) {
+    if(propertyValue != null && isArrayOrCollection(propertyValue.getClass())) {
+      if(propertyValue.getClass().isArray()) {
+        for(Object propertyElementValue : (Object[]) propertyValue) {
+          validatePropertyValue(errors, propertyElementValue);
+        }
+      } else {
+        for(Object propertyElementValue : (Collection<?>) propertyValue) {
+          validatePropertyValue(errors, propertyElementValue);
+        }
+      }
+    } else {
+      // Non-Scalar property
+      validatePropertyValue(errors, propertyValue);
+    }
+  }
+
+  private void validatePropertyValue(List<Errors> errors, @Nullable Object propertyValue) {
+    if(propertyValue == null) return;
     for(Validator validator : getValidators()) {
       if(validator.supports(propertyValue.getClass())) {
         log.debug("Validator supported: {}", propertyValue.getClass());

@@ -9,6 +9,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.IClusterable;
 import org.apache.wicket.Resource;
@@ -36,7 +38,7 @@ import org.obiba.wicket.markup.html.ResourceGetter;
 import org.obiba.wicket.markup.html.panel.ImageLabelLinkPanel;
 import org.obiba.wicket.util.resource.CsvResourceStream;
 
-@SuppressWarnings("UnusedDeclaration")
+@SuppressWarnings({ "UnusedDeclaration", "serial" })
 public class EntityListTablePanel<T> extends Panel {
 
   private static final long serialVersionUID = -5163898654558983434L;
@@ -199,12 +201,10 @@ public class EntityListTablePanel<T> extends Panel {
   }
 
   @SuppressWarnings("unchecked")
-  void updateColumns(List<IColumn<T>> columns, AjaxRequestTarget target) {
+  void updateColumns(List<IColumn<T>> columns, @Nullable AjaxRequestTarget target) {
     List<IColumn<T>> columnsWithSelector = null;
     if(displayRowSelectionColumn) {
-      if(rowSelectionColumn == null) {
-        rowSelectionColumn = new RowSelectionColumn(this);
-      }
+      if(rowSelectionColumn == null) rowSelectionColumn = new RowSelectionColumn(this);
       columnsWithSelector = new ArrayList<IColumn<T>>(columns);
       columnsWithSelector.add(0, rowSelectionColumn);
     } else {
@@ -215,7 +215,6 @@ public class EntityListTablePanel<T> extends Panel {
     int currentPage = dataTable.getCurrentPage();
     dataTable = new AjaxDataTable<T>("list", dataTable.getTitleModel(), columnsWithSelector, dataProvider, selector,
         dataTable.getRowsPerPage()) {
-      private static final long serialVersionUID = 1L;
 
       @Override
       protected void onPageChanged() {

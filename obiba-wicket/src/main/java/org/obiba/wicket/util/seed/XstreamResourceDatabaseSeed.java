@@ -151,6 +151,7 @@ public class XstreamResourceDatabaseSeed implements DatabaseSeed, InitializingBe
    * @param resource the {@code Resource} to load
    * @return the result of {@code XStream#fromXML(java.io.Reader)}
    */
+  @SuppressWarnings("PMD.NcssMethodCount")
   protected Object handleXtreamResource(Resource resource) {
     log.info("Loading resource {}.", resource);
     InputStreamReader reader = null;
