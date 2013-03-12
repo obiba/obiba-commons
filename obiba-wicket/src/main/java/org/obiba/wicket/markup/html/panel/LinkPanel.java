@@ -11,12 +11,12 @@ import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 
-
 public class LinkPanel extends Panel {
 
   private static final long serialVersionUID = -3959770015071789778L;
 
   private static final String LINK_ID = "link";
+
   private static final String LABEL_ID = "label";
 
   public LinkPanel(String id, Class<? extends Page> pageClass, PageParameters params, IModel labelModel) {
@@ -26,7 +26,8 @@ public class LinkPanel extends Panel {
     add(link);
   }
 
-  public LinkPanel(String id, IModel labelModel, Class<? extends Page> pageClass, String paramName, IModel paramValueModel) {
+  public LinkPanel(String id, IModel labelModel, Class<? extends Page> pageClass, String paramName,
+      IModel paramValueModel) {
     super(id, labelModel);
 
     PageParameters params = new PageParameters();
@@ -46,14 +47,16 @@ public class LinkPanel extends Panel {
   public LinkPanel(String id, final ILinkListener listener, IModel labelModel) {
     super(id, labelModel);
 
-    Link link = new Link(LINK_ID) { 
+    Link link = new Link(LINK_ID) {
 
       private static final long serialVersionUID = 1L;
 
       @Override
       public void onClick() {
         listener.onLinkClicked();
-      };
+      }
+
+      ;
     };
     link.add(makeLabelComponent(labelModel));
     add(link);
@@ -79,6 +82,5 @@ public class LinkPanel extends Panel {
     label.setRenderBodyOnly(true);
     return label;
   }
-
 
 }

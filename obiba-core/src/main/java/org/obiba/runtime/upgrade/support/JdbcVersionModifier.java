@@ -1,8 +1,8 @@
 /***********************************************************************************************************************
  * Copyright 2008(c) The OBiBa Consortium. All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under the terms of the GNU Public License v3.0.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  **********************************************************************************************************************/
@@ -38,7 +38,9 @@ public class JdbcVersionModifier implements VersionModifier, InitializingBean {
   public void setVersion(Version version) {
     this.version = version;
     jdbcTemplate.execute("delete from version");
-    jdbcTemplate.update("insert into version ( major, minor, micro, qualifier, version_string ) values (?,?,?,?,?)", new Object[] { version.getMajor(), version.getMinor(), version.getMicro(), version.getQualifier(), version.toString() });
+    jdbcTemplate.update("insert into version ( major, minor, micro, qualifier, version_string ) values (?,?,?,?,?)",
+        new Object[] { version.getMajor(), version.getMinor(), version.getMicro(), version.getQualifier(),
+            version.toString() });
   }
 
   public void setDatasource(DataSource datasource) {
@@ -57,13 +59,15 @@ public class JdbcVersionModifier implements VersionModifier, InitializingBean {
         String minor = versionInfo.get("minor").toString();
         String micro = versionInfo.get("micro").toString();
         String qualifier = versionInfo.get("qualifier").toString();
-        Version version = new Version(Integer.parseInt(major), Integer.parseInt(minor), Integer.parseInt(micro), qualifier);
+        Version version = new Version(Integer.parseInt(major), Integer.parseInt(minor), Integer.parseInt(micro),
+            qualifier);
 
         log.info("The current version is {} ", version.toString());
         setVersion(version);
       }
     } catch(DataAccessException couldNotRetrieveCurrentVersion) {
-      log.warn("Could not retrieve the current version.  This looks like a new installation of Onyx, so no upgrades are needed.");
+      log.warn(
+          "Could not retrieve the current version.  This looks like a new installation of Onyx, so no upgrades are needed.");
     }
 
   }

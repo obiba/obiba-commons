@@ -8,7 +8,6 @@ import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.WebSession;
-import org.apache.wicket.spring.SpringWebApplication;
 import org.obiba.wicket.application.ISpringWebApplication;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
@@ -17,10 +16,10 @@ import org.springframework.context.MessageSourceResolvable;
  * A model that represents a localized string obtained through Spring's l10n mechanism. Given a
  * {@code MessageSourceResolvable} this model will return the associated string using a call to
  * {@code MessageSource#getMessage(MessageSourceResolvable, Locale)}.
- * <p>
+ * <p/>
  * When not specified, the {@code MessageSource} instance defaults to the {@code ApplicationContext} which is obtained
  * through the {@code ISpringContextLocator}.
- * <p>
+ * <p/>
  * When not specified, the locale model uses the current {@code WebSession}'s locale.
  */
 public class MessageSourceResolvableStringModel extends AbstractReadOnlyModel {
@@ -33,12 +32,14 @@ public class MessageSourceResolvableStringModel extends AbstractReadOnlyModel {
 
   private IModel messageSourceResolvableModel;
 
-  public MessageSourceResolvableStringModel(MessageSource messageSource, IModel messageSourceResolvableModel, IModel localeModel) {
+  public MessageSourceResolvableStringModel(MessageSource messageSource, IModel messageSourceResolvableModel,
+      IModel localeModel) {
     this.messageSource = messageSource;
     this.messageSourceResolvableModel = messageSourceResolvableModel;
     this.localeModel = localeModel;
 
-    if(this.messageSourceResolvableModel == null) throw new IllegalArgumentException("MessageSourceResolvableModel cannot be null");
+    if(this.messageSourceResolvableModel == null)
+      throw new IllegalArgumentException("MessageSourceResolvableModel cannot be null");
   }
 
   public MessageSourceResolvableStringModel(MessageSource messageSource, IModel messageSourceResolvableModel) {
@@ -67,7 +68,8 @@ public class MessageSourceResolvableStringModel extends AbstractReadOnlyModel {
 
   @Override
   public Object getObject() {
-    return getMessageSource().getMessage((MessageSourceResolvable) messageSourceResolvableModel.getObject(), getLocale());
+    return getMessageSource()
+        .getMessage((MessageSourceResolvable) messageSourceResolvableModel.getObject(), getLocale());
   }
 
   private Locale getLocale() {
@@ -86,7 +88,8 @@ public class MessageSourceResolvableStringModel extends AbstractReadOnlyModel {
       return ((ISpringWebApplication) application).getSpringContextLocator().getSpringContext();
     }
 
-    throw new IllegalStateException("Cannot find MessageSource. Application must either implement ISpringWebApplication or extend SpringWebApplication.");
+    throw new IllegalStateException(
+        "Cannot find MessageSource. Application must either implement ISpringWebApplication or extend SpringWebApplication.");
   }
 
 }

@@ -4,16 +4,16 @@ import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.IModel;
 import org.obiba.wicket.JavascriptEventConfirmation;
 
-
 /**
  * A link with a confirm message.
- * @author ymarcon
  *
+ * @author ymarcon
  */
 public abstract class ConfirmLink extends Link {
 
   /**
    * Constructor with confirmation message.
+   *
    * @param id
    * @param message
    */
@@ -24,6 +24,7 @@ public abstract class ConfirmLink extends Link {
 
   /**
    * Constructor with confirmation message and link model.
+   *
    * @param id
    * @param message
    * @param model

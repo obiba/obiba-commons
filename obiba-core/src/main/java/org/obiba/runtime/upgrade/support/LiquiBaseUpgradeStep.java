@@ -1,8 +1,8 @@
 /***********************************************************************************************************************
  * Copyright 2008(c) The OBiBa Consortium. All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under the terms of the GNU Public License v3.0.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  **********************************************************************************************************************/
@@ -15,6 +15,9 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.obiba.runtime.Version;
+import org.obiba.runtime.upgrade.AbstractUpgradeStep;
+
 import liquibase.change.AddNotNullConstraintChange;
 import liquibase.change.Change;
 import liquibase.change.DropColumnChange;
@@ -24,9 +27,6 @@ import liquibase.database.sql.visitor.SqlVisitor;
 import liquibase.database.structure.Column;
 import liquibase.database.structure.DatabaseSnapshot;
 import liquibase.exception.JDBCException;
-
-import org.obiba.runtime.Version;
-import org.obiba.runtime.upgrade.AbstractUpgradeStep;
 
 public abstract class LiquiBaseUpgradeStep extends AbstractUpgradeStep {
   //
@@ -64,13 +64,14 @@ public abstract class LiquiBaseUpgradeStep extends AbstractUpgradeStep {
 
   /**
    * Creates a "change" consisting of the adding of not-null constraints for the specified table column.
-   * 
+   *
    * @param databaseSnapshot database snapshot
    * @param table table
    * @param column column
    * @return not-null constraint change
    */
-  public AddNotNullConstraintChange createAddNotNullConstraintChange(DatabaseSnapshot databaseSnapshot, String table, String column) {
+  public AddNotNullConstraintChange createAddNotNullConstraintChange(DatabaseSnapshot databaseSnapshot, String table,
+      String column) {
     AddNotNullConstraintChange change = new AddNotNullConstraintChange();
     change.setTableName(table);
     change.setColumnName(column);
@@ -85,7 +86,7 @@ public abstract class LiquiBaseUpgradeStep extends AbstractUpgradeStep {
 
   /**
    * Creates a "change" consisting of dropping the specified table column.
-   * 
+   *
    * @param databaseSnapshot database snapshot
    * @param table table
    * @param column column
@@ -95,10 +96,10 @@ public abstract class LiquiBaseUpgradeStep extends AbstractUpgradeStep {
     DropColumnChange change = new DropColumnChange();
     change.setTableName(table);
     change.setColumnName(column);
-    
+
     return change;
   }
-  
+
   public Database getDatabase() {
     // Get a connection to the dataSource.
     Connection connection = null;
@@ -126,7 +127,7 @@ public abstract class LiquiBaseUpgradeStep extends AbstractUpgradeStep {
 
   /**
    * Returns the list of schema changes to be applied.
-   * 
+   *
    * @return schema changes to be applied
    */
   protected abstract List<Change> getChanges();

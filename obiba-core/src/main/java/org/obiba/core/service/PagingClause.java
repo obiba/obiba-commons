@@ -3,12 +3,13 @@ package org.obiba.core.service;
 public class PagingClause {
 
   private int offset = -1;
+
   private int limit = -1;
 
   public PagingClause(int offset) {
     this(offset, 100);
   }
-  
+
   public PagingClause(int offset, int limit) {
     this.offset = offset;
     this.limit = limit;
@@ -40,6 +41,6 @@ public class PagingClause {
 
   @Override
   public String toString() {
-    return "{"+offset+","+limit+"}";
+    return "{" + offset + "," + limit + "}";
   }
 }

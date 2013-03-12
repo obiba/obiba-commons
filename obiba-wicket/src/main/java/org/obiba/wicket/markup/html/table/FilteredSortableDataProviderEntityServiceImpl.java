@@ -9,7 +9,6 @@ import org.obiba.core.service.EntityQueryService;
 import org.obiba.core.service.PagingClause;
 import org.obiba.core.service.SortingClause;
 
-
 /**
  * Uses an instance of {@link EntityService} and a template entity to filter records for {@link SortableDataProvider} implementation.
  * <p/>
@@ -22,14 +21,14 @@ public class FilteredSortableDataProviderEntityServiceImpl<T> extends SortableDa
   private T template;
 
   public FilteredSortableDataProviderEntityServiceImpl(EntityQueryService queryService, T template) {
-    super(queryService, (Class<T>)template.getClass());
+    super(queryService, (Class<T>) template.getClass());
     this.template = template;
   }
 
   public Iterator<T> iterator(int first, int count) {
     SortParam sp = getSort();
     SortingClause sort = null;
-    if (sp != null) {
+    if(sp != null) {
       sort = SortingClause.create(sp.getProperty(), sp.isAscending());
     }
     return getList(PagingClause.create(first, count), sort).iterator();

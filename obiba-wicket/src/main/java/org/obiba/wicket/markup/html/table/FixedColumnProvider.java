@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.obiba.wicket.markup.html.table;
 

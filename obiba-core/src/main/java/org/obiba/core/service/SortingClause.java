@@ -17,7 +17,7 @@ final public class SortingClause {
 
   /**
    * Creates an ascending <code>SortingClause</code> on the specified field.
-   * 
+   *
    * @param field the field to sort on.
    */
   public SortingClause(String field) {
@@ -26,6 +26,7 @@ final public class SortingClause {
 
   /**
    * Creates a <code>SortingClause</code> on the specified field in the specified direction.
+   *
    * @param field the field to sort on.
    * @param asc the direction to sort in.
    */
@@ -36,6 +37,7 @@ final public class SortingClause {
 
   /**
    * Creates a <code>SortingClause</code> on the specified field in the specified direction.
+   *
    * @param field the field to sort on.
    * @param asc the direction to sort in.
    */
@@ -45,7 +47,7 @@ final public class SortingClause {
 
   /**
    * Creates an ascending <code>SortingClause</code> on the specified field.
-   * 
+   *
    * @param field the field to sort on.
    */
   static public SortingClause create(String field) {

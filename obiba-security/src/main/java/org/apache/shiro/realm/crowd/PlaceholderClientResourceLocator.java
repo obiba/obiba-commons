@@ -1,7 +1,8 @@
 package org.apache.shiro.realm.crowd;
 
-import com.atlassian.crowd.service.client.ClientResourceLocator;
 import org.springframework.beans.factory.InitializingBean;
+
+import com.atlassian.crowd.service.client.ClientResourceLocator;
 
 /**
  *

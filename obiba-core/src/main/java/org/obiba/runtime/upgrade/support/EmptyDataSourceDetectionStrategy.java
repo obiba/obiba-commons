@@ -29,10 +29,10 @@ public class EmptyDataSourceDetectionStrategy implements NewInstallationDetectio
 
   @Override
   public boolean isNewInstallation(VersionProvider runtimeVersionProvider) {
-    Boolean result = (Boolean)jdbcTemplate.execute(new ConnectionCallback() {
+    Boolean result = (Boolean) jdbcTemplate.execute(new ConnectionCallback() {
       @Override
       public Object doInConnection(Connection con) throws SQLException, DataAccessException {
-        String[] types = new String[] {"TABLE"};
+        String[] types = new String[] { "TABLE" };
         ResultSet tables = con.getMetaData().getTables(null, null, null, types);
         try {
           if(!tables.next()) {

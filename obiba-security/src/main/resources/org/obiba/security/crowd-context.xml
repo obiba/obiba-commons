@@ -6,30 +6,30 @@
   <!-- Modified to support placeholders ${crowd.properties.path} and ${crowd-ehcache.xml.path} -->
 
   <bean id="crowdResourceLocator" class="org.apache.shiro.realm.crowd.PlaceholderClientResourceLocator">
-    <constructor-arg value="crowd.properties" />
-    <property name="crowdPropertiesPath" value="${crowd.properties.path}" />
+    <constructor-arg value="crowd.properties"/>
+    <property name="crowdPropertiesPath" value="${crowd.properties.path}"/>
   </bean>
 
   <bean id="crowdClientProperties" class="com.atlassian.crowd.service.soap.client.SoapClientPropertiesImpl"
       factory-method="newInstanceFromResourceLocator">
-    <constructor-arg type="com.atlassian.crowd.service.client.ResourceLocator" ref="crowdResourceLocator" />
+    <constructor-arg type="com.atlassian.crowd.service.client.ResourceLocator" ref="crowdResourceLocator"/>
   </bean>
 
   <bean id="crowdSecurityServerClient" class="com.atlassian.crowd.service.soap.client.SecurityServerClientImpl">
-    <constructor-arg ref="crowdClientProperties" />
+    <constructor-arg ref="crowdClientProperties"/>
   </bean>
 
   <bean id="crowdAuthenticationManager" class="com.atlassian.crowd.service.cache.CacheAwareAuthenticationManager">
-    <constructor-arg index="0" ref="crowdSecurityServerClient" />
-    <constructor-arg index="1" ref="crowdUserManager" />
+    <constructor-arg index="0" ref="crowdSecurityServerClient"/>
+    <constructor-arg index="1" ref="crowdUserManager"/>
   </bean>
 
   <bean id="crowdHttpAuthenticator" class="com.atlassian.crowd.integration.http.HttpAuthenticatorImpl">
-    <constructor-arg ref="crowdAuthenticationManager" />
+    <constructor-arg ref="crowdAuthenticationManager"/>
   </bean>
 
   <bean id="crowdVerifyTokenFilter" class="com.atlassian.crowd.integration.http.VerifyTokenFilter" lazy-init="true">
-    <constructor-arg ref="crowdHttpAuthenticator" />
+    <constructor-arg ref="crowdHttpAuthenticator"/>
   </bean>
 
   <!--  Appfuse 2.0.2 + Spring Security 2.0.4 overrides the lazy-init and tries to load this, causing a NoClassDefFound error for xwork.
@@ -38,28 +38,28 @@
       </bean>
   -->
   <bean id="crowdCacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
-    <property name="configLocation" value="${crowd-ehcache.xml.path}" />
+    <property name="configLocation" value="${crowd-ehcache.xml.path}"/>
   </bean>
 
   <bean id="crowdClientCache" class="com.atlassian.crowd.service.cache.CacheImpl">
-    <constructor-arg type="net.sf.ehcache.CacheManager" ref="crowdCacheManager" />
+    <constructor-arg type="net.sf.ehcache.CacheManager" ref="crowdCacheManager"/>
   </bean>
 
   <bean id="crowdUserManager" class="com.atlassian.crowd.service.cache.CachingUserManager">
-    <constructor-arg index="0" ref="crowdSecurityServerClient" />
-    <constructor-arg index="1" ref="crowdClientCache" />
+    <constructor-arg index="0" ref="crowdSecurityServerClient"/>
+    <constructor-arg index="1" ref="crowdClientCache"/>
   </bean>
 
   <bean id="crowdGroupMembershipManager" class="com.atlassian.crowd.service.cache.CachingGroupMembershipManager">
-    <constructor-arg index="0" ref="crowdSecurityServerClient" />
-    <constructor-arg index="1" ref="crowdUserManager" />
-    <constructor-arg index="2" ref="crowdGroupManager" />
-    <constructor-arg index="3" ref="crowdClientCache" />
+    <constructor-arg index="0" ref="crowdSecurityServerClient"/>
+    <constructor-arg index="1" ref="crowdUserManager"/>
+    <constructor-arg index="2" ref="crowdGroupManager"/>
+    <constructor-arg index="3" ref="crowdClientCache"/>
   </bean>
 
   <bean id="crowdGroupManager" class="com.atlassian.crowd.service.cache.CachingGroupManager">
-    <constructor-arg index="0" ref="crowdSecurityServerClient" />
-    <constructor-arg index="1" ref="crowdClientCache" />
+    <constructor-arg index="0" ref="crowdSecurityServerClient"/>
+    <constructor-arg index="1" ref="crowdClientCache"/>
   </bean>
 
 </beans>

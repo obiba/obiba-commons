@@ -5,14 +5,13 @@ import org.obiba.core.service.EntityQueryService;
 /**
  * Validator class to extend for performing object validation on a specific class, with PersistenceManager
  * for performing persistence checks.
- * 
- * @author ymarcon
  *
+ * @author ymarcon
  */
 public abstract class AbstractPersistenceAwareClassValidator extends AbstractClassValidator {
 
   protected EntityQueryService entityQueryService;
-  
+
   public EntityQueryService getEntityQueryService() {
     return entityQueryService;
   }

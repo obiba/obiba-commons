@@ -1,8 +1,8 @@
 /***********************************************************************************************************************
  * Copyright 2008(c) The OBiBa Consortium. All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under the terms of the GNU Public License v3.0.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  **********************************************************************************************************************/
@@ -31,7 +31,8 @@ public class MethodInvokingUpgradeStep extends AbstractUpgradeStep {
         }
       }
     } catch(Exception ex) {
-      throw new RuntimeException("Could not invoke method '" + methodName + "' of object of type " + clazz.getSimpleName(), ex);
+      throw new RuntimeException(
+          "Could not invoke method '" + methodName + "' of object of type " + clazz.getSimpleName(), ex);
     }
   }
 

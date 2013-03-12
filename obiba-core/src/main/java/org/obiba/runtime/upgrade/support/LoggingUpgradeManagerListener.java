@@ -29,7 +29,7 @@ public class LoggingUpgradeManagerListener extends AbstractUpgradeManagerListene
     log.error("Installation Step description: '{}'.", step.getDescription());
     log.error("Exception:", e);
   }
-  
+
   @Override
   public void onBeforeStep(UpgradeStep step) {
     super.onBeforeStep(step);

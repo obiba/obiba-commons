@@ -8,7 +8,6 @@ import org.obiba.wicket.application.WebApplicationStartupListener;
 /**
  * Implements {@link WebApplicationStartupListener} to allow seeding a database with a list of {@link DatabaseSeed}
  * instances.
- * 
  */
 public class DatabaseSeedWebApplicationStartupListener implements WebApplicationStartupListener {
 

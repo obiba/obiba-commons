@@ -27,9 +27,8 @@ import org.apache.wicket.model.StringResourceModel;
 
 /**
  * An implementation of ajaxified edit-in-place label {@link AbstractAjaxEditableLabel}, with ok/cancel buttons.
- *  
- * @author ymarcon
  *
+ * @author ymarcon
  */
 public class AjaxEditableConfirmableLabel extends AjaxEditableLabel {
 
@@ -41,7 +40,7 @@ public class AjaxEditableConfirmableLabel extends AjaxEditableLabel {
 
   /**
    * Constructor
-   * 
+   *
    * @param id
    */
   public AjaxEditableConfirmableLabel(String id) {
@@ -51,7 +50,7 @@ public class AjaxEditableConfirmableLabel extends AjaxEditableLabel {
 
   /**
    * Constructor
-   * 
+   *
    * @param id
    * @param model
    */
@@ -79,9 +78,8 @@ public class AjaxEditableConfirmableLabel extends AjaxEditableLabel {
   /**
    * Invoked when the label is in edit mode, and received a cancel event. Typically, nothing
    * should be done here.
-   * 
-   * @param target
-   *            the ajax request target
+   *
+   * @param target the ajax request target
    */
   protected void onCancel(AjaxRequestTarget target) {
     ok.setVisible(false);
@@ -91,9 +89,8 @@ public class AjaxEditableConfirmableLabel extends AjaxEditableLabel {
 
   /**
    * Called when the label is clicked and the component is put in edit mode.
-   * 
-   * @param target
-   *            Ajax target
+   *
+   * @param target Ajax target
    */
   protected void onEdit(AjaxRequestTarget target) {
     ok.setVisible(true);
@@ -105,9 +102,8 @@ public class AjaxEditableConfirmableLabel extends AjaxEditableLabel {
    * Invoked when the editor was succesfully updated. Use this method e.g. to persist the changed
    * value. This implemention displays the label and clears any window status that might have been
    * set in onError.
-   * 
-   * @param target
-   *            The ajax request target
+   *
+   * @param target The ajax request target
    */
   protected void onSubmit(AjaxRequestTarget target) {
     ok.setVisible(false);
@@ -129,14 +125,15 @@ public class AjaxEditableConfirmableLabel extends AjaxEditableLabel {
     return new EditorAjaxBehavior() {
       @Override
       protected void onComponentTag(ComponentTag tag) {
-        final String saveCall = "{" + generateCallbackScript("wicketAjaxGet('" + getCallbackUrl() 
-            + "&save=true&'+this.name+'='+wicketEncode(this.value)") + "; return false;}";
+        final String saveCall = "{" + generateCallbackScript(
+            "wicketAjaxGet('" + getCallbackUrl() + "&save=true&'+this.name+'='+wicketEncode(this.value)") +
+            "; return false;}";
 
-        final String cancelCall = "{" + generateCallbackScript("wicketAjaxGet('" + getCallbackUrl() 
-            + "&save=false'") + "; return false;}";
+        final String cancelCall = "{" + generateCallbackScript("wicketAjaxGet('" + getCallbackUrl() + "&save=false'") +
+            "; return false;}";
 
-        final String keypress = "var kc=wicketKeyCode(event); if (kc==27) " + cancelCall 
-            + " else if (kc!=13) { return true; } else " + saveCall;
+        final String keypress = "var kc=wicketKeyCode(event); if (kc==27) " + cancelCall +
+            " else if (kc!=13) { return true; } else " + saveCall;
 
         tag.put("onkeypress", keypress);
       }
@@ -158,18 +155,15 @@ public class AjaxEditableConfirmableLabel extends AjaxEditableLabel {
     }
 
     protected void onComponentTag(ComponentTag tag) {
-      final String saveCall = "{"
-          + generateCallbackScript("wicketAjaxGet('" + getCallbackUrl() 
-              + "&save=true&'+Wicket.$('" + getEditor().getMarkupId() + "').name+'='+wicketEncode(Wicket.$('" + getEditor().getMarkupId() + "').value)")
-          + "; return false;}";
+      final String saveCall = "{" + generateCallbackScript(
+          "wicketAjaxGet('" + getCallbackUrl() + "&save=true&'+Wicket.$('" + getEditor().getMarkupId() +
+              "').name+'='+wicketEncode(Wicket.$('" + getEditor().getMarkupId() + "').value)") + "; return false;}";
 
-      final String cancelCall = "{" + generateCallbackScript("wicketAjaxGet('" + getCallbackUrl() 
-          + "&save=false'") + "; return false;}";
+      final String cancelCall = "{" + generateCallbackScript("wicketAjaxGet('" + getCallbackUrl() + "&save=false'") +
+          "; return false;}";
 
-      if (ok)
-        tag.put("onclick", saveCall);
-      else
-        tag.put("onclick", cancelCall);
+      if(ok) tag.put("onclick", saveCall);
+      else tag.put("onclick", cancelCall);
     }
   }
 }

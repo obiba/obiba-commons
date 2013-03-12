@@ -21,18 +21,22 @@ public class AjaxDataTable<T> extends DataTable<T> {
 
   private IModel titleModel;
 
-  public AjaxDataTable(String id, IModel titleModel, final List<IColumn<T>> columns, ISortableDataProvider<T> dataProvider, Component commands, int rowsPerPage) {
+  public AjaxDataTable(String id, IModel titleModel, final List<IColumn<T>> columns,
+      ISortableDataProvider<T> dataProvider, Component commands, int rowsPerPage) {
     this(id, titleModel, (IColumn[]) columns.toArray(new IColumn[columns.size()]), dataProvider, commands, rowsPerPage);
   }
 
-  public AjaxDataTable(String id, IModel titleModel, final IColumn<T>[] columns, ISortableDataProvider<T> dataProvider,  Component commands, int rowsPerPage) {
+  public AjaxDataTable(String id, IModel titleModel, final IColumn<T>[] columns, ISortableDataProvider<T> dataProvider,
+      Component commands, int rowsPerPage) {
     super(id, columns, dataProvider, rowsPerPage);
     setOutputMarkupId(true);
     setVersioned(false);
-    
+
     this.titleModel = titleModel;
 
-    addTopToolbar(new TableTitleToolbar(this, titleModel, new StringResourceModel("element.${number}", this, new Model(this)), commands));
+    addTopToolbar(
+        new TableTitleToolbar(this, titleModel, new StringResourceModel("element.${number}", this, new Model(this)),
+            commands));
     addTopToolbar(new AjaxNavigationToolbar(this));
     addTopToolbar(new AjaxFallbackHeadersToolbar(this, dataProvider));
     addBottomToolbar(new NoRecordsToolbar(this));

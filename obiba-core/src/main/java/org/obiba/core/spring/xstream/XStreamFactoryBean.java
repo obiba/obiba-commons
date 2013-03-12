@@ -14,15 +14,15 @@ import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
 
 /**
  * {@link FactoryBean} implementation for creating and configuring {@link XStream} instances.
- * 
- * <p>
+ * <p/>
+ * <p/>
  * By default, this factory will create instances capable of injecting spring beans in objects unmarshaled by the
  * {@code XStream} instance. This behaviour can be deactivated through the {@code #injecting} property.
  */
 public class XStreamFactoryBean implements FactoryBean, ApplicationContextAware {
 
   private boolean injecting = true;
-  
+
   private int autowireType = -1;
 
   private ApplicationContext applicationContext;
@@ -40,7 +40,7 @@ public class XStreamFactoryBean implements FactoryBean, ApplicationContextAware 
   public void setInjecting(boolean injecting) {
     this.injecting = injecting;
   }
-  
+
   public void setAutowireType(int autowireType) {
     this.autowireType = autowireType;
   }
@@ -77,7 +77,8 @@ public class XStreamFactoryBean implements FactoryBean, ApplicationContextAware 
   protected ReflectionProvider doCreateReflectionProvider() {
     ReflectionProvider provider = new XStream().getReflectionProvider();
     if(injecting) {
-      InjectingReflectionProviderWrapper injecting = new InjectingReflectionProviderWrapper(provider, applicationContext);
+      InjectingReflectionProviderWrapper injecting = new InjectingReflectionProviderWrapper(provider,
+          applicationContext);
       if(autowireType > -1) {
         injecting.setAutowireType(autowireType);
       }

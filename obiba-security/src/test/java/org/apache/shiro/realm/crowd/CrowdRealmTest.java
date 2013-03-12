@@ -21,7 +21,6 @@ package org.apache.shiro.realm.crowd;
 import java.util.Arrays;
 import java.util.EnumSet;
 
-import com.atlassian.crowd.service.soap.client.SecurityServerClient;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -29,11 +28,12 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.atlassian.crowd.service.soap.client.SecurityServerClient;
+
 import static org.easymock.EasyMock.createStrictMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -73,7 +73,7 @@ public class CrowdRealmTest {
 
     SecurityServerClient client = createStrictMock(SecurityServerClient.class);
     expect(client.authenticatePrincipalSimple("yoko", "barbie")).andReturn("UNUSED");
-    expect(client.findRoleMemberships("yoko")).andReturn(new String[] {"big_sister", "table_setter", "dog_walker"});
+    expect(client.findRoleMemberships("yoko")).andReturn(new String[] { "big_sister", "table_setter", "dog_walker" });
     replay(client);
 
     CrowdRealm realm = new CrowdRealm(client);
@@ -94,7 +94,7 @@ public class CrowdRealmTest {
 
     SecurityServerClient client = createStrictMock(SecurityServerClient.class);
     expect(client.authenticatePrincipalSimple("yoko", "barbie")).andReturn("UNUSED");
-    expect(client.findRoleMemberships("yoko")).andReturn(new String[] {"big_sister", "table_setter", "dog_walker"});
+    expect(client.findRoleMemberships("yoko")).andReturn(new String[] { "big_sister", "table_setter", "dog_walker" });
     replay(client);
 
     CrowdRealm realm = new CrowdRealm(client);
@@ -116,7 +116,7 @@ public class CrowdRealmTest {
 
     SecurityServerClient client = createStrictMock(SecurityServerClient.class);
     expect(client.authenticatePrincipalSimple("yoko", "barbie")).andReturn("UNUSED");
-    expect(client.findGroupMemberships("yoko")).andReturn(new String[] {"girls", "naughty"});
+    expect(client.findGroupMemberships("yoko")).andReturn(new String[] { "girls", "naughty" });
     replay(client);
 
     CrowdRealm realm = new CrowdRealm(client);
@@ -137,8 +137,8 @@ public class CrowdRealmTest {
 
     SecurityServerClient client = createStrictMock(SecurityServerClient.class);
     expect(client.authenticatePrincipalSimple("yoko", "barbie")).andReturn("UNUSED");
-    expect(client.findRoleMemberships("yoko")).andReturn(new String[] {"big_sister", "table_setter", "dog_walker"});
-    expect(client.findGroupMemberships("yoko")).andReturn(new String[] {"girls", "naughty"});
+    expect(client.findRoleMemberships("yoko")).andReturn(new String[] { "big_sister", "table_setter", "dog_walker" });
+    expect(client.findGroupMemberships("yoko")).andReturn(new String[] { "girls", "naughty" });
     replay(client);
 
     CrowdRealm realm = new CrowdRealm(client);

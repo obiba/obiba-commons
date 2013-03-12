@@ -8,10 +8,9 @@ public class VersionPropertyEditor extends PropertyEditorSupport {
   //
   // PropertyEditorSupport Methods
   //
-  
+
   @Override
-  public void setAsText(String versionString)
-  {
+  public void setAsText(String versionString) {
     Version version = new Version(versionString);
     setValue(version);
   }

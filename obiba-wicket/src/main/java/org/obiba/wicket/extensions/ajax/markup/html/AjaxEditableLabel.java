@@ -33,11 +33,11 @@ import org.apache.wicket.validation.IValidator;
  * <li>{@link #onError(AjaxRequestTarget)} is called when in edit mode, the user submitted new
  * content, but that content did not validate. Get the current input by calling
  * {@link FormComponent#getInput()} on {@link #getEditor()}, and the error message by calling:
- * 
+ * <p/>
  * <pre>
  * String errorMessage = editor.getFeedbackMessage().getMessage();
  * </pre>
- * 
+ * <p/>
  * The default implementation of this method displays the error message in
  * <code>window.status</code>, redisplays the editor, selects the editor's content and sets the
  * focus on it.
@@ -46,20 +46,24 @@ import org.apache.wicket.validation.IValidator;
  * without any further action.</li>
  * </ul>
  * </p>
- * 
+ *
  * @author Igor Vaynberg (ivaynberg)
  * @author Eelco Hillenius
  */
 public class AjaxEditableLabel<T> extends Panel {
 
   private static final long serialVersionUID = 1L;
-  
+
   private int editorSize = -1;
 
-  /** label component. */
+  /**
+   * label component.
+   */
   private Component label;
 
-  /** editor component. */
+  /**
+   * editor component.
+   */
   private FormComponent<T> editor;
 
   public AjaxEditableLabel(String id) {
@@ -75,11 +79,10 @@ public class AjaxEditableLabel<T> extends Panel {
   /**
    * Adds a validator to this form component. A model must be available for this component before
    * Validators can be added. Either add this Component to its parent (already having a Model), or
-   * provide one before this call via constructor {@link #AjaxEditableLabel(String,IModel)} or
+   * provide one before this call via constructor {@link #AjaxEditableLabel(String, IModel)} or
    * {@link #setModel(IModel)}.
-   * 
-   * @param validator
-   *            The validator
+   *
+   * @param validator The validator
    * @return This
    */
   public final AjaxEditableLabel<T> add(IValidator<T> validator) {
@@ -90,7 +93,7 @@ public class AjaxEditableLabel<T> extends Panel {
   /**
    * The value will be made available to the validator property by means of ${label}. It does not
    * have any specific meaning to FormComponent itself.
-   * 
+   *
    * @param labelModel
    * @return this for chaining
    */
@@ -111,7 +114,7 @@ public class AjaxEditableLabel<T> extends Panel {
 
   /**
    * Sets the required flag
-   * 
+   *
    * @param required
    * @return this for chaining
    */
@@ -123,7 +126,7 @@ public class AjaxEditableLabel<T> extends Panel {
   /**
    * Sets the type that will be used when updating the model for this component. If no type is
    * specified String type is assumed.
-   * 
+   *
    * @param type
    * @return this for chaining
    */
@@ -134,6 +137,7 @@ public class AjaxEditableLabel<T> extends Panel {
 
   /**
    * Set editor size.
+   *
    * @param editorSize
    */
   public void setEditorSize(int editorSize) {
@@ -142,6 +146,7 @@ public class AjaxEditableLabel<T> extends Panel {
 
   /**
    * Get editor size.
+   *
    * @return
    */
   protected int getEditorSize() {
@@ -150,13 +155,10 @@ public class AjaxEditableLabel<T> extends Panel {
 
   /**
    * Create a new form component instance to serve as editor.
-   * 
-   * @param parent
-   *            The parent component
-   * @param componentId
-   *            Id that should be used by the component
-   * @param model
-   *            The model
+   *
+   * @param parent The parent component
+   * @param componentId Id that should be used by the component
+   * @param model The model
    * @return The editor
    */
   protected Component newLabel(MarkupContainer parent, String componentId, IModel<?> model) {
@@ -165,7 +167,7 @@ public class AjaxEditableLabel<T> extends Panel {
       private static final long serialVersionUID = 1L;
 
       protected void onComponentTagBody(MarkupStream markupStream, ComponentTag openTag) {
-        if (getDefaultModelObject() == null) {
+        if(getDefaultModelObject() == null) {
           replaceComponentTagBody(markupStream, openTag, defaultNullLabel());
         } else {
           super.onComponentTagBody(markupStream, openTag);
@@ -179,13 +181,10 @@ public class AjaxEditableLabel<T> extends Panel {
 
   /**
    * Create a new form component instance to serve as editor.
-   * 
-   * @param parent
-   *            The parent component
-   * @param componentId
-   *            Id that should be used by the component
-   * @param model
-   *            The model
+   *
+   * @param parent The parent component
+   * @param componentId Id that should be used by the component
+   * @param model The model
    * @return The editor
    */
   protected FormComponent<T> newEditor(MarkupContainer parent, String componentId, IModel<T> model) {
@@ -195,7 +194,7 @@ public class AjaxEditableLabel<T> extends Panel {
       @Override
       protected void onComponentTag(ComponentTag tag) {
         super.onComponentTag(tag);
-        if (editorSize > 0) tag.getAttributes().put("size", editorSize);
+        if(editorSize > 0) tag.getAttributes().put("size", editorSize);
       }
     };
     editor.setOutputMarkupId(true);
@@ -206,7 +205,7 @@ public class AjaxEditableLabel<T> extends Panel {
 
   /**
    * Gets the label component.
-   * 
+   *
    * @return The label component
    */
   protected final Component getLabel() {
@@ -219,11 +218,11 @@ public class AjaxEditableLabel<T> extends Panel {
 
   /**
    * Gets the editor component.
-   * 
+   *
    * @return The editor component
    */
   protected final FormComponent<T> getEditor() {
-    if (editor == null) {
+    if(editor == null) {
       initLabelAndEditor(getParentModel());
     }
     return editor;
@@ -235,9 +234,8 @@ public class AjaxEditableLabel<T> extends Panel {
 
   /**
    * Called when the label is clicked and the component is put in edit mode.
-   * 
-   * @param target
-   *            Ajax target
+   *
+   * @param target Ajax target
    */
   protected void onEdit(AjaxRequestTarget target) {
     label.setVisible(false);
@@ -245,22 +243,21 @@ public class AjaxEditableLabel<T> extends Panel {
     target.addComponent(this);
     // put focus on the textfield and stupid explorer hack to move the
     // caret to the end
-    target.appendJavascript("{ var el=wicketGet('" + editor.getMarkupId() + "');" 
-        + "   if (el.createTextRange) { " + "     var v = el.value; var r = el.createTextRange(); "
-        + "     r.moveStart('character', v.length); r.select(); } }");
+    target.appendJavascript("{ var el=wicketGet('" + editor.getMarkupId() + "');" + "   if (el.createTextRange) { " +
+        "     var v = el.value; var r = el.createTextRange(); " +
+        "     r.moveStart('character', v.length); r.select(); } }");
     target.focusComponent(editor);
   }
 
   /**
    * Invoked when the label is in edit mode, received a new input, but that input didn't validate
-   * 
-   * @param target
-   *            the ajax request target
+   *
+   * @param target the ajax request target
    */
   protected void onError(AjaxRequestTarget target) {
     Serializable errorMessage = editor.getFeedbackMessage().getMessage();
-    if (errorMessage instanceof String) {
-      target.appendJavascript("window.status='" + JavascriptUtils.escapeQuotes((String)errorMessage) + "';");
+    if(errorMessage instanceof String) {
+      target.appendJavascript("window.status='" + JavascriptUtils.escapeQuotes((String) errorMessage) + "';");
     }
     String editorMarkupId = editor.getMarkupId();
     target.appendJavascript(editorMarkupId + ".select();");
@@ -272,9 +269,8 @@ public class AjaxEditableLabel<T> extends Panel {
    * Invoked when the editor was succesfully updated. Use this method e.g. to persist the changed
    * value. This implemention displays the label and clears any window status that might have been
    * set in onError.
-   * 
-   * @param target
-   *            The ajax request target
+   *
+   * @param target The ajax request target
    */
   protected void onSubmit(AjaxRequestTarget target) {
     label.setVisible(true);
@@ -296,12 +292,15 @@ public class AjaxEditableLabel<T> extends Panel {
     IModel<T> m = (IModel<T>) getDefaultModel();
 
     // check that a model was found
-    if (m == null) {
+    if(m == null) {
       Component parent = getParent();
-      String msg = "No model found for this component, either pass one explicitly or " + "make sure an inheritable model is available.";
-      if (parent == null) {
-        msg += " This component is not added to a parent yet, so if this component " + "is supposed to use the model of the parent (e.g. when it uses a "
-            + "compound property model), add it first before further configuring " + "the component calling methods like e.g. setType and addValidator.";
+      String msg = "No model found for this component, either pass one explicitly or " +
+          "make sure an inheritable model is available.";
+      if(parent == null) {
+        msg += " This component is not added to a parent yet, so if this component " +
+            "is supposed to use the model of the parent (e.g. when it uses a " +
+            "compound property model), add it first before further configuring " +
+            "the component calling methods like e.g. setType and addValidator.";
       }
       throw new IllegalStateException(msg);
     }
@@ -314,7 +313,7 @@ public class AjaxEditableLabel<T> extends Panel {
   protected void onBeforeRender() {
     super.onBeforeRender();
     // lazily add label and editor
-    if (editor == null) {
+    if(editor == null) {
       initLabelAndEditor(getParentModel());
     }
   }
@@ -322,9 +321,8 @@ public class AjaxEditableLabel<T> extends Panel {
   /**
    * Invoked when the label is in edit mode, and received a cancel event. Typically, nothing
    * should be done here.
-   * 
-   * @param target
-   *            the ajax request target
+   *
+   * @param target the ajax request target
    */
   protected void onCancel(AjaxRequestTarget target) {
     label.setVisible(true);
@@ -335,7 +333,7 @@ public class AjaxEditableLabel<T> extends Panel {
   /**
    * Override this to display a different value when the model object is null. Default is
    * <code>...</code>
-   * 
+   *
    * @return The string which should be displayed when the model object is null.
    */
   protected String defaultNullLabel() {
@@ -344,9 +342,8 @@ public class AjaxEditableLabel<T> extends Panel {
 
   /**
    * Lazy initialization of the label and editor components and set tempModel to null.
-   * 
-   * @param model
-   *            The model for the label and editor
+   *
+   * @param model The model for the label and editor
    */
   protected void initLabelAndEditor(IModel<T> model) {
     setEditor(newEditor(this, "editor", model));
@@ -357,6 +354,7 @@ public class AjaxEditableLabel<T> extends Panel {
 
   /**
    * The editor behavior, to be overridden if default editor behavior is to changed.
+   *
    * @return
    */
   protected IBehavior newEditorAjaxBehavior() {
@@ -365,7 +363,6 @@ public class AjaxEditableLabel<T> extends Panel {
 
   /**
    * Default editor behavior.
-   *
    */
   protected class EditorAjaxBehavior extends AbstractDefaultAjaxBehavior {
 
@@ -379,14 +376,15 @@ public class AjaxEditableLabel<T> extends Panel {
 
     protected void onComponentTag(ComponentTag tag) {
       super.onComponentTag(tag);
-      final String saveCall = "{" + generateCallbackScript("wicketAjaxGet('" + getCallbackUrl() 
-          + "&save=true&'+this.name+'='+wicketEncode(this.value)") + "; return false;}";
+      final String saveCall = "{" + generateCallbackScript(
+          "wicketAjaxGet('" + getCallbackUrl() + "&save=true&'+this.name+'='+wicketEncode(this.value)") +
+          "; return false;}";
 
-      final String cancelCall = "{" + generateCallbackScript("wicketAjaxGet('" + getCallbackUrl() 
-          + "&save=false'") + "; return false;}";
+      final String cancelCall = "{" + generateCallbackScript("wicketAjaxGet('" + getCallbackUrl() + "&save=false'") +
+          "; return false;}";
 
-      final String keypress = "var kc=wicketKeyCode(event); if (kc==27) " + cancelCall 
-      + " else if (kc!=13) { return true; } else " + saveCall;
+      final String keypress = "var kc=wicketKeyCode(event); if (kc==27) " + cancelCall +
+          " else if (kc!=13) { return true; } else " + saveCall;
 
       tag.put("onblur", saveCall);
       tag.put("onkeypress", keypress);
@@ -397,10 +395,10 @@ public class AjaxEditableLabel<T> extends Panel {
       RequestCycle requestCycle = RequestCycle.get();
       boolean save = Boolean.valueOf(requestCycle.getRequest().getParameter("save")).booleanValue();
 
-      if (save) {
+      if(save) {
         getEditor().processInput();
 
-        if (getEditor().isValid()) {
+        if(getEditor().isValid()) {
           onSubmit(target);
         } else {
           onError(target);
@@ -410,14 +408,14 @@ public class AjaxEditableLabel<T> extends Panel {
       }
     }
   }
-  
+
   protected class LabelAjaxBehavior extends AjaxEventBehavior {
 
     private static final long serialVersionUID = 1L;
 
     /**
      * Construct.
-     * 
+     *
      * @param event
      */
     public LabelAjaxBehavior(String event) {

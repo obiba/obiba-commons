@@ -12,24 +12,26 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 /**
- * Base class for Spring-enabled unit tests. Simply extend this class in order to enable 
+ * Base class for Spring-enabled unit tests. Simply extend this class in order to enable
  * the test Spring Context for the execution of the test case.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"/test-spring-context.xml"})
-@TransactionConfiguration(transactionManager="transactionManager")
-@TestExecutionListeners(value={DependencyInjectionTestExecutionListener.class,DirtiesContextTestExecutionListener.class,TransactionalTestExecutionListener.class,DbUnitAwareTestExecutionListener.class})
+@ContextConfiguration(locations = { "/test-spring-context.xml" })
+@TransactionConfiguration(transactionManager = "transactionManager")
+@TestExecutionListeners(
+    value = { DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class, DbUnitAwareTestExecutionListener.class })
 public abstract class BaseDefaultSpringContextTestCase {
 
   private SessionFactory sessionFactory;
 
-  @Autowired(required=false)
+  @Autowired(required = false)
   public void setSessionFactory(SessionFactory sessionFactory) {
     this.sessionFactory = sessionFactory;
   }
 
   /**
-   * Flushes (executed pending statements) and clears the Hibernate cache. 
+   * Flushes (executed pending statements) and clears the Hibernate cache.
    */
   protected void flushCache() {
     if(this.sessionFactory == null) {

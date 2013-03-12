@@ -50,7 +50,9 @@ public class SqlScriptUpgradeStep extends AbstractUpgradeStep {
       script = scriptPath.createRelative(getScriptName());
       log.debug("Sql script {} exists {}", script.getDescription(), script.exists());
       if(script.exists() == false) {
-        throw new IllegalStateException("Cannot find sql script to execute. Script path '" + scriptPath + "' basename '" + scriptBasename + "' database product '" + product + "'.");
+        throw new IllegalStateException(
+            "Cannot find sql script to execute. Script path '" + scriptPath + "' basename '" + scriptBasename +
+                "' database product '" + product + "'.");
       }
     }
   }

@@ -6,7 +6,6 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.obiba.wicket.markup.html.panel.LinkPanel;
 
-
 abstract public class LinkPropertyColumn extends PropertyColumn {
 
   public LinkPropertyColumn(IModel displayModel, String sortProperty, String propertyExpression) {
@@ -29,7 +28,7 @@ abstract public class LinkPropertyColumn extends PropertyColumn {
       }
     }, labelModel));
   }
-  
+
   abstract protected void onClick(IModel model);
 
 }

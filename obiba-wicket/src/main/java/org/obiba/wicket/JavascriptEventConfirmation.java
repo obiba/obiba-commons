@@ -11,14 +11,14 @@ public class JavascriptEventConfirmation extends AttributeModifier {
   public JavascriptEventConfirmation(String event, String msg) {
     super(event, true, new Model(msg));
   }
-  
+
   public JavascriptEventConfirmation(String event, IModel model) {
     super(event, true, model);
   }
 
   protected String newValue(final String currentValue, final String replacementValue) {
     String result = "return confirm('" + replacementValue + "')";
-    if (currentValue != null) {       
+    if(currentValue != null) {
       result = currentValue + "; " + result;
     }
     return result;

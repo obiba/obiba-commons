@@ -13,15 +13,14 @@ import org.apache.wicket.model.IModel;
 
 /**
  * A list of linkable objects separated by a given separator.
- * 
+ *
  * @author ymarcon
- * 
  */
 public abstract class AjaxLinkList extends Panel {
 
   /**
    * List of objects that are linkable, with a comma as default separator.
-   * 
+   *
    * @param id
    * @param links
    */
@@ -31,13 +30,12 @@ public abstract class AjaxLinkList extends Panel {
 
   /**
    * List of objects that are linkable.
-   * 
+   *
    * @param id
    * @param links
    * @param separator
    */
-  public AjaxLinkList(String id, final List<IModel> links,
-      final String separator) {
+  public AjaxLinkList(String id, final List<IModel> links, final String separator) {
     super(id);
 
     add(new DataView("list", new ListDataProvider(links)) {
@@ -47,11 +45,9 @@ public abstract class AjaxLinkList extends Panel {
       @Override
       protected void populateItem(Item item) {
         final IModel model = (IModel) item.getModelObject();
-        if (model != null) {
-          if (links.indexOf(model) == 0)
-            item.add(new Label("separator"));
-          else
-            item.add(new Label("separator", separator));
+        if(model != null) {
+          if(links.indexOf(model) == 0) item.add(new Label("separator"));
+          else item.add(new Label("separator", separator));
           AjaxLink link = new AjaxLink("link", model) {
 
             private static final long serialVersionUID = 1L;
@@ -72,7 +68,7 @@ public abstract class AjaxLinkList extends Panel {
 
   /**
    * Method to implement when a object from the list is clicked.
-   * 
+   *
    * @param obj
    */
   public abstract void onClick(IModel model, AjaxRequestTarget target);

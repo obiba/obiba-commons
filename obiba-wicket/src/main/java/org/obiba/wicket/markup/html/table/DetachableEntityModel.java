@@ -33,7 +33,7 @@ public class DetachableEntityModel<T> extends LoadableDetachableModel<T> {
     } else {
       this.id = getEntityQueryService().getId(o);
     }
-    this.type = (Class<T>)o.getClass();
+    this.type = (Class<T>) o.getClass();
   }
 
   @Override
@@ -51,6 +51,7 @@ public class DetachableEntityModel<T> extends LoadableDetachableModel<T> {
   /**
    * Returns the {@code EntityQueryService} used to load the entity. Extending classes can override the strategy for
    * obtaining the service.
+   *
    * @return the instance of {@code EntityQueryService} to use for loading the entity.
    */
   protected EntityQueryService getEntityQueryService() {

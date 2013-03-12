@@ -33,7 +33,7 @@ public class LocaleDropDownChoice extends DropDownChoice {
   /**
    * When true, the {@code Session}'s locale is used to display the choice's label, otherwise the label is generated
    * using its own locale.
-   * 
+   *
    * @param b
    */
   public void setUseSessionLocale(boolean b) {

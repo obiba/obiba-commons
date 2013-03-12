@@ -4,16 +4,15 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
-
 final public class StringUtil {
-  
+
   private StringUtil() {
   }
 
   static public String collectionToString(Collection<?> c, String separator) {
     if(c != null) {
       StringBuilder sb = new StringBuilder();
-      for (Iterator<?> iter = c.iterator(); iter.hasNext();) {
+      for(Iterator<?> iter = c.iterator(); iter.hasNext(); ) {
         Object o = (Object) iter.next();
         sb.append(o);
         if(iter.hasNext()) sb.append(separator);
@@ -28,11 +27,11 @@ final public class StringUtil {
   }
 
   static public String stringArrayToString(String[] array, String separator) {
-    if (array != null) {
+    if(array != null) {
       StringBuilder sb = new StringBuilder();
-      for (int i = 0; i < array.length; i++) {
+      for(int i = 0; i < array.length; i++) {
         //Add separator if this element is not the first in the list.
-        if (i > 0) {
+        if(i > 0) {
           sb.append(separator);
         }
         sb.append(array[i]);
@@ -41,19 +40,19 @@ final public class StringUtil {
     }
     return null;
   }
-  
+
   static public String stringArrayToString(String[] pArray) {
     return stringArrayToString(pArray, ",");
   }
 
-  static public String arrayToString(Object ... objects) {
+  static public String arrayToString(Object... objects) {
     if(objects != null) return Arrays.toString(objects);
     return "null";
   }
-  
+
   static public String ellipsis(String value, int maxSize) {
     if(value != null && value.length() > maxSize) {
-      return new StringBuilder(value.substring(0, maxSize-3)).append("...").toString();
+      return new StringBuilder(value.substring(0, maxSize - 3)).append("...").toString();
     }
     return value;
   }
@@ -75,6 +74,7 @@ final public class StringUtil {
   static private class DeferToString {
 
     final private Object[] objects;
+
     private String result;
 
     public DeferToString(final Object[] objects) {
@@ -85,5 +85,5 @@ final public class StringUtil {
       return result != null ? result : (result = arrayToString(this.objects));
     }
   }
-  
+
 }

@@ -9,16 +9,16 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.obiba.wicket.JavascriptEventConfirmation;
 
-
 /**
  * A panel with a linked image inside, optionally confirmable.
- * @author ymarcon
  *
+ * @author ymarcon
  */
 public abstract class ConfirmImageLinkPanel extends Panel {
 
   /**
    * Image with a label and confirm message.
+   *
    * @param id
    * @param image
    * @param model
@@ -34,26 +34,27 @@ public abstract class ConfirmImageLinkPanel extends Panel {
       public void onClick() {
         ConfirmImageLinkPanel.this.onClick();
       }
-      
+
     };
     link.add(new Image("image", image));
     add(new Label("label", model));
-    if (messageModel != null)
-      link.add(new JavascriptEventConfirmation("onclick", messageModel));
+    if(messageModel != null) link.add(new JavascriptEventConfirmation("onclick", messageModel));
     add(link);
   }
-  
+
   /**
    * Image with no label, no confirm message.
+   *
    * @param id
    * @param image
    */
   public ConfirmImageLinkPanel(String id, Resource image) {
     this(id, image, new Model(""));
   }
-  
+
   /**
    * Image without confirm message.
+   *
    * @param id
    * @param image
    * @param model
@@ -68,7 +69,7 @@ public abstract class ConfirmImageLinkPanel extends Panel {
       public void onClick() {
         ConfirmImageLinkPanel.this.onClick();
       }
-      
+
     };
     link.add(new Image("image", image));
     add(new Label("label", model));

@@ -1,22 +1,22 @@
 <wicket:panel>
-  <table cellspacing="0" class="keyValueTable">
-    <tr wicket:id="header"/>
-    <tr wicket:id="repeating">
-      <td wicket:id="rowKey" class="keyValueTableKey">Key of the row goes here</td>
-      <td wicket:id="rowValue">Value of the row goes here</td>
-    </tr>
-    <tr wicket:id="noDataRow">
-      <td colspan="2"><span wicket:id="noDataLabel"/></td>
-    </tr>
-  </table>
+    <table cellspacing="0" class="keyValueTable">
+        <tr wicket:id="header"/>
+        <tr wicket:id="repeating">
+            <td wicket:id="rowKey" class="keyValueTableKey">Key of the row goes here</td>
+            <td wicket:id="rowValue">Value of the row goes here</td>
+        </tr>
+        <tr wicket:id="noDataRow">
+            <td colspan="2"><span wicket:id="noDataLabel"/></td>
+        </tr>
+    </table>
 </wicket:panel>
 
 <wicket:fragment wicket:id="headerFragment">
- <tr>
-   <td colspan="2" class="keyValueTableHeader"><span wicket:id="tableLabel"/></td>
- </tr>
+    <tr>
+        <td colspan="2" class="keyValueTableHeader"><span wicket:id="tableLabel"/></td>
+    </tr>
 </wicket:fragment>
 
 <wicket:fragment wicket:id="emptyCellFragment">
-	<span>&nbsp;</span>
+    <span>&nbsp;</span>
 </wicket:fragment>

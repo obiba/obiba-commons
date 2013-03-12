@@ -17,7 +17,6 @@ import org.obiba.core.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * Wraps a Hibernate {@link Criteria} to allow adding restrictions on association paths.
  */
@@ -40,14 +39,15 @@ public class AssociationCriteria {
      */
     match {
       @Override
-      protected AssociationCriteria add(AssociationCriteria criteria, String path, String qualifier, String propertyName, Object ... values) {
+      protected AssociationCriteria add(AssociationCriteria criteria, String path, String qualifier,
+          String propertyName, Object... values) {
         // Use the whole path (eg: a.b.c) and not the qualifier (eg: a.b)
         Criteria c = criteria.getAssociationCriteria(path, false);
         c.add(AssociationExample.create(values[0]));
         return criteria;
       }
     },
-    
+
     /**
      * Tests that a property is equal to the specified value.
      * <p/>
@@ -58,7 +58,8 @@ public class AssociationCriteria {
      */
     eq {
       @Override
-      protected AssociationCriteria add(AssociationCriteria criteria, String path, String qualifier, String propertyName, Object ... values) {
+      protected AssociationCriteria add(AssociationCriteria criteria, String path, String qualifier,
+          String propertyName, Object... values) {
         Criteria c = criteria.getAssociationCriteria(qualifier, false);
         c.add(Restrictions.eq(propertyName, values[0]));
         return criteria;
@@ -75,7 +76,8 @@ public class AssociationCriteria {
      */
     ne {
       @Override
-      protected AssociationCriteria add(AssociationCriteria criteria, String path, String qualifier, String propertyName, Object ... values) {
+      protected AssociationCriteria add(AssociationCriteria criteria, String path, String qualifier,
+          String propertyName, Object... values) {
         Criteria c = criteria.getAssociationCriteria(qualifier, false);
         c.add(Restrictions.ne(propertyName, values[0]));
         return criteria;
@@ -92,7 +94,8 @@ public class AssociationCriteria {
      */
     le {
       @Override
-      protected AssociationCriteria add(AssociationCriteria criteria, String path, String qualifier, String propertyName, Object ... values) {
+      protected AssociationCriteria add(AssociationCriteria criteria, String path, String qualifier,
+          String propertyName, Object... values) {
         Criteria c = criteria.getAssociationCriteria(qualifier, false);
         c.add(Restrictions.le(propertyName, values[0]));
         return criteria;
@@ -109,7 +112,8 @@ public class AssociationCriteria {
      */
     lt {
       @Override
-      protected AssociationCriteria add(AssociationCriteria criteria, String path, String qualifier, String propertyName, Object ... values) {
+      protected AssociationCriteria add(AssociationCriteria criteria, String path, String qualifier,
+          String propertyName, Object... values) {
         Criteria c = criteria.getAssociationCriteria(qualifier, false);
         c.add(Restrictions.lt(propertyName, values[0]));
         return criteria;
@@ -126,7 +130,8 @@ public class AssociationCriteria {
      */
     ge {
       @Override
-      protected AssociationCriteria add(AssociationCriteria criteria, String path, String qualifier, String propertyName, Object ... values) {
+      protected AssociationCriteria add(AssociationCriteria criteria, String path, String qualifier,
+          String propertyName, Object... values) {
         Criteria c = criteria.getAssociationCriteria(qualifier, false);
         c.add(Restrictions.ge(propertyName, values[0]));
         return criteria;
@@ -143,7 +148,8 @@ public class AssociationCriteria {
      */
     gt {
       @Override
-      protected AssociationCriteria add(AssociationCriteria criteria, String path, String qualifier, String propertyName, Object ... values) {
+      protected AssociationCriteria add(AssociationCriteria criteria, String path, String qualifier,
+          String propertyName, Object... values) {
         Criteria c = criteria.getAssociationCriteria(qualifier, false);
         c.add(Restrictions.gt(propertyName, values[0]));
         return criteria;
@@ -160,13 +166,14 @@ public class AssociationCriteria {
      */
     like {
       @Override
-      protected AssociationCriteria add(AssociationCriteria criteria, String path, String qualifier, String propertyName, Object ... values) {
+      protected AssociationCriteria add(AssociationCriteria criteria, String path, String qualifier,
+          String propertyName, Object... values) {
         Criteria c = criteria.getAssociationCriteria(qualifier, false);
         c.add(Restrictions.like(propertyName, values[0]));
         return criteria;
       }
     },
-    
+
     /**
      * Tests that a property is case insensitive like (SQL semantic) the specified value.
      * <p/>
@@ -177,7 +184,8 @@ public class AssociationCriteria {
      */
     ilike {
       @Override
-      protected AssociationCriteria add(AssociationCriteria criteria, String path, String qualifier, String propertyName, Object ... values) {
+      protected AssociationCriteria add(AssociationCriteria criteria, String path, String qualifier,
+          String propertyName, Object... values) {
         Criteria c = criteria.getAssociationCriteria(qualifier, false);
         c.add(Restrictions.ilike(propertyName, values[0]));
         return criteria;
@@ -191,7 +199,8 @@ public class AssociationCriteria {
      */
     isEmpty {
       @Override
-      protected AssociationCriteria add(AssociationCriteria criteria, String path, String qualifier, String propertyName, Object ... values) {
+      protected AssociationCriteria add(AssociationCriteria criteria, String path, String qualifier,
+          String propertyName, Object... values) {
         Criteria c = criteria.getAssociationCriteria(qualifier, false);
         c.add(Restrictions.isEmpty(propertyName));
         return criteria;
@@ -205,7 +214,8 @@ public class AssociationCriteria {
      */
     isNotEmpty {
       @Override
-      protected AssociationCriteria add(AssociationCriteria criteria, String path, String qualifier, String propertyName, Object ... values) {
+      protected AssociationCriteria add(AssociationCriteria criteria, String path, String qualifier,
+          String propertyName, Object... values) {
         Criteria c = criteria.getAssociationCriteria(qualifier, false);
         c.add(Restrictions.isNotEmpty(propertyName));
         return criteria;
@@ -219,7 +229,8 @@ public class AssociationCriteria {
      */
     isNull {
       @Override
-      protected AssociationCriteria add(AssociationCriteria criteria, String path, String qualifier, String propertyName, Object ... values) {
+      protected AssociationCriteria add(AssociationCriteria criteria, String path, String qualifier,
+          String propertyName, Object... values) {
         Criteria c = criteria.getAssociationCriteria(qualifier, false);
         c.add(Restrictions.isNull(propertyName));
         return criteria;
@@ -233,7 +244,8 @@ public class AssociationCriteria {
      */
     isNotNull {
       @Override
-      protected AssociationCriteria add(AssociationCriteria criteria, String path, String qualifier, String propertyName, Object ... values) {
+      protected AssociationCriteria add(AssociationCriteria criteria, String path, String qualifier,
+          String propertyName, Object... values) {
         Criteria c = criteria.getAssociationCriteria(qualifier, false);
         c.add(Restrictions.isNotNull(propertyName));
         return criteria;
@@ -245,18 +257,20 @@ public class AssociationCriteria {
      * <p/>
      * Required values:
      * <ol>
-     *   <li>first {@link Criterion}</li>
-     *   <li>second {@link Criterion}</li>
+     * <li>first {@link Criterion}</li>
+     * <li>second {@link Criterion}</li>
      * </ol>
      */
     or {
       @Override
-      protected AssociationCriteria add(AssociationCriteria criteria, String path, String qualifier, String propertyName, Object ... values) {
+      protected AssociationCriteria add(AssociationCriteria criteria, String path, String qualifier,
+          String propertyName, Object... values) {
         Criteria c = criteria.getAssociationCriteria(path, false);
         if(values.length != 2 || values[0] instanceof Criterion == false || values[1] instanceof Criterion == false) {
-          throw new IllegalArgumentException("Operation.or requires exactly two parameters or type org.hibernate.criterion.Criterion");
+          throw new IllegalArgumentException(
+              "Operation.or requires exactly two parameters or type org.hibernate.criterion.Criterion");
         }
-        c.add(Restrictions.or((Criterion)values[0], (Criterion)values[1]));
+        c.add(Restrictions.or((Criterion) values[0], (Criterion) values[1]));
         return criteria;
       }
     },
@@ -266,37 +280,38 @@ public class AssociationCriteria {
      * <p/>
      * Required values:
      * <ol>
-     *   <li>Object[]</li>
+     * <li>Object[]</li>
      * </ol>
      */
     in {
       @Override
-      protected AssociationCriteria add(AssociationCriteria criteria, String path, String qualifier, String propertyName, Object ... values) {
+      protected AssociationCriteria add(AssociationCriteria criteria, String path, String qualifier,
+          String propertyName, Object... values) {
         Criteria c = criteria.getAssociationCriteria(qualifier, false);
         c.add(Restrictions.in(propertyName, values));
         return criteria;
       }
-    }
-    ;
+    };
 
     /**
      * Add this operation to the specified AssociationCriteria.
-     * 
+     *
      * @param criteria the criteria
      * @param path the association path (eg: a.b.c.name)
      * @param values the required operation values
      * @return the criteria for method call chaining
      */
-    protected AssociationCriteria add(AssociationCriteria criteria, String path, Object ... values) {
+    protected AssociationCriteria add(AssociationCriteria criteria, String path, Object... values) {
       String propertyName = getProperty(path);
       String qualifier = getQualifier(path);
-      log.debug("Adding operation {}({}) at path {}", new Object[] {toString(), StringUtil.deferToString(values), path});
+      log.debug("Adding operation {}({}) at path {}",
+          new Object[] { toString(), StringUtil.deferToString(values), path });
       return add(criteria, path, qualifier, propertyName, values);
     }
 
     /**
      * Implemented by each operation where the actual {@link Criterion} is added to the {@link Criteria}
-     * 
+     *
      * @param criteria the criteria
      * @param path the association path (eg: a.b.c.name)
      * @param qualifier the entity qualifier (eg: a.b.c)
@@ -304,26 +319,31 @@ public class AssociationCriteria {
      * @param values the required operation values
      * @return the criteria for method call chaining
      */
-    abstract protected AssociationCriteria add(AssociationCriteria criteria, String path, String qualifier, String propertyName, Object ... values);
+    abstract protected AssociationCriteria add(AssociationCriteria criteria, String path, String qualifier,
+        String propertyName, Object... values);
 
   }
 
-  /** The resulting Criteria "rooted" on the initial entity */
+  /**
+   * The resulting Criteria "rooted" on the initial entity
+   */
   private Criteria baseCriteria;
 
-  /** A Map of association path to the Criteria instance */
+  /**
+   * A Map of association path to the Criteria instance
+   */
   private Map<String, Criteria> associationCriteria = new HashMap<String, Criteria>();
 
   /**
    * Builds a new instance of an AssociationCriteria for the specified entity type and the specified session.
-   * 
+   *
    * @param entityType the entity type returned by this criteria.
-   * @param session the session used to create the Criteria. 
+   * @param session the session used to create the Criteria.
    */
   public AssociationCriteria(Class<?> entityType, Session session) {
     baseCriteria = session.createCriteria(entityType);
     associationCriteria.put("", baseCriteria);
-    
+
     // This is not always required.
     // When required and not present, the result of the criteria is invalid.
     // When not required and present, the result is valid, but performance may suffer.
@@ -353,23 +373,23 @@ public class AssociationCriteria {
    * AssociationCriteria.create(A.class, session).add(Operation.isNotNull, "a.b.c.name");
    * </pre>
    * Chaining other {@link AssociationCriteria#add} calls, complex queries can be created easily.
-   * 
+   *
    * @param op the operation
    * @param path the association path (eg: a.b.c.name)
    * @param values the parameters required by the {@link Operation} (see the operation javadoc)
    * @return this for method call chaining
    */
-  public AssociationCriteria add(String path, Operation op, Object ... values) {
+  public AssociationCriteria add(String path, Operation op, Object... values) {
     return op.add(this, path, values);
   }
 
   /**
    * Adds {@link SortingClause}s to the resulting {@link Criteria}.
-   * 
+   *
    * @param clauses an array of {@link SortingClause}
    * @return this for method call chaining
    */
-  public AssociationCriteria addSortingClauses(SortingClause ... clauses) {
+  public AssociationCriteria addSortingClauses(SortingClause... clauses) {
     if(clauses != null && clauses.length > 0) {
       for(SortingClause clause : clauses) {
         if(clause != null) {
@@ -386,16 +406,16 @@ public class AssociationCriteria {
 
   /**
    * Adds a {@link PagingClause} to the resulting {@link Criteria}
-   * 
+   *
    * @param clause the paging clause
    * @return this for method call chaining
    */
   public AssociationCriteria addPagingClause(PagingClause clause) {
-    if (clause != null) {
-      if (clause.getOffset() > 0) {
+    if(clause != null) {
+      if(clause.getOffset() > 0) {
         baseCriteria.setFirstResult(clause.getOffset());
       }
-      if (clause.getLimit() > 0) {
+      if(clause.getLimit() > 0) {
         baseCriteria.setMaxResults(clause.getLimit());
       }
     }
@@ -404,6 +424,7 @@ public class AssociationCriteria {
 
   /**
    * Returns the resulting {@link Criteria}
+   *
    * @return the resulting {@link Criteria}
    */
   public Criteria getCriteria() {
@@ -411,7 +432,7 @@ public class AssociationCriteria {
   }
 
   public int count() {
-    return (Integer)baseCriteria.setProjection(Projections.rowCount()).uniqueResult();
+    return (Integer) baseCriteria.setProjection(Projections.rowCount()).uniqueResult();
   }
 
   @SuppressWarnings("unchecked")
@@ -420,9 +441,9 @@ public class AssociationCriteria {
   }
 
   /**
-   * Returns the {@link Criteria} "rooted" at the specified association path. This method will create 
+   * Returns the {@link Criteria} "rooted" at the specified association path. This method will create
    * all the required {@link Criteria} instances along the path.
-   * 
+   *
    * @param path the association path from the root (eg: a.b.c)
    * @param leftJoin whether to use a left join when creating new {@link Criteria} instances (useful when creating paths for sorting)
    * @return the {@link Criteria} instance "rooted" at the specified path.
@@ -442,7 +463,7 @@ public class AssociationCriteria {
    *
    * @param path the path (eg: a.b.c)
    * @param leftJoin true to create left joins for new {@link Criteria} instances
-   * @return an instance of {@link Criteria} "rooted" at the specified path. 
+   * @return an instance of {@link Criteria} "rooted" at the specified path.
    */
   protected Criteria createAssociationCriteria(String path, boolean leftJoin) {
     String[] elements = path.split("\\.");

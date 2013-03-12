@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Hibernate implementation of {@link PersistenceManager}.
- * 
+ *
  * @param <T>
  */
 @Transactional
@@ -65,7 +65,8 @@ public class PersistenceManagerHibernateImpl extends DefaultPersistenceManagerIm
 
   @SuppressWarnings("unchecked")
   public <T> List<T> list(Class<T> type, PagingClause paging, SortingClause... clauses) {
-    return AssociationCriteria.create(type, getSession()).addPagingClause(paging).addSortingClauses(clauses).getCriteria().setCacheable(cacheTemplateQueries).list();
+    return AssociationCriteria.create(type, getSession()).addPagingClause(paging).addSortingClauses(clauses)
+        .getCriteria().setCacheable(cacheTemplateQueries).list();
   }
 
   public <T> List<T> list(Class<T> type, SortingClause... clauses) {
@@ -87,7 +88,9 @@ public class PersistenceManagerHibernateImpl extends DefaultPersistenceManagerIm
   }
 
   protected <T> Criteria mathCriteria(T template, PagingClause paging, SortingClause... clauses) {
-    return AssociationCriteria.create(template.getClass(), getSession()).add("", AssociationCriteria.Operation.match, template).addPagingClause(paging).addSortingClauses(clauses).getCriteria().setCacheable(cacheTemplateQueries);
+    return AssociationCriteria.create(template.getClass(), getSession())
+        .add("", AssociationCriteria.Operation.match, template).addPagingClause(paging).addSortingClauses(clauses)
+        .getCriteria().setCacheable(cacheTemplateQueries);
   }
 
   public <T> T newInstance(Class<T> type) {

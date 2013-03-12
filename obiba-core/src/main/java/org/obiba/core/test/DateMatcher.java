@@ -15,13 +15,19 @@ import org.hamcrest.Matcher;
  */
 public class DateMatcher extends BaseMatcher<Date> {
 
-  /** The expected value */
+  /**
+   * The expected value
+   */
   private final Calendar value;
 
-  /** An array of Calendar fields that should be compared */
+  /**
+   * An array of Calendar fields that should be compared
+   */
   private final int[] fields;
 
-  /** A description of the matching */
+  /**
+   * A description of the matching
+   */
   private final String desc;
 
   private DateMatcher(Date d, String desc, int[] fields) {
@@ -54,7 +60,7 @@ public class DateMatcher extends BaseMatcher<Date> {
 
   /**
    * Matches the year and the day of year of two dates.
-   * 
+   *
    * @param d
    * @return
    */
@@ -64,16 +70,18 @@ public class DateMatcher extends BaseMatcher<Date> {
 
   /**
    * Matches the date and time (up to the seconds).
+   *
    * @param d
    * @return
    */
   static public DateMatcher sameDateAndTime(Date d) {
-    return same(d, "date and time", Calendar.YEAR, Calendar.DAY_OF_YEAR, Calendar.HOUR_OF_DAY, Calendar.MINUTE, Calendar.SECOND);
+    return same(d, "date and time", Calendar.YEAR, Calendar.DAY_OF_YEAR, Calendar.HOUR_OF_DAY, Calendar.MINUTE,
+        Calendar.SECOND);
   }
 
   /**
    * Matches the day of the year, ie: January first.
-   * 
+   *
    * @param d
    * @return
    */
@@ -83,7 +91,7 @@ public class DateMatcher extends BaseMatcher<Date> {
 
   /**
    * Matches the time of day up to the seconds.
-   * 
+   *
    * @param d
    * @return
    */

@@ -8,28 +8,28 @@ import org.apache.wicket.model.IModel;
 
 /**
  * A panel with a checkbox inside (typically for checkable list rows).
- * @author ymarcon
  *
+ * @author ymarcon
  */
 public class CheckBoxPanel extends Panel {
 
   private static final long serialVersionUID = 1234234234L;
-  
+
   private CheckBox checkBox;
-  
+
   public CheckBoxPanel(String id) {
     super(id, null);
     init();
   }
-  
+
   public CheckBoxPanel(String id, IModel<Boolean> model) {
     super(id, model);
     init();
   }
-  
+
   @SuppressWarnings("unchecked")
   private void init() {
-    checkBox = new CheckBox("checker", (IModel<Boolean>)getDefaultModel());
+    checkBox = new CheckBox("checker", (IModel<Boolean>) getDefaultModel());
     add(checkBox);
   }
 
@@ -37,5 +37,5 @@ public class CheckBoxPanel extends Panel {
   public Component add(IBehavior... behavior) {
     return checkBox.add(behavior);
   }
-  
+
 }

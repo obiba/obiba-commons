@@ -6,16 +6,16 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.obiba.wicket.JavascriptEventConfirmation;
 
-
 /**
  * A panel with a link inside, optionally confirmable.
- * @author ymarcon
  *
+ * @author ymarcon
  */
 public abstract class ConfirmLinkPanel extends Panel {
 
   /**
    * Constructor with a link and a confirmation message model.
+   *
    * @param id
    * @param model
    * @param messageModel
@@ -29,15 +29,16 @@ public abstract class ConfirmLinkPanel extends Panel {
       public void onClick() {
         ConfirmLinkPanel.this.onClick();
       }
-      
+
     };
     link.add(new Label("label", model));
     link.add(new JavascriptEventConfirmation("onclick", messageModel));
     add(link);
   }
-  
+
   /**
    * Constructor with a link.
+   *
    * @param id
    * @param model
    */
@@ -50,7 +51,7 @@ public abstract class ConfirmLinkPanel extends Panel {
       public void onClick() {
         ConfirmLinkPanel.this.onClick();
       }
-      
+
     };
     link.add(new Label("label", model));
     add(link);
@@ -58,7 +59,6 @@ public abstract class ConfirmLinkPanel extends Panel {
 
   /**
    * Called when link is clicked.
-   *
    */
   abstract public void onClick();
 }

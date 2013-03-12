@@ -8,9 +8,8 @@ import java.util.regex.Pattern;
  * <p/>
  * Format is <code>major'.'minor('.'micro)?(('.'|'-'|'_')qualifier)?</code> <br/>
  * where major, minor and micro are composed of digits and qualifier is an arbitrary string.
- * 
+ *
  * @author plaflamm
- * 
  */
 final public class Version implements Comparable<Version> {
 
@@ -140,11 +139,13 @@ final public class Version implements Comparable<Version> {
   }
 
   private IllegalArgumentException invalidVersionString(String version, String reason) {
-    return new IllegalArgumentException("Invalid version string '" + version + "'. Expected format is \"major'.'minor('.'micro)?(('.'|'-'|'_')qualifier)?\": " + reason);
+    return new IllegalArgumentException("Invalid version string '" + version +
+        "'. Expected format is \"major'.'minor('.'micro)?(('.'|'-'|'_')qualifier)?\": " + reason);
   }
 
   private IllegalArgumentException invalidVersionString(String version, Exception e) {
-    return new IllegalArgumentException("Invalid version string '" + version + "'. Expected format is \"major'.'minor('.'micro)?(('.'|'-'|'_')qualifier)?\"", e);
+    return new IllegalArgumentException("Invalid version string '" + version +
+        "'. Expected format is \"major'.'minor('.'micro)?(('.'|'-'|'_')qualifier)?\"", e);
   }
 
 }

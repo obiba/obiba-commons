@@ -14,13 +14,12 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.obiba.wicket.markup.html.panel.CheckBoxPanel;
 
-
 public class RowSelectionColumn<T> extends HeaderlessColumn<T> {
 
   private static final long serialVersionUID = 1L;
 
   private EntityListTablePanel<T> table;
-  
+
   private List<CheckBoxPanel> checkboxes = new ArrayList<CheckBoxPanel>();
 
   public RowSelectionColumn(EntityListTablePanel<T> table) {
@@ -31,7 +30,7 @@ public class RowSelectionColumn<T> extends HeaderlessColumn<T> {
   public String getCssClass() {
     return "rowSelector";
   }
-  
+
   @Override
   public void populateItem(final Item<ICellPopulator<T>> cellItem, final String componentId, final IModel<T> rowModel) {
     final EntityListTablePanel<T>.EntitySelection selection = table.getSelection(rowModel);
@@ -63,17 +62,17 @@ public class RowSelectionColumn<T> extends HeaderlessColumn<T> {
       protected void onEvent(AjaxRequestTarget target) {
         table.setAllSelected(!table.getAllSelected());
         boolean selected = table.getAllSelected();
-        for (Serializable id : table.getSelections().keySet()) {
+        for(Serializable id : table.getSelections().keySet()) {
           table.getSelections().get(id).setSelected(selected);
         }
-        for (CheckBoxPanel cb : checkboxes)
+        for(CheckBoxPanel cb : checkboxes)
           target.addComponent(cb);
       }
 
     });
     return cbPanel;
   }
-  
+
   public void clearSelectionComponents() {
     checkboxes.clear();
   }

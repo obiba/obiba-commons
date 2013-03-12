@@ -65,7 +65,8 @@ public class HibernateStatisticsPanel extends Panel {
 
       protected void populateItem(ListItem<String> item) {
         String entityName = item.getModelObject();
-        final EntityStatistics entityStat = HibernateStatisticsPanel.this.getModelObject().getEntityStatistics(entityName);
+        final EntityStatistics entityStat = HibernateStatisticsPanel.this.getModelObject()
+            .getEntityStatistics(entityName);
         item.add(new Label("deleteCount", new Model(entityStat.getDeleteCount())));
         item.add(new Label("updateCount", new Model(entityStat.getUpdateCount())));
         item.add(new Label("fetchCount", new Model(entityStat.getFetchCount())));
@@ -77,13 +78,15 @@ public class HibernateStatisticsPanel extends Panel {
     };
     add(entityStats);
 
-    ListView<String> collectionStats = new ListView<String>("collections", Arrays.asList(getModelObject().getCollectionRoleNames())) {
+    ListView<String> collectionStats = new ListView<String>("collections",
+        Arrays.asList(getModelObject().getCollectionRoleNames())) {
 
       private static final long serialVersionUID = 90593970649625929L;
 
       protected void populateItem(ListItem<String> item) {
         String collName = item.getModelObject();
-        CollectionStatistics collectionStatistics = HibernateStatisticsPanel.this.getModelObject().getCollectionStatistics(collName);
+        CollectionStatistics collectionStatistics = HibernateStatisticsPanel.this.getModelObject()
+            .getCollectionStatistics(collName);
         item.add(new Label("recreateCount", new Model(collectionStatistics.getRecreateCount())));
         item.add(new Label("updateCount", new Model(collectionStatistics.getUpdateCount())));
         item.add(new Label("fetchCount", new Model(collectionStatistics.getFetchCount())));
@@ -115,13 +118,15 @@ public class HibernateStatisticsPanel extends Panel {
     };
     add(queryStats);
 
-    ListView<String> cacheStats = new ListView<String>("caches", Arrays.asList(getModelObject().getSecondLevelCacheRegionNames())) {
+    ListView<String> cacheStats = new ListView<String>("caches",
+        Arrays.asList(getModelObject().getSecondLevelCacheRegionNames())) {
 
       private static final long serialVersionUID = 1L;
 
       protected void populateItem(ListItem<String> item) {
         String cacheName = (String) item.getModelObject();
-        SecondLevelCacheStatistics cacheStatistics = HibernateStatisticsPanel.this.getModelObject().getSecondLevelCacheStatistics(cacheName);
+        SecondLevelCacheStatistics cacheStatistics = HibernateStatisticsPanel.this.getModelObject()
+            .getSecondLevelCacheStatistics(cacheName);
         item.setModel(new CompoundPropertyModel(cacheStatistics));
         item.add(new Label("hitCount"));
         item.add(new Label("missCount"));

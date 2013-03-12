@@ -9,7 +9,6 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
-
 public class TableTitleToolbar extends AbstractToolbar {
 
   private static final long serialVersionUID = -9147214207355639443L;

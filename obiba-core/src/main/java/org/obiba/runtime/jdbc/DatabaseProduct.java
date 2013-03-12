@@ -15,7 +15,7 @@ public class DatabaseProduct {
   public boolean isForProductName(String dbProductName) {
     return PatternMatchUtils.simpleMatch(databaseProductNames, dbProductName);
   }
-  
+
   @Override
   public String toString() {
     return getNormalizedName();

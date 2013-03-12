@@ -7,17 +7,15 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.obiba.wicket.markup.html.ResourceGetter;
 
-
-
 /**
  * A convient panel for setting an image in a span (typically in a EntityList).
- * @author ymarcon
  *
+ * @author ymarcon
  */
 public class ImagePanel extends Panel {
 
   private static final long serialVersionUID = 234647687L;
-  
+
   public static final String IMAGE_ID = "image";
 
   /**
@@ -28,7 +26,7 @@ public class ImagePanel extends Panel {
     super(id, model);
     add(new Image(IMAGE_ID, model));
   }
-  
+
   /**
    * @param id
    * @param resource resource of the image
@@ -40,6 +38,7 @@ public class ImagePanel extends Panel {
 
   /**
    * Image is accessible to the ResourceGetter
+   *
    * @param id
    * @param imagePath path to the ResourceGetter image
    */
@@ -51,7 +50,7 @@ public class ImagePanel extends Panel {
   public ImagePanel(String id, Image image) {
     super(id);
     if(image.getId().equals(IMAGE_ID) == false) {
-      throw new IllegalArgumentException("Image ID should be '"+IMAGE_ID+"'");
+      throw new IllegalArgumentException("Image ID should be '" + IMAGE_ID + "'");
     }
     add(image);
   }
@@ -59,7 +58,7 @@ public class ImagePanel extends Panel {
   public ImagePanel(String id, ContextImage image) {
     super(id);
     if(image.getId().equals(IMAGE_ID) == false) {
-      throw new IllegalArgumentException("Image ID should be '"+IMAGE_ID+"'");
+      throw new IllegalArgumentException("Image ID should be '" + IMAGE_ID + "'");
     }
     add(image);
   }

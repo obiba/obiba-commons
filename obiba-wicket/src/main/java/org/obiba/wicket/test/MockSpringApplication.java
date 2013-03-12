@@ -12,12 +12,11 @@ import org.springframework.context.ApplicationContext;
 /**
  * A configurable Wicket {@code WebApplication} implementation that can inject member variables annotated with
  * {@code @SpringBean}.
- *
  */
 public class MockSpringApplication extends WebApplication implements ISpringWebApplication {
 
   private ApplicationContext context;
-  
+
   Class<? extends Page> homePage = DummyHomePage.class;
 
   /**
@@ -32,7 +31,7 @@ public class MockSpringApplication extends WebApplication implements ISpringWebA
       return ((MockSpringApplication) app).getApplicationContext();
     }
   };
-  
+
   @Override
   protected void init() {
     super.init();
@@ -52,8 +51,8 @@ public class MockSpringApplication extends WebApplication implements ISpringWebA
   public ApplicationContext getApplicationContext() {
     return context;
   }
-  
-  public void setApplicationContext (ApplicationContext context) {
+
+  public void setApplicationContext(ApplicationContext context) {
     this.context = context;
   }
 

@@ -4,7 +4,6 @@ import javax.persistence.Entity;
 
 import org.obiba.core.domain.AbstractEntity;
 
-
 @Entity
 public class AnEntity extends AbstractEntity {
 
@@ -20,5 +19,4 @@ public class AnEntity extends AbstractEntity {
     this.name = name;
   }
 
-  
 }

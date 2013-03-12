@@ -6,40 +6,40 @@ import org.springframework.validation.Validator;
 
 /**
  * Validator class to extend for performing object validation on a specific class.
- * 
- * @author ymarcon
  *
+ * @author ymarcon
  */
 public abstract class AbstractClassValidator implements Validator {
 
-	/**
-	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
-	 */
-	@SuppressWarnings("unchecked")
+  /**
+   * @see org.springframework.validation.Validator#supports(java.lang.Class)
+   */
+  @SuppressWarnings("unchecked")
   public boolean supports(final Class clazz) {
-		return clazz.isAssignableFrom(getValidatorSupportClass());
-	}
+    return clazz.isAssignableFrom(getValidatorSupportClass());
+  }
 
-	/**
-	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
-	 *      org.springframework.validation.Errors)
-	 */
-	public abstract void validate(final Object obj, final Errors errors);
+  /**
+   * @see org.springframework.validation.Validator#validate(java.lang.Object,
+   *      org.springframework.validation.Errors)
+   */
+  public abstract void validate(final Object obj, final Errors errors);
 
-	/**
-	 * @return
-	 */
-	protected abstract Class getValidatorSupportClass();
+  /**
+   * @return
+   */
+  protected abstract Class getValidatorSupportClass();
 
   /**
    * Validate given object.
+   *
    * @param obj the object to validate.
    * @return null if object is null or object class is not supported by this validator.
    */
   public Errors validate(final Object obj) {
     Errors errors = null;
-    
-    if (obj != null && supports(obj.getClass())) {
+
+    if(obj != null && supports(obj.getClass())) {
       errors = new BindException(obj, obj.getClass().getName());
 
       validate(obj, errors);
