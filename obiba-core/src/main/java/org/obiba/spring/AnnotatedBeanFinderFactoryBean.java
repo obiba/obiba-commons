@@ -8,6 +8,8 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import javax.annotation.Nonnull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.FatalBeanException;
@@ -288,7 +290,8 @@ public class AnnotatedBeanFinderFactoryBean implements ResourceLoaderAware, Fact
    * @param path
    * @return
    */
-  private String pathToQualifiedClassName(String path) {
+  @Nonnull
+  private String pathToQualifiedClassName(@Nonnull String path) {
     return path.replaceAll("/", ".").replaceAll("\\\\", ".").substring(0, path.length() - ".class".length());
   }
 
