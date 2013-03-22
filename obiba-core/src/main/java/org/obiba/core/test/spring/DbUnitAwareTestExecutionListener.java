@@ -106,8 +106,8 @@ public class DbUnitAwareTestExecutionListener extends AbstractTestExecutionListe
         getDbUnitOp(before ? datasetAnnotation.beforeOperation() : datasetAnnotation.afterOperation())
             .execute(connection, dataset);
       } catch(DatabaseUnitException e) {
-        log.error("Exception while inserting dataset filename {} for test case {}",
-            new String[] { filename, className, e.getMessage() });
+        log.error("Exception while inserting dataset filename {} for test case {}", filename, className,
+            e.getMessage());
         throw e;
       }
     }
