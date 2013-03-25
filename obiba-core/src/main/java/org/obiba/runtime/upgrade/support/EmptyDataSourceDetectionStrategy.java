@@ -24,29 +24,28 @@ public class EmptyDataSourceDetectionStrategy implements NewInstallationDetectio
   private JdbcTemplate jdbcTemplate;
 
   public void setDataSource(DataSource dataSource) {
-    this.jdbcTemplate = new JdbcTemplate(dataSource);
+    jdbcTemplate = new JdbcTemplate(dataSource);
   }
 
   @Override
   public boolean isNewInstallation(VersionProvider runtimeVersionProvider) {
-    Boolean result = (Boolean) jdbcTemplate.execute(new ConnectionCallback() {
+    return jdbcTemplate.execute(new ConnectionCallback<Boolean>() {
       @Override
-      public Object doInConnection(Connection con) throws SQLException, DataAccessException {
+      public Boolean doInConnection(Connection con) throws SQLException, DataAccessException {
         String[] types = new String[] { "TABLE" };
         ResultSet tables = con.getMetaData().getTables(null, null, null, types);
         try {
           if(!tables.next()) {
             log.info("DataSource does not contain any table. New installation detected.");
-            return Boolean.TRUE;
+            return true;
           }
         } finally {
           tables.close();
         }
         log.info("DataSource contains at least one table. This is not a new installation.");
-        return Boolean.FALSE;
+        return false;
       }
     });
-    return result;
   }
 
 }
