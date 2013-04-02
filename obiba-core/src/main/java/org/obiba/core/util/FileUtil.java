@@ -6,11 +6,28 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+
+import javax.annotation.Nonnull;
 
 @SuppressWarnings("UnusedDeclaration")
 public final class FileUtil {
 
   private FileUtil() {}
+
+  @Nonnull
+  public static File getFileFromResource(String path) {
+    try {
+      URL resource = FileUtil.class.getClassLoader().getResource(path);
+      URI uri = resource == null ? null : resource.toURI();
+      if(uri == null) throw new IllegalArgumentException("Cannot find file at " + path);
+      return new File(uri);
+    } catch(URISyntaxException e) {
+      throw new IllegalArgumentException("Cannot find file at " + path);
+    }
+  }
 
   /**
    * Copy recursively one directory to another.
