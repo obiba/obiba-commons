@@ -19,7 +19,7 @@ public class TimedExecution {
 
   private long start;
 
-  private long executionTime;
+  private long end;
 
   public TimedExecution start() {
     start = System.currentTimeMillis();
@@ -27,12 +27,15 @@ public class TimedExecution {
   }
 
   public TimedExecution end() {
-    executionTime = System.currentTimeMillis() - start;
+    if(start == 0) throw new IllegalStateException("Cannot end not started TimedExecution");
+    end = System.currentTimeMillis();
     return this;
   }
 
   public String formatExecutionTime() {
-    return PeriodFormat.getDefault().print(new Period(executionTime));
+    if(start == 0) throw new IllegalStateException("Cannot format not started TimedExecution");
+    if(end == 0) throw new IllegalStateException("Cannot format not ended TimedExecution");
+    return PeriodFormat.getDefault().print(new Period(start, end));
   }
 
 }
