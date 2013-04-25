@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -12,7 +13,6 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <groupId>org.obiba</groupId>
   <artifactId>obiba-security</artifactId>
   <packaging>jar</packaging>
 
@@ -26,6 +26,13 @@
     <dependency>
       <groupId>com.atlassian.crowd</groupId>
       <artifactId>crowd-integration-client</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <!-- needed by crowd-integration-client -->
+    <dependency>
+      <groupId>commons-httpclient</groupId>
+      <artifactId>commons-httpclient</artifactId>
       <optional>true</optional>
     </dependency>
 
