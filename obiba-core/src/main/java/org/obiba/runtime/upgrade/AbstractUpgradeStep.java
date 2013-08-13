@@ -17,10 +17,12 @@ public abstract class AbstractUpgradeStep implements UpgradeStep {
 
   private Version appliesTo;
 
+  @Override
   public Version getAppliesTo() {
     return appliesTo;
   }
 
+  @Override
   public String getDescription() {
     return description;
   }

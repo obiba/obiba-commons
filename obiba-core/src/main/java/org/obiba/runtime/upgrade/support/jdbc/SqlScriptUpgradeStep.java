@@ -12,8 +12,8 @@ import org.obiba.runtime.upgrade.AbstractUpgradeStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
-import org.springframework.test.jdbc.SimpleJdbcTestUtils;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.jdbc.JdbcTestUtils;
 
 public class SqlScriptUpgradeStep extends AbstractUpgradeStep {
 
@@ -26,6 +26,15 @@ public class SqlScriptUpgradeStep extends AbstractUpgradeStep {
   private String scriptBasename;
 
   private Resource script;
+
+  public SqlScriptUpgradeStep() {
+  }
+
+  public SqlScriptUpgradeStep(DataSource dataSource, String scriptBasename, Resource scriptPath) {
+    this.dataSource = dataSource;
+    this.scriptBasename = scriptBasename;
+    this.scriptPath = scriptPath;
+  }
 
   public void setDataSource(DataSource dataSource) {
     this.dataSource = dataSource;
@@ -42,14 +51,14 @@ public class SqlScriptUpgradeStep extends AbstractUpgradeStep {
   @PostConstruct
   public void initialize() throws IOException {
     log.debug("Identifying database.");
-    DatabaseProduct product = getDatabaseProduct(this.dataSource);
+    DatabaseProduct product = getDatabaseProduct(dataSource);
     log.debug("Database product is: {}", product);
     script = scriptPath.createRelative(getProductSpecificScriptName(product));
     log.debug("Sql script {} exists {}", script.getDescription(), script.exists());
-    if(script.exists() == false) {
+    if(!script.exists()) {
       script = scriptPath.createRelative(getScriptName());
       log.debug("Sql script {} exists {}", script.getDescription(), script.exists());
-      if(script.exists() == false) {
+      if(!script.exists()) {
         throw new IllegalStateException(
             "Cannot find sql script to execute. Script path '" + scriptPath + "' basename '" + scriptBasename +
                 "' database product '" + product + "'.");
@@ -64,7 +73,7 @@ public class SqlScriptUpgradeStep extends AbstractUpgradeStep {
   }
 
   protected void executeScript(DataSource dataSource, Resource script) {
-    SimpleJdbcTestUtils.executeSqlScript(new SimpleJdbcTemplate(dataSource), script, false);
+    JdbcTestUtils.executeSqlScript(new JdbcTemplate(dataSource), script, false);
   }
 
   protected DatabaseProduct getDatabaseProduct(DataSource dataSource) {
