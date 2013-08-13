@@ -19,6 +19,7 @@ public class MethodInvokingUpgradeStep extends AbstractUpgradeStep {
 
   private String methodName;
 
+  @Override
   public void execute(Version currentVersion) {
     Class<?> clazz = methodOwner.getClass();
 

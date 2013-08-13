@@ -4,10 +4,10 @@ import org.obiba.runtime.Version;
 
 public interface UpgradeStep {
 
-  public String getDescription();
+  String getDescription();
 
-  public Version getAppliesTo();
+  Version getAppliesTo();
 
-  public void execute(Version currentVersion);
+  void execute(Version currentVersion);
 
 }

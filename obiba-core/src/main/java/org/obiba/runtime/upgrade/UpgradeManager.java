@@ -4,12 +4,12 @@ import org.obiba.runtime.Version;
 
 public interface UpgradeManager {
 
-  public Version getCurrentVersion();
+  Version getCurrentVersion();
 
-  public Version getRuntimeVersion();
+  Version getRuntimeVersion();
 
-  public boolean requiresUpgrade();
+  boolean requiresUpgrade();
 
-  public void executeUpgrade() throws UpgradeException;
+  void executeUpgrade() throws UpgradeException;
 
 }
