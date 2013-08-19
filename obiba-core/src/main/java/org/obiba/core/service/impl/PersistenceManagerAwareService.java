@@ -10,6 +10,7 @@ abstract public class PersistenceManagerAwareService implements PersistenceManag
 
   protected PersistenceManager persistenceManager;
 
+  @Override
   public void setPersistenceManager(PersistenceManager persistenceManager) {
     this.persistenceManager = persistenceManager;
   }
