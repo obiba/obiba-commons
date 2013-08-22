@@ -17,13 +17,13 @@ public interface InstallStep {
    *
    * @return description
    */
-  public String getDescription();
+  String getDescription();
 
   /**
    * Executes the <code>InstallStep</code>.
    *
    * @param currentVersion
    */
-  public void execute(Version currentVersion);
+  void execute(Version currentVersion);
 
 }

@@ -35,17 +35,13 @@ final public class Version implements Comparable<Version> {
     this.major = major;
     this.minor = minor;
     this.micro = micro;
-    if(qualifier == null) {
-      this.qualifier = "";
-    } else {
-      this.qualifier = qualifier;
-    }
+    this.qualifier = qualifier == null ? "" : qualifier;
   }
 
   public Version(String version) {
     try {
       Matcher m = VERSION_PATTERN.matcher(version);
-      if(m.matches() == false) {
+      if(!m.matches()) {
         throw invalidVersionString(version, "cannot parse version.");
       }
       String major = m.group(1);
@@ -57,21 +53,14 @@ final public class Version implements Comparable<Version> {
       }
       this.major = Integer.parseInt(major);
       this.minor = Integer.parseInt(minor);
-      if(micro != null) {
-        this.micro = Integer.parseInt(micro);
-      } else {
-        this.micro = 0;
-      }
-      if(qualifier != null) {
-        this.qualifier = qualifier;
-      } else {
-        this.qualifier = "";
-      }
+      this.micro = micro == null ? 0 : Integer.parseInt(micro);
+      this.qualifier = qualifier == null ? "" : qualifier;
     } catch(RuntimeException e) {
       throw invalidVersionString(version, e);
     }
   }
 
+  @Override
   public int compareTo(Version rhs) {
     if(major != rhs.major) return major - rhs.major;
     if(minor != rhs.minor) return minor - rhs.minor;
@@ -98,7 +87,7 @@ final public class Version implements Comparable<Version> {
       return false;
     }
 
-    final Version rhs = (Version) obj;
+    Version rhs = (Version) obj;
     if(major != rhs.major) {
       return false;
     }
@@ -113,7 +102,7 @@ final public class Version implements Comparable<Version> {
 
   @Override
   public int hashCode() {
-    final int PRIME = 31;
+    int PRIME = 31;
     int hash = 1;
     hash = PRIME * hash + major;
     hash = PRIME * hash + minor;

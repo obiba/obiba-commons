@@ -265,8 +265,9 @@ public class DefaultUpgradeManager implements UpgradeManager {
   @Nonnull
   protected List<UpgradeStep> getApplicableSteps() {
     List<UpgradeStep> applicableSteps = new ArrayList<UpgradeStep>();
+    Version currentVersion = getCurrentVersion();
     for(UpgradeStep step : upgradeSteps) {
-      int diff = versionComparator.compare(getCurrentVersion(), step.getAppliesTo());
+      int diff = versionComparator.compare(currentVersion, step.getAppliesTo());
       if(diff < 0) {
         applicableSteps.add(step);
       }
