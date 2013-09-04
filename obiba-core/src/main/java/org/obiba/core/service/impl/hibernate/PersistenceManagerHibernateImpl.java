@@ -42,46 +42,56 @@ public class PersistenceManagerHibernateImpl extends DefaultPersistenceManagerIm
     return sessionFactory.getCurrentSession();
   }
 
+  @Override
   public int count(Class<?> type) {
     return count(getSession().createCriteria(type));
   }
 
+  @Override
   public int count(Object template) {
     return count(getSession().createCriteria(template.getClass()).add(AssociationExample.create(template)));
   }
 
+  @Override
   public void delete(Object entity) {
     getSession().delete(entity);
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public <T> T get(Class<T> type, Serializable id) {
     return (T) getSession().get(type, id);
   }
 
+  @Override
   public Serializable getId(Object o) {
     return getSession().getIdentifier(o);
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public <T> List<T> list(Class<T> type, PagingClause paging, SortingClause... clauses) {
     return AssociationCriteria.create(type, getSession()).addPagingClause(paging).addSortingClauses(clauses)
         .getCriteria().setCacheable(cacheTemplateQueries).list();
   }
 
+  @Override
   public <T> List<T> list(Class<T> type, SortingClause... clauses) {
     return this.list(type, null, clauses);
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public <T> List<T> match(T template, PagingClause paging, SortingClause... clauses) {
     return mathCriteria(template, paging, clauses).list();
   }
 
+  @Override
   public <T> List<T> match(T template, SortingClause... clauses) {
     return this.match(template, null, clauses);
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public <T> T matchOne(T template, SortingClause... clauses) {
     return (T) mathCriteria(template, null, clauses).uniqueResult();
@@ -93,6 +103,7 @@ public class PersistenceManagerHibernateImpl extends DefaultPersistenceManagerIm
         .getCriteria().setCacheable(cacheTemplateQueries);
   }
 
+  @Override
   public <T> T newInstance(Class<T> type) {
     try {
       return type.newInstance();
@@ -101,11 +112,13 @@ public class PersistenceManagerHibernateImpl extends DefaultPersistenceManagerIm
     }
   }
 
+  @Override
   public <T> T refresh(T entity) {
     getSession().refresh(entity);
     return entity;
   }
 
+  @Override
   public <T> T save(T entity) throws ValidationRuntimeException {
     validate(entity);
     getSession().save(entity);
