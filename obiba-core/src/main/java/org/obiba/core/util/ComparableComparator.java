@@ -16,6 +16,7 @@ public class ComparableComparator<T extends Comparable<T>> implements Comparator
 
   private static final long serialVersionUID = -2271811769930959756L;
 
+  @Override
   public int compare(T o1, T o2) {
     return o1.compareTo(o2);
   }
