@@ -233,7 +233,7 @@
       </dependency>
 
       <dependency>
-        <groupId>hsqldb</groupId>
+        <groupId>org.hsqldb</groupId>
         <artifactId>hsqldb</artifactId>
         <version>${hsqldb.version}</version>
         <scope>test</scope>
@@ -352,7 +352,7 @@
       <artifactId>commons-dbcp</artifactId>
     </dependency>
     <dependency>
-      <groupId>hsqldb</groupId>
+      <groupId>org.hsqldb</groupId>
       <artifactId>hsqldb</artifactId>
     </dependency>
     <dependency>
@@ -637,23 +637,23 @@
     <commons-dbcp.version>1.4</commons-dbcp.version>
     <commons-httpclient.version>3.1</commons-httpclient.version>
     <crowd.version>2.5.1</crowd.version>
-    <dbunit.version>2.2.2</dbunit.version>
-    <easymock.version>2.5</easymock.version>
+    <dbunit.version>2.4.9</dbunit.version>
+    <easymock.version>3.2</easymock.version>
     <hibernate-annotations.version>3.4.0.GA</hibernate-annotations.version>
     <hibernate-core.version>3.3.2.GA</hibernate-core.version>
-    <hsqldb.version>1.8.0.10</hsqldb.version>
+    <hsqldb.version>2.3.0</hsqldb.version>
     <javassist.version>3.4.GA</javassist.version>
     <jetty.version>6.1.17</jetty.version>
-    <joda-time.version>2.2</joda-time.version>
+    <joda-time.version>2.3</joda-time.version>
     <jsr305.version>2.0.1</jsr305.version>
     <jta.version>1.0.1B</jta.version>
-    <junit.version>4.7</junit.version>
+    <junit.version>4.11</junit.version>
     <liquibase.version>1.9.4</liquibase.version>
-    <mail.version>1.4</mail.version>
-    <mysql-connector-java.version>5.1.24</mysql-connector-java.version>
+    <mail.version>1.5.0-b01</mail.version>
+    <mysql-connector-java.version>5.1.26</mysql-connector-java.version>
     <shiro.version>1.2.1</shiro.version>
     <slf4j.version>1.7.5</slf4j.version>
-    <spring.version>3.1.4.RELEASE</spring.version>
+    <spring.version>3.2.4.RELEASE</spring.version>
     <wicket.version>1.4.17</wicket.version>
     <xstream.version>1.4.4</xstream.version>
 

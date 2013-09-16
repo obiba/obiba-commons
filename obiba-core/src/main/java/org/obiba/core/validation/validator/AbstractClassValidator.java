@@ -15,7 +15,7 @@ public abstract class AbstractClassValidator implements Validator {
    * @see org.springframework.validation.Validator#supports(java.lang.Class)
    */
   @SuppressWarnings("unchecked")
-  public boolean supports(final Class clazz) {
+  public boolean supports(Class clazz) {
     return clazz.isAssignableFrom(getValidatorSupportClass());
   }
 
@@ -23,7 +23,7 @@ public abstract class AbstractClassValidator implements Validator {
    * @see org.springframework.validation.Validator#validate(java.lang.Object,
    *      org.springframework.validation.Errors)
    */
-  public abstract void validate(final Object obj, final Errors errors);
+  public abstract void validate(Object obj, Errors errors);
 
   /**
    * @return
@@ -36,7 +36,7 @@ public abstract class AbstractClassValidator implements Validator {
    * @param obj the object to validate.
    * @return null if object is null or object class is not supported by this validator.
    */
-  public Errors validate(final Object obj) {
+  public Errors validate(Object obj) {
     Errors errors = null;
 
     if(obj != null && supports(obj.getClass())) {
