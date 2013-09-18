@@ -35,7 +35,12 @@
 
     <dependency>
       <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-annotations</artifactId>
+      <artifactId>hibernate-core</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-ehcache</artifactId>
       <optional>true</optional>
     </dependency>
     <dependency>
@@ -43,11 +48,7 @@
       <artifactId>javassist</artifactId>
       <optional>true</optional>
     </dependency>
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-cglib-repack</artifactId>
-      <optional>true</optional>
-    </dependency>
+
 
     <dependency>
       <groupId>org.slf4j</groupId>

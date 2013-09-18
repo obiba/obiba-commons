@@ -6,11 +6,11 @@ import java.util.Map;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.sql.JoinType;
 import org.obiba.core.service.PagingClause;
 import org.obiba.core.service.SortingClause;
 import org.obiba.core.util.StringUtil;
@@ -491,11 +491,9 @@ public class AssociationCriteria {
    * @return the new {@link Criteria} instance for the specified property of the parent {@link Criteria}
    */
   protected Criteria createSubCriteria(Criteria parentCriteria, String property, boolean leftJoin) {
-    if(leftJoin) {
-      return parentCriteria.createCriteria(property, CriteriaSpecification.LEFT_JOIN);
-    } else {
-      return parentCriteria.createCriteria(property);
-    }
+    return leftJoin
+        ? parentCriteria.createCriteria(property, JoinType.LEFT_OUTER_JOIN)
+        : parentCriteria.createCriteria(property);
   }
 
   /**

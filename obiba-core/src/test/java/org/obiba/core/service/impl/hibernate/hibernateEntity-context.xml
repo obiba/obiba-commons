@@ -21,24 +21,20 @@
   <bean id="namingStrategy" class="org.hibernate.cfg.ImprovedNamingStrategy"/>
 
   <!-- The Hibernate SessionFactory -->
-  <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
-    <property name="dataSource">
-      <ref bean="dataSource"/>
-    </property>
-    <property name="namingStrategy">
-      <ref bean="namingStrategy"/>
-    </property>
+  <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+    <property name="dataSource" ref="dataSource"/>
+    <property name="namingStrategy" ref="namingStrategy"/>
     <property name="annotatedClasses">
       <list>
         <value>org.obiba.core.service.impl.hibernate.testModel.AnEntity</value>
       </list>
     </property>
-    <property name="configurationClass" value="org.hibernate.cfg.AnnotationConfiguration"/>
+    <!--<property name="configurationClass" value="org.hibernate.cfg.AnnotationConfiguration"/>-->
     <property name="hibernateProperties" ref="hibernateConfig"/>
   </bean>
 
   <!-- Hook the SessionFactory to a platform TransactionManager -->
-  <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+  <bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean>
 
@@ -47,4 +43,5 @@
       <property name="transactionManager" ref="transactionManager"/>
     </bean>
   -->
+
 </beans>
