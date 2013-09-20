@@ -26,6 +26,7 @@ public class MockSpringApplication extends WebApplication implements ISpringWebA
 
     private static final long serialVersionUID = 1L;
 
+    @Override
     public ApplicationContext getSpringContext() {
       Application app = Application.get();
       return ((MockSpringApplication) app).getApplicationContext();
@@ -35,7 +36,7 @@ public class MockSpringApplication extends WebApplication implements ISpringWebA
   @Override
   protected void init() {
     super.init();
-    super.addComponentInstantiationListener(new SpringComponentInjector(this, this.context, true));
+    addComponentInstantiationListener(new SpringComponentInjector(this, context, true));
     getResourceSettings().setThrowExceptionOnMissingResource(false);
   }
 

@@ -17,8 +17,6 @@ public abstract class ImageLabelLinkPanel extends Panel {
 
   public enum ImageLocation {left, right}
 
-  ;
-
   ImageLocation imgLoc = ImageLocation.left;
 
   /**

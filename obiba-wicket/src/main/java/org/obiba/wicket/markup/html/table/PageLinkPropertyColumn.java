@@ -17,11 +17,11 @@ public class PageLinkPropertyColumn<T> extends PropertyColumn<T> {
 
   private static final long serialVersionUID = 2517785311391170622L;
 
-  private Class<? extends Page> pageClass;
+  private final Class<? extends Page> pageClass;
 
-  private String key;
+  private final String key;
 
-  private String propertyExpression;
+  private final String propertyExpression;
 
   /**
    * @param displayModel the label of the column's header
@@ -52,7 +52,7 @@ public class PageLinkPropertyColumn<T> extends PropertyColumn<T> {
     Object value = PropertyResolver.getValue(propertyExpression, rowModel);
     if(value == null) throw new IllegalArgumentException(
         "Property [" + propertyExpression + "] value is null for object [" + rowModel + "]: cannot create page link.");
-    parameters.add(this.key, value.toString());
+    parameters.add(key, value.toString());
     item.add(new LinkPanel(componentId, pageClass, parameters, createLabelModel(rowModel)));
   }
 

@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class PersistenceManagerHibernateImpl extends DefaultPersistenceManagerImpl {
 
-  private final Logger log = LoggerFactory.getLogger(PersistenceManagerHibernateImpl.class);
+  private static final Logger log = LoggerFactory.getLogger(PersistenceManagerHibernateImpl.class);
 
   protected SessionFactory sessionFactory = null;
 
@@ -77,7 +77,7 @@ public class PersistenceManagerHibernateImpl extends DefaultPersistenceManagerIm
 
   @Override
   public <T> List<T> list(Class<T> type, SortingClause... clauses) {
-    return this.list(type, null, clauses);
+    return list(type, null, clauses);
   }
 
   @Override
@@ -88,7 +88,7 @@ public class PersistenceManagerHibernateImpl extends DefaultPersistenceManagerIm
 
   @Override
   public <T> List<T> match(T template, SortingClause... clauses) {
-    return this.match(template, null, clauses);
+    return match(template, null, clauses);
   }
 
   @Override

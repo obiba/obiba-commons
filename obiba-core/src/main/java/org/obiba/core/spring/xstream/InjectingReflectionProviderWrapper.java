@@ -19,7 +19,7 @@ import com.thoughtworks.xstream.converters.reflection.ReflectionProviderWrapper;
  */
 public class InjectingReflectionProviderWrapper extends ReflectionProviderWrapper {
 
-  private ApplicationContext applicationContext;
+  private final ApplicationContext applicationContext;
 
   private int autowireType = AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE;
 

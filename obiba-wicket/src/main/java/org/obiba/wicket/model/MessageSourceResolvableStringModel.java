@@ -26,11 +26,11 @@ public class MessageSourceResolvableStringModel extends AbstractReadOnlyModel {
 
   private static final long serialVersionUID = 1936149729794048090L;
 
-  private MessageSource messageSource;
+  private final MessageSource messageSource;
 
-  private IModel localeModel;
+  private final IModel localeModel;
 
-  private IModel messageSourceResolvableModel;
+  private final IModel messageSourceResolvableModel;
 
   public MessageSourceResolvableStringModel(MessageSource messageSource, IModel messageSourceResolvableModel,
       IModel localeModel) {
@@ -60,9 +60,9 @@ public class MessageSourceResolvableStringModel extends AbstractReadOnlyModel {
   @Override
   public void detach() {
     if(localeModel != null) {
-      this.localeModel.detach();
+      localeModel.detach();
     }
-    this.messageSourceResolvableModel.detach();
+    messageSourceResolvableModel.detach();
     super.detach();
   }
 

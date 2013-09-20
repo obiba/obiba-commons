@@ -75,6 +75,7 @@ final public class Version implements Comparable<Version> {
     return sb.toString();
   }
 
+  @SuppressWarnings("SimplifiableIfStatement")
   @Override
   public boolean equals(Object obj) {
     if(this == obj) {

@@ -97,7 +97,7 @@ public class AjaxEditableLabel<T> extends Panel {
    * @param labelModel
    * @return this for chaining
    */
-  public final AjaxEditableLabel<T> setLabel(final IModel<String> labelModel) {
+  public final AjaxEditableLabel<T> setLabel(IModel<String> labelModel) {
     getEditor().setLabel(labelModel);
     return this;
   }
@@ -106,7 +106,7 @@ public class AjaxEditableLabel<T> extends Panel {
    * @see org.apache.wicket.MarkupContainer#setModel(org.apache.wicket.model.IModel)
    */
   public final Component setModel(IModel<T> model) {
-    super.setDefaultModel(model);
+    setDefaultModel(model);
     getLabel().setDefaultModel(model);
     getEditor().setDefaultModel(model);
     return this;
@@ -118,7 +118,7 @@ public class AjaxEditableLabel<T> extends Panel {
    * @param required
    * @return this for chaining
    */
-  public final AjaxEditableLabel<T> setRequired(final boolean required) {
+  public final AjaxEditableLabel<T> setRequired(boolean required) {
     getEditor().setRequired(required);
     return this;
   }
@@ -166,6 +166,7 @@ public class AjaxEditableLabel<T> extends Panel {
 
       private static final long serialVersionUID = 1L;
 
+      @Override
       protected void onComponentTagBody(MarkupStream markupStream, ComponentTag openTag) {
         if(getDefaultModelObject() == null) {
           replaceComponentTagBody(markupStream, openTag, defaultNullLabel());
@@ -310,6 +311,7 @@ public class AjaxEditableLabel<T> extends Panel {
   /**
    * @see org.apache.wicket.Component#onBeforeRender()
    */
+  @Override
   protected void onBeforeRender() {
     super.onBeforeRender();
     // lazily add label and editor
@@ -374,16 +376,17 @@ public class AjaxEditableLabel<T> extends Panel {
     public EditorAjaxBehavior() {
     }
 
+    @Override
     protected void onComponentTag(ComponentTag tag) {
       super.onComponentTag(tag);
-      final String saveCall = "{" + generateCallbackScript(
+      String saveCall = "{" + generateCallbackScript(
           "wicketAjaxGet('" + getCallbackUrl() + "&save=true&'+this.name+'='+wicketEncode(this.value)") +
           "; return false;}";
 
-      final String cancelCall = "{" + generateCallbackScript("wicketAjaxGet('" + getCallbackUrl() + "&save=false'") +
+      String cancelCall = "{" + generateCallbackScript("wicketAjaxGet('" + getCallbackUrl() + "&save=false'") +
           "; return false;}";
 
-      final String keypress = "var kc=wicketKeyCode(event); if (kc==27) " + cancelCall +
+      String keypress = "var kc=wicketKeyCode(event); if (kc==27) " + cancelCall +
           " else if (kc!=13) { return true; } else " + saveCall;
 
       tag.put("onblur", saveCall);
@@ -391,6 +394,7 @@ public class AjaxEditableLabel<T> extends Panel {
 
     }
 
+    @Override
     protected void respond(AjaxRequestTarget target) {
       RequestCycle requestCycle = RequestCycle.get();
       boolean save = Boolean.valueOf(requestCycle.getRequest().getParameter("save")).booleanValue();
@@ -422,6 +426,7 @@ public class AjaxEditableLabel<T> extends Panel {
       super(event);
     }
 
+    @Override
     protected void onEvent(AjaxRequestTarget target) {
       onEdit(target);
     }

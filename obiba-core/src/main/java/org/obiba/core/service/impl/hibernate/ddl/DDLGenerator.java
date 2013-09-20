@@ -74,7 +74,7 @@ public class DDLGenerator {
    * @param suffix DDL script file suffix
    * @param conf
    */
-  @SuppressWarnings({ "AssignmentToMethodParameter", "PMD.AvoidReassigningParameters", "PMD.NcssMethodCount" })
+  @SuppressWarnings({ "AssignmentToMethodParameter" })
   private void generate(String path, String suffix, @Nonnull Configuration conf) {
     //noinspection ConstantConditions
     if(conf == null) throw new IllegalArgumentException("Configuration cannot be null.");

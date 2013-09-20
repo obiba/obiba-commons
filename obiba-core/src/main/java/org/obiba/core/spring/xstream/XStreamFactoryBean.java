@@ -33,6 +33,7 @@ public class XStreamFactoryBean implements FactoryBean, ApplicationContextAware 
 
   private Set<Converter> converters;
 
+  @Override
   public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
     this.applicationContext = applicationContext;
   }
@@ -57,15 +58,17 @@ public class XStreamFactoryBean implements FactoryBean, ApplicationContextAware 
     this.converters = converters;
   }
 
+  @Override
   public Object getObject() throws Exception {
     return doCreateXStream();
   }
 
-  @SuppressWarnings("unchecked")
+  @Override
   public Class getObjectType() {
     return XStream.class;
   }
 
+  @Override
   public boolean isSingleton() {
     return false;
   }

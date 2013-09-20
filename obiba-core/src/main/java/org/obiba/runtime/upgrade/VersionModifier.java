@@ -4,6 +4,6 @@ import org.obiba.runtime.Version;
 
 public interface VersionModifier extends VersionProvider {
 
-  public void setVersion(Version version);
+  void setVersion(Version version);
 
 }

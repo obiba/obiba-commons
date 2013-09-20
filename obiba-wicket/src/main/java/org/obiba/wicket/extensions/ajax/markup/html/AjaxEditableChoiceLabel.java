@@ -142,11 +142,13 @@ public class AjaxEditableChoiceLabel extends AjaxEditableLabel {
    * @see org.apache.wicket.extensions.ajax.markup.html.AjaxEditableLabel#newEditor(org.apache.wicket.MarkupContainer,
    *      java.lang.String, org.apache.wicket.model.IModel)
    */
+  @Override
   protected FormComponent newEditor(MarkupContainer parent, String componentId, IModel model) {
     DropDownChoice editor = new DropDownChoice(componentId, model, new AbstractReadOnlyModel() {
 
       private static final long serialVersionUID = 1L;
 
+      @Override
       public Object getObject() {
         return choices.getObject();
       }
@@ -163,12 +165,13 @@ public class AjaxEditableChoiceLabel extends AjaxEditableLabel {
     editor.add(new EditorAjaxBehavior() {
       private static final long serialVersionUID = 1L;
 
+      @Override
       protected void onComponentTag(ComponentTag tag) {
         super.onComponentTag(tag);
-        final String saveCall = "{wicketAjaxGet('" + getCallbackUrl() +
+        String saveCall = "{wicketAjaxGet('" + getCallbackUrl() +
             "&save=true&'+this.name+'='+wicketEncode(this.value)); return true;}";
 
-        final String cancelCall = "{wicketAjaxGet('" + getCallbackUrl() +
+        String cancelCall = "{wicketAjaxGet('" + getCallbackUrl() +
             "&save=false'); return false;}";
 
         tag.put("onchange", saveCall);

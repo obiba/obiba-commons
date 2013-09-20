@@ -124,7 +124,7 @@ public class VersionTableInstallStep implements InstallStep {
     }
 
     @Override
-    @SuppressWarnings({ "AssignmentToMethodParameter", "PMD.AvoidReassigningParameters" })
+    @SuppressWarnings({ "AssignmentToMethodParameter" })
     public String modifySql(String sql, Database database) {
       if(sql.toUpperCase().startsWith("CREATE TABLE")) {
         sql += " ENGINE=InnoDB";

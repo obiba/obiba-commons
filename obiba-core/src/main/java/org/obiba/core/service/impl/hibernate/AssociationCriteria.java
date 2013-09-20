@@ -327,12 +327,12 @@ public class AssociationCriteria {
   /**
    * The resulting Criteria "rooted" on the initial entity
    */
-  private Criteria baseCriteria;
+  private final Criteria baseCriteria;
 
   /**
    * A Map of association path to the Criteria instance
    */
-  private Map<String, Criteria> associationCriteria = new HashMap<String, Criteria>();
+  private final Map<String, Criteria> associationCriteria = new HashMap<String, Criteria>();
 
   /**
    * Builds a new instance of an AssociationCriteria for the specified entity type and the specified session.
