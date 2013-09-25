@@ -78,7 +78,6 @@
     <dependency>
       <groupId>commons-dbcp</groupId>
       <artifactId>commons-dbcp</artifactId>
-      <optional>true</optional>
     </dependency>
 
     <dependency>
@@ -103,16 +102,6 @@
       <groupId>org.dbunit</groupId>
       <artifactId>dbunit</artifactId>
       <scope>compile</scope>
-      <optional>true</optional>
-    </dependency>
-
-    <!--
-      Even though we don't use it, the JTA jar is required due because the Spring class hierarchy and hibernate
-      references javax.transaction.TransactionManager
-    -->
-    <dependency>
-      <groupId>javax.transaction</groupId>
-      <artifactId>jta</artifactId>
       <optional>true</optional>
     </dependency>
 
