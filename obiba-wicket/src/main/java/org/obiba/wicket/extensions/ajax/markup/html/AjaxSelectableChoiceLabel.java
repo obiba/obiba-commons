@@ -15,7 +15,7 @@ public abstract class AjaxSelectableChoiceLabel extends AjaxEditableChoiceLabel 
 
   private IChoiceRenderer renderer = null;
 
-  private List selectable;
+  private final List selectable;
 
   private AjaxDropDownMultipleChoice editor = null;
 
@@ -136,8 +136,6 @@ public abstract class AjaxSelectableChoiceLabel extends AjaxEditableChoiceLabel 
     private Object dummy = null;
 
     protected Dummy2() {}
-
-    ;
 
     public Object getDummy() {
       return dummy;

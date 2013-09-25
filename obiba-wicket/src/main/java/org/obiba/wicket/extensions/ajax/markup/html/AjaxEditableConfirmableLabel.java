@@ -81,6 +81,7 @@ public class AjaxEditableConfirmableLabel extends AjaxEditableLabel {
    *
    * @param target the ajax request target
    */
+  @Override
   protected void onCancel(AjaxRequestTarget target) {
     ok.setVisible(false);
     cancel.setVisible(false);
@@ -92,6 +93,7 @@ public class AjaxEditableConfirmableLabel extends AjaxEditableLabel {
    *
    * @param target Ajax target
    */
+  @Override
   protected void onEdit(AjaxRequestTarget target) {
     ok.setVisible(true);
     cancel.setVisible(true);
@@ -105,6 +107,7 @@ public class AjaxEditableConfirmableLabel extends AjaxEditableLabel {
    *
    * @param target The ajax request target
    */
+  @Override
   protected void onSubmit(AjaxRequestTarget target) {
     ok.setVisible(false);
     cancel.setVisible(false);
@@ -125,14 +128,14 @@ public class AjaxEditableConfirmableLabel extends AjaxEditableLabel {
     return new EditorAjaxBehavior() {
       @Override
       protected void onComponentTag(ComponentTag tag) {
-        final String saveCall = "{" + generateCallbackScript(
+        String saveCall = "{" + generateCallbackScript(
             "wicketAjaxGet('" + getCallbackUrl() + "&save=true&'+this.name+'='+wicketEncode(this.value)") +
             "; return false;}";
 
-        final String cancelCall = "{" + generateCallbackScript("wicketAjaxGet('" + getCallbackUrl() + "&save=false'") +
+        String cancelCall = "{" + generateCallbackScript("wicketAjaxGet('" + getCallbackUrl() + "&save=false'") +
             "; return false;}";
 
-        final String keypress = "var kc=wicketKeyCode(event); if (kc==27) " + cancelCall +
+        String keypress = "var kc=wicketKeyCode(event); if (kc==27) " + cancelCall +
             " else if (kc!=13) { return true; } else " + saveCall;
 
         tag.put("onkeypress", keypress);
@@ -144,22 +147,22 @@ public class AjaxEditableConfirmableLabel extends AjaxEditableLabel {
 
     private static final long serialVersionUID = 1L;
 
-    private boolean ok;
+    private final boolean ok;
 
     /**
      * Constructor.
      */
     public ValidatorAjaxBehavior(boolean ok) {
-      super();
       this.ok = ok;
     }
 
+    @Override
     protected void onComponentTag(ComponentTag tag) {
-      final String saveCall = "{" + generateCallbackScript(
+      String saveCall = "{" + generateCallbackScript(
           "wicketAjaxGet('" + getCallbackUrl() + "&save=true&'+Wicket.$('" + getEditor().getMarkupId() +
               "').name+'='+wicketEncode(Wicket.$('" + getEditor().getMarkupId() + "').value)") + "; return false;}";
 
-      final String cancelCall = "{" + generateCallbackScript("wicketAjaxGet('" + getCallbackUrl() + "&save=false'") +
+      String cancelCall = "{" + generateCallbackScript("wicketAjaxGet('" + getCallbackUrl() + "&save=false'") +
           "; return false;}";
 
       if(ok) tag.put("onclick", saveCall);

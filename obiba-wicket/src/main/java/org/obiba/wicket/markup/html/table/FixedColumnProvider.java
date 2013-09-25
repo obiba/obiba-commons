@@ -20,30 +20,34 @@ public class FixedColumnProvider<T> implements IColumnProvider<T>, Serializable 
 
   private final List<IColumn<T>> fixedColumns;
 
-  public FixedColumnProvider(final List<IColumn<T>> fixedColumns) {
+  public FixedColumnProvider(List<IColumn<T>> fixedColumns) {
     this.fixedColumns = fixedColumns;
   }
 
   public FixedColumnProvider() {
-    this.fixedColumns = new ArrayList<IColumn<T>>();
+    fixedColumns = new ArrayList<IColumn<T>>();
   }
 
   public void addColumn(IColumn<T> column) {
     fixedColumns.add(column);
   }
 
+  @Override
   public List<IColumn<T>> getAdditionalColumns() {
     return null;
   }
 
+  @Override
   public List<String> getColumnHeaderNames() {
     return null;
   }
 
+  @Override
   public List<IColumn<T>> getDefaultColumns() {
     return Collections.unmodifiableList(fixedColumns);
   }
 
+  @Override
   public List<IColumn<T>> getRequiredColumns() {
     return Collections.unmodifiableList(fixedColumns);
   }

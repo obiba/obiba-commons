@@ -272,7 +272,6 @@ public class CrowdRealm extends AuthorizingRealm {
    * {@inheritDoc}
    */
   @Override
-  @SuppressWarnings("PMD.NcssMethodCount")
   protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken)
       throws AuthenticationException {
 

@@ -31,10 +31,12 @@ public class JdbcVersionModifier implements VersionModifier, InitializingBean {
 
   private Version version;
 
+  @Override
   public Version getVersion() {
     return version;
   }
 
+  @Override
   public void setVersion(Version version) {
     this.version = version;
     jdbcTemplate.execute("delete from version");
@@ -47,6 +49,7 @@ public class JdbcVersionModifier implements VersionModifier, InitializingBean {
     this.datasource = datasource;
   }
 
+  @Override
   public void afterPropertiesSet() throws Exception {
     jdbcTemplate = new JdbcTemplate(datasource);
 

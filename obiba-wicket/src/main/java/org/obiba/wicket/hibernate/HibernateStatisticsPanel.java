@@ -26,7 +26,7 @@ public class HibernateStatisticsPanel extends Panel {
   public HibernateStatisticsPanel(String id, IModel<Statistics> statsModel) {
     super(id, statsModel);
 
-    final WebMarkupContainer st = new WebMarkupContainer("stats", new CompoundPropertyModel<Statistics>(statsModel));
+    WebMarkupContainer st = new WebMarkupContainer("stats", new CompoundPropertyModel<Statistics>(statsModel));
     st.add(new Label("isStatisticsEnabled"));
     st.add(new Label("startTime"));
     st.add(new Label("sessionOpenCount"));
@@ -63,10 +63,10 @@ public class HibernateStatisticsPanel extends Panel {
 
       private static final long serialVersionUID = -2021620693275613902L;
 
+      @Override
       protected void populateItem(ListItem<String> item) {
         String entityName = item.getModelObject();
-        final EntityStatistics entityStat = HibernateStatisticsPanel.this.getModelObject()
-            .getEntityStatistics(entityName);
+        EntityStatistics entityStat = HibernateStatisticsPanel.this.getModelObject().getEntityStatistics(entityName);
         item.add(new Label("deleteCount", new Model(entityStat.getDeleteCount())));
         item.add(new Label("updateCount", new Model(entityStat.getUpdateCount())));
         item.add(new Label("fetchCount", new Model(entityStat.getFetchCount())));
@@ -83,6 +83,7 @@ public class HibernateStatisticsPanel extends Panel {
 
       private static final long serialVersionUID = 90593970649625929L;
 
+      @Override
       protected void populateItem(ListItem<String> item) {
         String collName = item.getModelObject();
         CollectionStatistics collectionStatistics = HibernateStatisticsPanel.this.getModelObject()
@@ -101,6 +102,7 @@ public class HibernateStatisticsPanel extends Panel {
 
       private static final long serialVersionUID = 1L;
 
+      @Override
       protected void populateItem(ListItem<String> item) {
         String queryName = item.getModelObject();
         QueryStatistics queryStatistics = HibernateStatisticsPanel.this.getModelObject().getQueryStatistics(queryName);
@@ -123,6 +125,7 @@ public class HibernateStatisticsPanel extends Panel {
 
       private static final long serialVersionUID = 1L;
 
+      @Override
       protected void populateItem(ListItem<String> item) {
         String cacheName = (String) item.getModelObject();
         SecondLevelCacheStatistics cacheStatistics = HibernateStatisticsPanel.this.getModelObject()

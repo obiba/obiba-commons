@@ -56,7 +56,6 @@ public class LinkPanel extends Panel {
         listener.onLinkClicked();
       }
 
-      ;
     };
     link.add(makeLabelComponent(labelModel));
     add(link);

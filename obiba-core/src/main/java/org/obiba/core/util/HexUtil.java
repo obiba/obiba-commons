@@ -52,7 +52,7 @@ final public class HexUtil {
    * @param out A byte array of length at least s.length()/2 + off
    * @param off The first byte to write of the array
    */
-  @SuppressWarnings({ "AssignmentToMethodParameter", "PMD.AvoidReassigningParameters" })
+  @SuppressWarnings({ "AssignmentToMethodParameter" })
   public static void hexToBytes(String s, byte[] out, int off) throws NumberFormatException, IndexOutOfBoundsException {
     int slen = s.length();
     if(slen % 2 != 0) {

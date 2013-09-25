@@ -31,18 +31,20 @@ public class DateMatcher extends BaseMatcher<Date> {
   private final String desc;
 
   private DateMatcher(Date d, String desc, int[] fields) {
-    (this.value = GregorianCalendar.getInstance()).setTime(d);
+    (value = GregorianCalendar.getInstance()).setTime(d);
     this.fields = fields;
     this.desc = desc;
   }
 
+  @Override
   public void describeTo(Description description) {
     DateFormat df = new SimpleDateFormat("yyyy-MM-dd G 'at' HH:mm:ss z");
     description.appendText("the same ").appendText(desc).appendText(" as ").appendValue(df.format(value.getTime()));
   }
 
+  @Override
   public boolean matches(Object obj) {
-    if(obj instanceof java.util.Date) {
+    if(obj instanceof Date) {
       Calendar c = GregorianCalendar.getInstance();
       c.setTime((Date) obj);
       for(int i = 0; i < fields.length; i++) {

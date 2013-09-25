@@ -4,6 +4,6 @@ import org.apache.wicket.protocol.http.WebApplication;
 
 public interface DatabaseSeed {
 
-  public void seedDatabase(WebApplication application);
+  void seedDatabase(WebApplication application);
 
 }

@@ -18,13 +18,14 @@ public class FilteredSortableDataProviderEntityServiceImpl<T> extends SortableDa
 
   private static final long serialVersionUID = 1L;
 
-  private T template;
+  private final T template;
 
   public FilteredSortableDataProviderEntityServiceImpl(EntityQueryService queryService, T template) {
     super(queryService, (Class<T>) template.getClass());
     this.template = template;
   }
 
+  @Override
   public Iterator<T> iterator(int first, int count) {
     SortParam sp = getSort();
     SortingClause sort = null;
@@ -34,10 +35,12 @@ public class FilteredSortableDataProviderEntityServiceImpl<T> extends SortableDa
     return getList(PagingClause.create(first, count), sort).iterator();
   }
 
+  @Override
   protected List<T> getList(PagingClause paging, SortingClause... clauses) {
     return getQueryService().match(template, paging, clauses);
   }
 
+  @Override
   public int size() {
     return getQueryService().count(template);
   }

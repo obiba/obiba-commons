@@ -17,11 +17,12 @@ public class MethodArgValidationInterceptor extends ObjectValidationInspector im
   /**
    * @see org.aopalliance.intercept.MethodInterceptor#invoke(org.aopalliance.intercept.MethodInvocation)
    */
-  public Object invoke(final MethodInvocation methodInvocation) throws Throwable {
+  @Override
+  public Object invoke(MethodInvocation methodInvocation) throws Throwable {
     log.info("method={}", methodInvocation.getMethod().getName());
-    final List<Errors> errors = new ArrayList<Errors>();
+    List<Errors> errors = new ArrayList<Errors>();
     for(int i = 0; i < methodInvocation.getArguments().length; i++) {
-      final Object arg = methodInvocation.getArguments()[i];
+      Object arg = methodInvocation.getArguments()[i];
       log.info("method={} object={}", methodInvocation.getMethod().getName(), arg.getClass().getName());
       // Inspect fields... of this arg.
       inspectObject(errors, arg);

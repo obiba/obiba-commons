@@ -28,6 +28,7 @@ public abstract class AbstractDatabaseUpgradeStep extends AbstractUpgradeStep {
 
   protected abstract void execute(Version currentVersion, SimpleJdbcTemplate template);
 
+  @Override
   public void execute(Version currentVersion) {
     SimpleJdbcTemplate template = new SimpleJdbcTemplate(dataSource);
     execute(currentVersion, template);

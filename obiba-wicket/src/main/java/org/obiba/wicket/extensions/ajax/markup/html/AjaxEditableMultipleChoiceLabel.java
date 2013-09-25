@@ -113,6 +113,7 @@ public class AjaxEditableMultipleChoiceLabel extends AjaxEditableLabel {
    * @see org.apache.wicket.extensions.ajax.markup.html.AjaxEditableLabel#newEditor(org.apache.wicket.MarkupContainer,
    *      java.lang.String, org.apache.wicket.model.IModel)
    */
+  @Override
   protected FormComponent newEditor(MarkupContainer parent, String componentId, IModel model) {
     ListMultipleChoice editor = new ListMultipleChoice(componentId, model, new AbstractReadOnlyModel() {
 
@@ -130,15 +131,16 @@ public class AjaxEditableMultipleChoiceLabel extends AjaxEditableLabel {
     editor.add(new EditorAjaxBehavior() {
       private static final long serialVersionUID = 1L;
 
+      @Override
       protected void onComponentTag(ComponentTag tag) {
         super.onComponentTag(tag);
-        final String saveCall = "{wicketAjaxGet('" + getCallbackUrl() +
+        String saveCall = "{wicketAjaxGet('" + getCallbackUrl() +
             "&save=true&'+wicketSerialize(this)); return true;}";
 
-        final String cancelCall = "{wicketAjaxGet('" + getCallbackUrl() +
+        String cancelCall = "{wicketAjaxGet('" + getCallbackUrl() +
             "&save=false'); return false;}";
 
-        final String keypress = "var kc=wicketKeyCode(event); if (kc==27) " + cancelCall +
+        String keypress = "var kc=wicketKeyCode(event); if (kc==27) " + cancelCall +
             " else if (kc!=13) { return true; } else " + saveCall;
 
         tag.put("onblur", saveCall);

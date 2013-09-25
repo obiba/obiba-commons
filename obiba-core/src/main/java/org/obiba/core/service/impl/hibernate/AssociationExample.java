@@ -9,16 +9,16 @@ import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.EntityMode;
 import org.hibernate.HibernateException;
+import org.hibernate.annotations.common.util.StringHelper;
 import org.hibernate.criterion.CriteriaQuery;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.SimpleExpression;
-import org.hibernate.engine.TypedValue;
+import org.hibernate.engine.spi.TypedValue;
 import org.hibernate.persister.entity.EntityPersister;
-import org.hibernate.type.AbstractComponentType;
+import org.hibernate.type.CompositeType;
 import org.hibernate.type.Type;
-import org.hibernate.util.StringHelper;
 
 /**
  * A copy of Hibernate's Example class, with modifications that allow you to
@@ -26,11 +26,11 @@ import org.hibernate.util.StringHelper;
  * queries.
  *
  * @author original code by Gavin King, modified by jkelly
- * @see <a href="http://forum.hibernate.org/viewtopic.php?t=942872">Example and
- *      association class </a>
+ * @see <a href="http://forum.hibernate.org/viewtopic.php?t=942872">Example and association class </a>
  */
 @SuppressWarnings("UnusedDeclaration")
 public class AssociationExample implements Criterion {
+
   private static final long serialVersionUID = 1545101873498985131L;
 
   private final Object entity;
@@ -181,12 +181,12 @@ public class AssociationExample implements Criterion {
   @Override
   public String toSqlString(Criteria criteria, CriteriaQuery criteriaQuery) throws HibernateException {
 
-    StringBuffer buf = new StringBuffer().append('(');
+    StringBuffer buf = new StringBuffer("(");
     EntityPersister meta = criteriaQuery.getFactory().getEntityPersister(criteriaQuery.getEntityName(criteria));
     String[] propertyNames = meta.getPropertyNames();
     Type[] propertyTypes = meta.getPropertyTypes();
     //TODO: get all properties, not just the fetched ones!
-    Object[] propertyValues = meta.getPropertyValues(entity, getEntityMode(criteria, criteriaQuery));
+    Object[] propertyValues = meta.getPropertyValues(entity);
     for(int i = 0; i < propertyNames.length; i++) {
       Object propertyValue = propertyValues[i];
       String propertyName = propertyNames[i];
@@ -195,7 +195,7 @@ public class AssociationExample implements Criterion {
           isPropertyIncluded(propertyValue, propertyName, propertyTypes[i]);
       if(isPropertyIncluded) {
         if(propertyTypes[i].isComponentType()) {
-          appendComponentCondition(propertyName, propertyValue, (AbstractComponentType) propertyTypes[i], criteria,
+          appendComponentCondition(propertyName, propertyValue, (CompositeType) propertyTypes[i], criteria,
               criteriaQuery, buf);
         } else {
           appendPropertyCondition(propertyName, propertyValue, criteria, criteriaQuery, buf);
@@ -215,7 +215,7 @@ public class AssociationExample implements Criterion {
     String[] propertyNames = meta.getPropertyNames();
     Type[] propertyTypes = meta.getPropertyTypes();
     //TODO: get all properties, not just the fetched ones!
-    Object[] values = meta.getPropertyValues(entity, getEntityMode(criteria, criteriaQuery));
+    Object[] values = meta.getPropertyValues(entity);
     List<TypedValue> list = new ArrayList<TypedValue>();
     for(int i = 0; i < propertyNames.length; i++) {
       Object value = values[i];
@@ -226,7 +226,7 @@ public class AssociationExample implements Criterion {
 
       if(isPropertyIncluded) {
         if(propertyTypes[i].isComponentType()) {
-          addComponentTypedValues(name, value, (AbstractComponentType) type, list, criteria, criteriaQuery);
+          addComponentTypedValues(name, value, (CompositeType) type, list, criteria, criteriaQuery);
         } else {
           addPropertyTypedValue(value, type, list);
         }
@@ -237,11 +237,11 @@ public class AssociationExample implements Criterion {
 
   private EntityMode getEntityMode(Criteria criteria, CriteriaQuery criteriaQuery) {
     EntityPersister meta = criteriaQuery.getFactory().getEntityPersister(criteriaQuery.getEntityName(criteria));
-    EntityMode result = meta.guessEntityMode(entity);
-    if(result == null) {
+    EntityMode entityMode = meta.getEntityMode();
+    if(entityMode == null) {
       throw new ClassCastException(entity.getClass().getName());
     }
-    return result;
+    return entityMode;
   }
 
   protected void addPropertyTypedValue(Object value, Type type, Collection<TypedValue> list) {
@@ -257,8 +257,8 @@ public class AssociationExample implements Criterion {
     }
   }
 
-  protected void addComponentTypedValues(String path, Object component, AbstractComponentType type,
-      List<TypedValue> list, Criteria criteria, CriteriaQuery criteriaQuery) throws HibernateException {
+  protected void addComponentTypedValues(String path, Object component, CompositeType type, List<TypedValue> list,
+      Criteria criteria, CriteriaQuery criteriaQuery) throws HibernateException {
 
     if(component != null) {
       String[] propertyNames = type.getPropertyNames();
@@ -270,7 +270,7 @@ public class AssociationExample implements Criterion {
         String subPath = StringHelper.qualify(path, propertyNames[i]);
         if(isPropertyIncluded(value, subPath, subtype)) {
           if(subtype.isComponentType()) {
-            addComponentTypedValues(subPath, value, (AbstractComponentType) subtype, list, criteria, criteriaQuery);
+            addComponentTypedValues(subPath, value, (CompositeType) subtype, list, criteria, criteriaQuery);
           } else {
             addPropertyTypedValue(value, subtype, list);
           }
@@ -281,22 +281,22 @@ public class AssociationExample implements Criterion {
 
   protected void appendPropertyCondition(String propertyName, Object propertyValue, Criteria criteria, CriteriaQuery cq,
       StringBuffer buf) throws HibernateException {
-    Criterion crit;
+    Criterion criterion;
     if(propertyValue != null) {
       boolean isString = propertyValue instanceof String;
       SimpleExpression se = isLikeEnabled && isString
           ? Restrictions.like(propertyName, propertyValue)
           : Restrictions.eq(propertyName, propertyValue);
-      crit = isIgnoreCaseEnabled && isString ? se.ignoreCase() : se;
+      criterion = isIgnoreCaseEnabled && isString ? se.ignoreCase() : se;
     } else {
-      crit = Restrictions.isNull(propertyName);
+      criterion = Restrictions.isNull(propertyName);
     }
-    String critCondition = crit.toSqlString(criteria, cq);
+    String critCondition = criterion.toSqlString(criteria, cq);
     if(buf.length() > 1 && critCondition.trim().length() > 0) buf.append(" and ");
     buf.append(critCondition);
   }
 
-  protected void appendComponentCondition(String path, Object component, AbstractComponentType type, Criteria criteria,
+  protected void appendComponentCondition(String path, Object component, CompositeType type, Criteria criteria,
       CriteriaQuery criteriaQuery, StringBuffer buf) throws HibernateException {
 
     if(component != null) {
@@ -309,7 +309,7 @@ public class AssociationExample implements Criterion {
         if(isPropertyIncluded(value, subPath, subtypes[i])) {
           Type subtype = subtypes[i];
           if(subtype.isComponentType()) {
-            appendComponentCondition(subPath, value, (AbstractComponentType) subtype, criteria, criteriaQuery, buf);
+            appendComponentCondition(subPath, value, (CompositeType) subtype, criteria, criteriaQuery, buf);
           } else {
             appendPropertyCondition(subPath, value, criteria, criteriaQuery, buf);
           }

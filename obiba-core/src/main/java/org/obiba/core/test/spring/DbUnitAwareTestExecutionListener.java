@@ -119,7 +119,6 @@ public class DbUnitAwareTestExecutionListener extends AbstractTestExecutionListe
    * @param type the dataset type
    * @return the corresponding {@link DatabaseOperation}
    */
-  @SuppressWarnings("PMD.NcssMethodCount")
   private DatabaseOperation getDbUnitOp(DatasetOperationType type) {
     switch(type) {
       case CLEAN_INSERT:

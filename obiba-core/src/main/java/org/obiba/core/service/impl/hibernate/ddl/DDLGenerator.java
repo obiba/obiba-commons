@@ -2,8 +2,9 @@ package org.obiba.core.service.impl.hibernate.ddl;
 
 import java.util.Properties;
 
+import javax.annotation.Nonnull;
+
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.ImprovedNamingStrategy;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
@@ -47,7 +48,7 @@ public class DDLGenerator {
   private Configuration getConfiguration(String dialect) {
     log.warn("Creating Hibernate Configuration from Session...");
 
-    AnnotationConfiguration annoteConf = new AnnotationConfiguration();
+    Configuration annoteConf = new Configuration();
     for(Object metaKey : sessionFactory.getAllClassMetadata().keySet()) {
       log.info("annotatedClass={}", metaKey);
       try {
@@ -73,11 +74,12 @@ public class DDLGenerator {
    * @param suffix DDL script file suffix
    * @param conf
    */
-  @SuppressWarnings({ "AssignmentToMethodParameter", "PMD.AvoidReassigningParameters", "PMD.NcssMethodCount" })
-  private void generate(String path, String suffix, Configuration conf) {
+  @SuppressWarnings({ "AssignmentToMethodParameter" })
+  private void generate(String path, String suffix, @Nonnull Configuration conf) {
+    //noinspection ConstantConditions
     if(conf == null) throw new IllegalArgumentException("Configuration cannot be null.");
 
-    SchemaExport schemaExport = new SchemaExport(conf, conf.buildSettings());
+    SchemaExport schemaExport = new SchemaExport(conf);
     schemaExport.setDelimiter(";");
 
     if(path == null) path = "";

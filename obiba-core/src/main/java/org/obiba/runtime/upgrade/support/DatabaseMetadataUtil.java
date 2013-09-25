@@ -22,7 +22,7 @@ public class DatabaseMetadataUtil {
   // Instance Variables
   //
 
-  private DataSource dataSource;
+  private final DataSource dataSource;
 
   //
   // Constructors
@@ -45,6 +45,7 @@ public class DatabaseMetadataUtil {
     String databaseProductName;
     try {
       databaseProductName = (String) JdbcUtils.extractDatabaseMetaData(dataSource, new DatabaseMetaDataCallback() {
+        @Override
         public Object processMetaData(DatabaseMetaData dbmd) throws SQLException, MetaDataAccessException {
           return dbmd.getDatabaseProductName();
         }
@@ -67,6 +68,7 @@ public class DatabaseMetadataUtil {
 
     try {
       tablePresent = (Boolean) JdbcUtils.extractDatabaseMetaData(dataSource, new DatabaseMetaDataCallback() {
+        @Override
         public Object processMetaData(DatabaseMetaData dbmd) throws SQLException, MetaDataAccessException {
           return dbmd.getTables(null, null, tableName, null).next();
         }
@@ -90,6 +92,7 @@ public class DatabaseMetadataUtil {
 
     try {
       columnPresent = (Boolean) JdbcUtils.extractDatabaseMetaData(dataSource, new DatabaseMetaDataCallback() {
+        @Override
         public Object processMetaData(DatabaseMetaData dbmd) throws SQLException, MetaDataAccessException {
           return dbmd.getColumns(null, null, tableName, columnName).next();
         }

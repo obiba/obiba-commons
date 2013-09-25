@@ -39,6 +39,7 @@ public abstract class LiquiBaseUpgradeStep extends AbstractUpgradeStep {
   // AbstractUpgradeStep Methods
   //
 
+  @Override
   public void execute(Version currentVersion) {
     applyChanges();
   }

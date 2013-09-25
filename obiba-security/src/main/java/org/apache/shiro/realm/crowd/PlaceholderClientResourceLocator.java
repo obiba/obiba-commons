@@ -32,6 +32,6 @@ public class PlaceholderClientResourceLocator extends ClientResourceLocator impl
 
   @Override
   public void afterPropertiesSet() throws Exception {
-    this.propertyFileLocation = findPropertyFileLocation();
+    propertyFileLocation = findPropertyFileLocation();
   }
 }

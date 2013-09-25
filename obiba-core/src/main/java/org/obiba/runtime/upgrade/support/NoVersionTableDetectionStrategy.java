@@ -14,12 +14,13 @@ import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
- * An implementation of {@link NewInstallationDetectionStrategy} that returns true if its {@code dataSource} attribute
- * contains no table.
+ * An implementation of {@link org.obiba.runtime.upgrade.support.NewInstallationDetectionStrategy} that returns true if its {@code dataSource} attribute
+ * contains no version table.
+ * See {@link VersionTableInstallStep}
  */
-public class EmptyDataSourceDetectionStrategy implements NewInstallationDetectionStrategy {
+public class NoVersionTableDetectionStrategy implements NewInstallationDetectionStrategy {
 
-  private static final Logger log = LoggerFactory.getLogger(EmptyDataSourceDetectionStrategy.class);
+  private static final Logger log = LoggerFactory.getLogger(NoVersionTableDetectionStrategy.class);
 
   private JdbcTemplate jdbcTemplate;
 
@@ -35,18 +36,16 @@ public class EmptyDataSourceDetectionStrategy implements NewInstallationDetectio
         String[] types = new String[] { "TABLE" };
         ResultSet tables = con.getMetaData().getTables(null, null, null, types);
         try {
-          if(!tables.next()) {
-            log.info("DataSource does not contain any table. New installation detected.");
-            return true;
-          }
-          log.info("DataSource contains at least one table. This is not a new installation.");
-          if(log.isDebugEnabled()) {
-            tables.first();
-            while(tables.next()) {
-              log.debug("Existing table: {}", tables.getString("TABLE_NAME"));
+          while(tables.next()) {
+            if(VersionTableInstallStep.TABLE_NAME.equalsIgnoreCase(tables.getString("TABLE_NAME"))) {
+              log.info("DataSource contains '" + VersionTableInstallStep.TABLE_NAME +
+                  "' table. This is not a new installation.");
+              return false;
             }
           }
-          return false;
+          log.info("DataSource does not contain '" + VersionTableInstallStep.TABLE_NAME +
+              "' table. New installation detected.");
+          return true;
         } finally {
           tables.close();
         }

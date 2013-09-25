@@ -18,9 +18,9 @@ public class RowSelectionColumn<T> extends HeaderlessColumn<T> {
 
   private static final long serialVersionUID = 1L;
 
-  private EntityListTablePanel<T> table;
+  private final EntityListTablePanel<T> table;
 
-  private List<CheckBoxPanel> checkboxes = new ArrayList<CheckBoxPanel>();
+  private final List<CheckBoxPanel> checkboxes = new ArrayList<CheckBoxPanel>();
 
   public RowSelectionColumn(EntityListTablePanel<T> table) {
     this.table = table;
@@ -32,10 +32,10 @@ public class RowSelectionColumn<T> extends HeaderlessColumn<T> {
   }
 
   @Override
-  public void populateItem(final Item<ICellPopulator<T>> cellItem, final String componentId, final IModel<T> rowModel) {
+  public void populateItem(Item<ICellPopulator<T>> cellItem, String componentId, IModel<T> rowModel) {
     final EntityListTablePanel<T>.EntitySelection selection = table.getSelection(rowModel);
 
-    final CheckBoxPanel cbPanel = new CheckBoxPanel(componentId, new PropertyModel<Boolean>(selection, "selected"));
+    CheckBoxPanel cbPanel = new CheckBoxPanel(componentId, new PropertyModel<Boolean>(selection, "selected"));
     cbPanel.setOutputMarkupId(true);
     cbPanel.add(new AjaxEventBehavior("onclick") {
 
