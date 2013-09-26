@@ -52,11 +52,11 @@ final public class HexUtil {
    * @param out A byte array of length at least s.length()/2 + off
    * @param off The first byte to write of the array
    */
-  @SuppressWarnings({ "AssignmentToMethodParameter" })
   public static void hexToBytes(String s, byte[] out, int off) throws NumberFormatException, IndexOutOfBoundsException {
     int slen = s.length();
+    String filledString = s;
     if(slen % 2 != 0) {
-      s = '0' + s;
+      filledString = '0' + s;
     }
 
     if(out.length < off + slen / 2) {
@@ -67,8 +67,8 @@ final public class HexUtil {
     // Safe to assume the string is even length
     byte b1, b2;
     for(int i = 0; i < slen; i += 2) {
-      b1 = (byte) Character.digit(s.charAt(i), 16);
-      b2 = (byte) Character.digit(s.charAt(i + 1), 16);
+      b1 = (byte) Character.digit(filledString.charAt(i), 16);
+      b2 = (byte) Character.digit(filledString.charAt(i + 1), 16);
       if(b1 < 0 || b2 < 0) {
         throw new NumberFormatException();
       }

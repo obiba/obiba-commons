@@ -163,8 +163,11 @@ public class KeyValueDataPanel extends Panel {
    * @param value
    * @param rowAuth
    */
-  @SuppressWarnings({ "AssignmentToMethodParameter" })
   public void addRow(Component key, Component value, final boolean indent, RowAuthorization... rowAuth) {
+    // If the value's is empty, generate an empty component with a spacing character.
+    // This prevents some display glitches on the table.
+    Component safeValue = value == null ? new EmptyCellFragment(getRowValueId()) : value;
+
     rowCounter++;
     WebMarkupContainer item = new WebMarkupContainer(view.newChildId());
     view.add(item);
@@ -180,13 +183,7 @@ public class KeyValueDataPanel extends Panel {
       }
     }));
 
-    // If the value's is empty, generate an empty component with a spacing character.
-    // This prevents some display glitches on the table.
-    if(value == null) {
-      value = new EmptyCellFragment(getRowValueId());
-    }
-
-    item.add(value);
+    item.add(safeValue);
 
     if(rowAuth != null) {
       for(RowAuthorization aRowAuth : rowAuth) {
@@ -194,7 +191,7 @@ public class KeyValueDataPanel extends Panel {
       }
     }
 
-    value.add(new AttributeModifier("class", true, new AbstractReadOnlyModel() {
+    safeValue.add(new AttributeModifier("class", true, new AbstractReadOnlyModel() {
       private static final long serialVersionUID = 8250197630638663648L;
 
       int rowIndex = rowCounter;

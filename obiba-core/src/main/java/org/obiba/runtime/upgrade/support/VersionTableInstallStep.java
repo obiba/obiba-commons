@@ -125,12 +125,8 @@ public class VersionTableInstallStep implements InstallStep {
     }
 
     @Override
-    @SuppressWarnings({ "AssignmentToMethodParameter" })
     public String modifySql(String sql, Database database) {
-      if(sql.toUpperCase().startsWith("CREATE TABLE")) {
-        sql += " ENGINE=InnoDB";
-      }
-      return sql;
+      return sql.toUpperCase().startsWith("CREATE TABLE") ? sql + " ENGINE=InnoDB" : sql;
     }
   }
 }

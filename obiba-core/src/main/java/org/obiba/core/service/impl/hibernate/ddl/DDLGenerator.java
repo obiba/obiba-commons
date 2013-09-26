@@ -74,7 +74,6 @@ public class DDLGenerator {
    * @param suffix DDL script file suffix
    * @param conf
    */
-  @SuppressWarnings({ "AssignmentToMethodParameter" })
   private void generate(String path, String suffix, @Nonnull Configuration conf) {
     //noinspection ConstantConditions
     if(conf == null) throw new IllegalArgumentException("Configuration cannot be null.");
@@ -82,13 +81,14 @@ public class DDLGenerator {
     SchemaExport schemaExport = new SchemaExport(conf);
     schemaExport.setDelimiter(";");
 
-    if(path == null) path = "";
+    String safePath = path == null ? "" : path;
 
-    if(path.length() != 0 && !path.endsWith(FILE_SEP)) path += FILE_SEP;
+    if(safePath.length() != 0 && !path.endsWith(FILE_SEP)) safePath += FILE_SEP;
 
+    String safeSuffix = suffix;
     if(suffix == null || suffix.isEmpty()) {
       String dialect = conf.getProperty("hibernate.dialect");
-      suffix = dialect == null ? ".sql" : "_" + dialect.substring(dialect.lastIndexOf('.') + 1) + ".sql";
+      safeSuffix = dialect == null ? ".sql" : "_" + dialect.substring(dialect.lastIndexOf('.') + 1) + ".sql";
     }
 
     schemaExport.setHaltOnError(true);
@@ -97,12 +97,12 @@ public class DDLGenerator {
     // scripts WILL include drop statements at
     // the top of the script!
     log.info("CREATE DDL...");
-    schemaExport.setOutputFile(path + "create" + suffix);
+    schemaExport.setOutputFile(safePath + "create" + safeSuffix);
     schemaExport.create(false, false);
 
     // Generates DROP statements only
     log.info("DROP DDL...");
-    schemaExport.setOutputFile(path + "drop" + suffix);
+    schemaExport.setOutputFile(safePath + "drop" + safeSuffix);
     schemaExport.drop(false, false);
 
     log.error("exceptions: {}", schemaExport.getExceptions().toString());
