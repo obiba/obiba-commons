@@ -242,22 +242,28 @@ public class AnnotatedBeanFinderFactoryBean implements ResourceLoaderAware, Fact
    * @throws Exception
    */
   private void dealWithJars(Resource res) throws Exception {
-    // Enumerate all entries in this JAR file.
-    Enumeration<JarEntry> jarEntries = new JarFile(res.getFile()).entries();
-    while(jarEntries.hasMoreElements()) {
-      String name = jarEntries.nextElement().getName();
+    JarFile jarFile = null;
+    try {
+      jarFile = new JarFile(res.getFile());
+      // Enumerate all entries in this JAR file.
+      Enumeration<JarEntry> jarEntries = jarFile.entries();
+      while(jarEntries.hasMoreElements()) {
+        String name = jarEntries.nextElement().getName();
 
-      // If the entry is a class, deal with it.
-      if(name.endsWith(".class") && !"".equals(name)) {
-        // Format the path first.
-        name = pathToQualifiedClassName(name);
+        // If the entry is a class, deal with it.
+        if(name.endsWith(".class") && !"".equals(name)) {
+          // Format the path first.
+          name = pathToQualifiedClassName(name);
 
-        // Apply the qualified class name pattern to improve the
-        // searching performance.
-        if(matchQualifiedClassNamePatterns(name))
-          // This is the qualified class name, so add it.
-          addPossibleClasses(name);
+          // Apply the qualified class name pattern to improve the
+          // searching performance.
+          if(matchQualifiedClassNamePatterns(name))
+            // This is the qualified class name, so add it.
+            addPossibleClasses(name);
+        }
       }
+    } finally {
+      if(jarFile != null) jarFile.close();
     }
   }
 

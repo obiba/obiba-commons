@@ -55,13 +55,13 @@ public class DefaultUpgradeManager implements UpgradeManager {
    * A list of all required installation steps.
    */
   @Nonnull
-  private final List<InstallStep> installSteps;
+  private final Collection<InstallStep> installSteps = new ArrayList<InstallStep>();
 
   /**
    * A list of all available upgrade steps.
    */
   @Nonnull
-  private final List<UpgradeStep> upgradeSteps;
+  private final Collection<UpgradeStep> upgradeSteps = new ArrayList<UpgradeStep>();
 
   /**
    * A list of listeners to be notified of step executions.
@@ -80,14 +80,14 @@ public class DefaultUpgradeManager implements UpgradeManager {
   //
 
   public DefaultUpgradeManager() {
-    installSteps = new ArrayList<InstallStep>();
-    upgradeSteps = new ArrayList<UpgradeStep>();
+
   }
 
   //
   // UpgradeManager Methods
   //
 
+  @SuppressWarnings("ConstantConditions")
   @Override
   public void executeUpgrade() throws UpgradeException {
     if(currentVersionProvider == null) throw new IllegalStateException("currentVersionProvider is required");
@@ -167,17 +167,20 @@ public class DefaultUpgradeManager implements UpgradeManager {
   //
 
   public void setCurrentVersionProvider(@Nonnull VersionModifier currentVersionProvider) {
+    //noinspection ConstantConditions
     if(currentVersionProvider == null) throw new IllegalArgumentException("currentVersionProvider cannot be null");
     this.currentVersionProvider = currentVersionProvider;
   }
 
   public void setRuntimeVersionProvider(@Nonnull VersionProvider runtimeVersionProvider) {
+    //noinspection ConstantConditions
     if(runtimeVersionProvider == null) throw new IllegalArgumentException("runtimeVersionProvider cannot be null");
     this.runtimeVersionProvider = runtimeVersionProvider;
   }
 
   public void setNewInstallationDetectionStrategy(
       @Nonnull NewInstallationDetectionStrategy newInstallationDetectionStrategy) {
+    //noinspection ConstantConditions
     if(newInstallationDetectionStrategy == null) {
       throw new IllegalArgumentException("newInstallationDetectionStrategy cannot be null");
     }
@@ -199,6 +202,7 @@ public class DefaultUpgradeManager implements UpgradeManager {
   }
 
   public void setVersionComparator(@Nonnull Comparator<Version> versionComparator) {
+    //noinspection ConstantConditions
     if(versionComparator == null) throw new IllegalArgumentException("versionComparator cannot be null");
     this.versionComparator = versionComparator;
   }

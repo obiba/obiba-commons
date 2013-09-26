@@ -11,6 +11,7 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 @SuppressWarnings("UnusedDeclaration")
@@ -90,8 +91,11 @@ public final class StreamUtil {
    * @param in
    * @return
    * @throws IOException
+   * @Deprecated use {@link #readLines(InputStream, String)}
    * @since 1.0.4
    */
+  @Deprecated
+  @edu.umd.cs.findbugs.annotations.SuppressWarnings("DM_DEFAULT_ENCODING")
   public static List<String> readLines(InputStream in) throws IOException {
     InputStreamReader reader = new InputStreamReader(in);
     return readLines(reader);
@@ -104,8 +108,8 @@ public final class StreamUtil {
    * @throws IOException
    * @since 1.0.4
    */
-  public static List<String> readLines(InputStream in, String encoding) throws IOException {
-    return encoding == null ? readLines(in) : readLines(new InputStreamReader(in, encoding));
+  public static List<String> readLines(InputStream in, @Nonnull String encoding) throws IOException {
+    return readLines(new InputStreamReader(in, encoding));
   }
 
   /**
