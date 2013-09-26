@@ -163,7 +163,7 @@ public class KeyValueDataPanel extends Panel {
    * @param value
    * @param rowAuth
    */
-  @SuppressWarnings({ "AssignmentToMethodParameter", "PMD.AvoidReassigningParameters" })
+  @SuppressWarnings({ "AssignmentToMethodParameter" })
   public void addRow(Component key, Component value, final boolean indent, RowAuthorization... rowAuth) {
     rowCounter++;
     WebMarkupContainer item = new WebMarkupContainer(view.newChildId());

@@ -32,7 +32,7 @@ final public class SortingClause {
    */
   public SortingClause(String field, boolean asc) {
     this.field = field;
-    this.ascending = asc;
+    ascending = asc;
   }
 
   /**
@@ -55,11 +55,11 @@ final public class SortingClause {
   }
 
   public String getField() {
-    return this.field;
+    return field;
   }
 
   public boolean isAscending() {
-    return this.ascending;
+    return ascending;
   }
 
   @Override

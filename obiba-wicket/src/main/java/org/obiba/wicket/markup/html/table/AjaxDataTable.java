@@ -19,14 +19,14 @@ public class AjaxDataTable<T> extends DataTable<T> {
 
   private static final long serialVersionUID = 1L;
 
-  private IModel titleModel;
+  private final IModel titleModel;
 
-  public AjaxDataTable(String id, IModel titleModel, final List<IColumn<T>> columns,
-      ISortableDataProvider<T> dataProvider, Component commands, int rowsPerPage) {
+  public AjaxDataTable(String id, IModel titleModel, List<IColumn<T>> columns, ISortableDataProvider<T> dataProvider,
+      Component commands, int rowsPerPage) {
     this(id, titleModel, (IColumn[]) columns.toArray(new IColumn[columns.size()]), dataProvider, commands, rowsPerPage);
   }
 
-  public AjaxDataTable(String id, IModel titleModel, final IColumn<T>[] columns, ISortableDataProvider<T> dataProvider,
+  public AjaxDataTable(String id, IModel titleModel, IColumn<T>[] columns, ISortableDataProvider<T> dataProvider,
       Component commands, int rowsPerPage) {
     super(id, columns, dataProvider, rowsPerPage);
     setOutputMarkupId(true);
@@ -42,6 +42,7 @@ public class AjaxDataTable<T> extends DataTable<T> {
     addBottomToolbar(new NoRecordsToolbar(this));
   }
 
+  @Override
   protected Item newRowItem(String id, int index, IModel model) {
     return new OddEvenItem(id, index, model);
   }

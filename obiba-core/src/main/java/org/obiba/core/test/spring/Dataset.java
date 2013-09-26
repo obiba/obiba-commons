@@ -6,12 +6,12 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Dataset {
 
-  public String[] filenames() default { };
+  String[] filenames() default { };
 
-  public String dataSourceBean() default "dataSource";
+  String dataSourceBean() default "dataSource";
 
-  public DatasetOperationType beforeOperation() default DatasetOperationType.INSERT;
+  DatasetOperationType beforeOperation() default DatasetOperationType.INSERT;
 
-  public DatasetOperationType afterOperation() default DatasetOperationType.DELETE_ALL;
+  DatasetOperationType afterOperation() default DatasetOperationType.DELETE_ALL;
 
 }

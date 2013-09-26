@@ -18,23 +18,26 @@ public class SortableDataProviderEntityServiceImpl<T> extends AbstractSortableDa
 
   private static final long serialVersionUID = 1L;
 
-  private EntityQueryService queryService;
+  private final EntityQueryService queryService;
 
-  private Class<T> type;
+  private final Class<T> type;
 
   public SortableDataProviderEntityServiceImpl(EntityQueryService queryService, Class<T> type) {
     this.queryService = queryService;
     this.type = type;
   }
 
+  @Override
   protected List<T> getList(PagingClause paging, SortingClause... clauses) {
     return getQueryService().list(type, paging, clauses);
   }
 
-  public IModel<T> makeModel(final T object) {
+  @Override
+  public IModel<T> makeModel(T object) {
     return new DetachableEntityModel<T>(getQueryService(), object);
   }
 
+  @Override
   public int size() {
     return getQueryService().count(type);
   }

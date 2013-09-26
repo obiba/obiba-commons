@@ -15,6 +15,6 @@ public interface PersistenceManagerAware {
    *
    * @param persistenceManager
    */
-  public void setPersistenceManager(PersistenceManager persistenceManager);
+  void setPersistenceManager(PersistenceManager persistenceManager);
 
 }

@@ -24,10 +24,11 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.sql.visitor.SqlVisitor;
 import liquibase.exception.JDBCException;
 
-@SuppressWarnings("UnusedDeclaration")
 public class VersionTableInstallStep implements InstallStep {
 
   private static final Logger log = LoggerFactory.getLogger(VersionTableInstallStep.class);
+
+  public static final String TABLE_NAME = "version";
 
   private String description = "Create version table.";
 
@@ -81,7 +82,7 @@ public class VersionTableInstallStep implements InstallStep {
 
       private CreateTableChange doBuildCreateVersionTableChange() {
         CreateTableChange createVersionTable = new CreateTableChange();
-        createVersionTable.setTableName("version");
+        createVersionTable.setTableName(TABLE_NAME);
         createVersionTable.addColumn(createColumn("major", "java.sql.Types.INTEGER", false));
         createVersionTable.addColumn(createColumn("minor", "java.sql.Types.INTEGER", false));
         createVersionTable.addColumn(createColumn("micro", "java.sql.Types.INTEGER", false));
@@ -124,7 +125,7 @@ public class VersionTableInstallStep implements InstallStep {
     }
 
     @Override
-    @SuppressWarnings({ "AssignmentToMethodParameter", "PMD.AvoidReassigningParameters" })
+    @SuppressWarnings({ "AssignmentToMethodParameter" })
     public String modifySql(String sql, Database database) {
       if(sql.toUpperCase().startsWith("CREATE TABLE")) {
         sql += " ENGINE=InnoDB";

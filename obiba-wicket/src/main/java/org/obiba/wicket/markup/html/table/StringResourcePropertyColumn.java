@@ -18,22 +18,22 @@ public class StringResourcePropertyColumn<T> extends PropertyColumn<T> {
 
   private static final long serialVersionUID = -1672283569335782243L;
 
-  private Component component;
+  private final Component component;
 
-  private String resourceKey;
+  private final String resourceKey;
 
   public StringResourcePropertyColumn(IModel<String> displayModel, String propertyExpression, Component component,
       String resourceKeyPrefix) {
     super(displayModel, propertyExpression);
     this.component = component;
-    this.resourceKey = resourceKeyPrefix + ".${" + propertyExpression + "}";
+    resourceKey = resourceKeyPrefix + ".${" + propertyExpression + "}";
   }
 
   public StringResourcePropertyColumn(IModel<String> displayModel, String sortProperty, String propertyExpression,
       Component component, String resourceKeyPrefix) {
     super(displayModel, sortProperty, propertyExpression);
     this.component = component;
-    this.resourceKey = resourceKeyPrefix + ".${" + propertyExpression + "}";
+    resourceKey = resourceKeyPrefix + ".${" + propertyExpression + "}";
   }
 
   @Override

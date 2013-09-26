@@ -21,6 +21,7 @@ abstract public class AbstractSortableDataProvider<T> extends SortableDataProvid
   public AbstractSortableDataProvider() {
   }
 
+  @Override
   public Iterator<T> iterator(int first, int count) {
     SortParam sp = getSort();
     SortingClause[] sort = null;
@@ -45,8 +46,9 @@ abstract public class AbstractSortableDataProvider<T> extends SortableDataProvid
 
   abstract protected List<T> getList(PagingClause paging, SortingClause... clauses);
 
+  @Override
   abstract public int size();
 
-  abstract protected IModel<T> makeModel(final T object);
+  abstract protected IModel<T> makeModel(T object);
 
 }

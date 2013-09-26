@@ -15,6 +15,7 @@ public class VersionBeanVersionProvider implements VersionProvider {
 
   private Version version;
 
+  @Override
   public Version getVersion() {
     return version;
   }

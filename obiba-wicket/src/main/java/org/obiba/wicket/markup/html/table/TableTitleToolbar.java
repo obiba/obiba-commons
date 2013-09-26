@@ -13,16 +13,16 @@ public class TableTitleToolbar extends AbstractToolbar {
 
   private static final long serialVersionUID = -9147214207355639443L;
 
-  public TableTitleToolbar(DataTable table, IModel titleModel, IModel countModel, Component commands) {
+  public TableTitleToolbar(DataTable<?> table, IModel<?> titleModel, IModel<?> countModel, Component commands) {
     super(table);
 
     WebMarkupContainer span = new WebMarkupContainer("span");
     add(span);
-    span.add(new AttributeModifier("colspan", true, new Model(String.valueOf(table.getColumns().length))));
+    span.add(new AttributeModifier("colspan", true, new Model<String>(String.valueOf(table.getColumns().length))));
 
     span.add(new Label("titleLabel", titleModel));
     span.add(new Label("listCount", countModel));
-    if(commands.getId().equals("commands") == false) {
+    if(!"commands".equals(commands.getId())) {
       throw new IllegalArgumentException("Command panel's ID must be 'commands'");
     }
     span.add(commands);

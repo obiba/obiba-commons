@@ -24,12 +24,18 @@ public class MethodInvokingUpgradeStep extends AbstractUpgradeStep {
     Class<?> clazz = methodOwner.getClass();
 
     try {
+      boolean found = false;
       Method[] methods = clazz.getMethods();
       for(Method method : methods) {
         if(method.getName().equals(methodName)) {
+          found = true;
           method.invoke(methodOwner);
           break;
         }
+      }
+      if(!found) {
+        throw new RuntimeException(
+            "Could not find method to invoke '" + methodName + "' of object of type " + clazz.getSimpleName());
       }
     } catch(Exception ex) {
       throw new RuntimeException(

@@ -34,10 +34,10 @@ public abstract class BaseDefaultSpringContextTestCase {
    * Flushes (executed pending statements) and clears the Hibernate cache.
    */
   protected void flushCache() {
-    if(this.sessionFactory == null) {
+    if(sessionFactory == null) {
       throw new IllegalStateException("Cannot flush hibernate cache: missing sessionFactory dependency.");
     }
-    this.sessionFactory.getCurrentSession().flush();
-    this.sessionFactory.getCurrentSession().clear();
+    sessionFactory.getCurrentSession().flush();
+    sessionFactory.getCurrentSession().clear();
   }
 }

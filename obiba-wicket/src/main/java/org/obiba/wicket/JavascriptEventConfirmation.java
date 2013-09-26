@@ -16,7 +16,8 @@ public class JavascriptEventConfirmation extends AttributeModifier {
     super(event, true, model);
   }
 
-  protected String newValue(final String currentValue, final String replacementValue) {
+  @Override
+  protected String newValue(String currentValue, String replacementValue) {
     String result = "return confirm('" + replacementValue + "')";
     if(currentValue != null) {
       result = currentValue + "; " + result;

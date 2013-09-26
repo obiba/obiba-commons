@@ -4,6 +4,6 @@ import org.obiba.runtime.Version;
 
 public interface VersionProvider {
 
-  public Version getVersion();
+  Version getVersion();
 
 }

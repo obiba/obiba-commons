@@ -16,12 +16,14 @@ import org.obiba.core.test.spring.Dataset;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+@SuppressWarnings("unchecked")
 @Transactional
 @Dataset
 public class AssociationCriteriaTest extends BaseDefaultSpringContextTestCase {
 
   private SessionFactory factory;
 
+  @Override
   @Autowired(required = true)
   public void setSessionFactory(SessionFactory factory) {
     this.factory = factory;
@@ -142,7 +144,7 @@ public class AssociationCriteriaTest extends BaseDefaultSpringContextTestCase {
 
   @Test
   public void testNullSortingClause() {
-    AssociationCriteria ac = AssociationCriteria.create(A.class, factory.getCurrentSession()).addSortingClauses(null);
+    AssociationCriteria ac = AssociationCriteria.create(A.class, factory.getCurrentSession()).addSortingClauses();
     List<A> results = ac.getCriteria().list();
     Assert.assertNotNull(results);
   }

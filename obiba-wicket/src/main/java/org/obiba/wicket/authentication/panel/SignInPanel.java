@@ -47,7 +47,7 @@ public class SignInPanel extends Panel {
    */
   private TextField<String> username;
 
-  private FeedbackPanel feedback;
+  private final FeedbackPanel feedback;
 
   /**
    * Sign in form.
@@ -65,7 +65,7 @@ public class SignInPanel extends Panel {
      *
      * @param id id of the form component
      */
-    public SignInForm(final String id) {
+    public SignInForm(String id) {
       super(id);
 
       add(new Label("userNameLabel", new StringResourceModel("UserName", this, null)));
@@ -78,7 +78,7 @@ public class SignInPanel extends Panel {
       password.setRequired(false);
 
       // MarkupContainer row for remember me checkbox
-      final WebMarkupContainer rememberMeRow = new WebMarkupContainer("rememberMeRow");
+      WebMarkupContainer rememberMeRow = new WebMarkupContainer("rememberMeRow");
       add(rememberMeRow);
 
       // Add rememberMe checkbox
@@ -95,7 +95,8 @@ public class SignInPanel extends Panel {
     /**
      * @see org.apache.wicket.markup.html.form.Form#onSubmit()
      */
-    public final void onSubmit() {
+    @Override
+    public void onSubmit() {
       if(signIn(getUsername(), getPassword())) {
         onSignInSucceeded();
       } else {
@@ -107,7 +108,7 @@ public class SignInPanel extends Panel {
   /**
    * @see org.apache.wicket.Component#Component(String)
    */
-  public SignInPanel(final String id, FeedbackPanel feedback) {
+  public SignInPanel(String id, FeedbackPanel feedback) {
     this(id, true, feedback);
   }
 
@@ -116,7 +117,7 @@ public class SignInPanel extends Panel {
    * @param includeRememberMe True if form should include a remember-me checkbox
    * @see org.apache.wicket.Component#Component(String)
    */
-  public SignInPanel(final String id, final boolean includeRememberMe, FeedbackPanel feedback) {
+  public SignInPanel(String id, boolean includeRememberMe, FeedbackPanel feedback) {
     super(id);
 
     this.feedback = feedback;
@@ -134,7 +135,7 @@ public class SignInPanel extends Panel {
   public final void forgetMe() {
     // Remove persisted user data. Search for child component
     // of type SignInForm and remove its related persistence values.
-    getPage().removePersistedFormData(SignInPanel.SignInForm.class, true);
+    getPage().removePersistedFormData(SignInForm.class, true);
   }
 
   /**
@@ -169,7 +170,7 @@ public class SignInPanel extends Panel {
    *
    * @param enable Whether the fields should be persistent
    */
-  public void setPersistent(final boolean enable) {
+  public void setPersistent(boolean enable) {
     username.setPersistent(enable);
   }
 
@@ -178,9 +179,9 @@ public class SignInPanel extends Panel {
    *
    * @param rememberMe
    */
-  public void setRememberMe(final boolean rememberMe) {
+  public void setRememberMe(boolean rememberMe) {
     this.rememberMe = rememberMe;
-    this.setPersistent(rememberMe);
+    setPersistent(rememberMe);
   }
 
   /**

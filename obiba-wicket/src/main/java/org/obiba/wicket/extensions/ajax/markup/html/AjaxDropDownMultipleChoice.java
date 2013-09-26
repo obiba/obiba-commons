@@ -26,7 +26,7 @@ public abstract class AjaxDropDownMultipleChoice extends DropDownChoice {
 
   private boolean keepSelection = false;
 
-  private IChoiceRenderer userRenderer;
+  private final IChoiceRenderer userRenderer;
 
   /**
    * Constructor with the selectable objects and an object renderer.
@@ -42,9 +42,10 @@ public abstract class AjaxDropDownMultipleChoice extends DropDownChoice {
     setSelected(currentSelection);
     setNullValid(true);
     setModel(new PropertyModel(this, "selection"));
-    this.userRenderer = renderer;
+    userRenderer = renderer;
     setChoiceRenderer(new IChoiceRenderer() {
 
+      @Override
       public Object getDisplayValue(Object obj) {
         Object rval;
 
@@ -56,6 +57,7 @@ public abstract class AjaxDropDownMultipleChoice extends DropDownChoice {
         else return "+ " + rval;
       }
 
+      @Override
       public String getIdValue(Object obj, int idx) {
         if(userRenderer != null) return userRenderer.getIdValue(obj, idx);
         else if(obj != null) return obj.toString();

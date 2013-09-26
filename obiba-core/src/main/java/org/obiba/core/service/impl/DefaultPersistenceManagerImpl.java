@@ -26,7 +26,7 @@ public abstract class DefaultPersistenceManagerImpl implements PersistenceManage
 
   public <T> void validate(T entity) throws ValidationRuntimeException {
     if(getObjectValidationInspector() != null) {
-      final List<Errors> errors = new ArrayList<Errors>();
+      List<Errors> errors = new ArrayList<Errors>();
       getObjectValidationInspector().setEntityQueryService(this);
       getObjectValidationInspector().inspectObject(errors, entity);
       if(errors.size() > 0) {

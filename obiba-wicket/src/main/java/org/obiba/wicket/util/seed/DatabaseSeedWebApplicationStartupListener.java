@@ -13,10 +13,12 @@ public class DatabaseSeedWebApplicationStartupListener implements WebApplication
 
   private List<DatabaseSeed> databaseSeeds;
 
+  @Override
   public void shutdown(WebApplication application) {
     // Nothing to do.
   }
 
+  @Override
   public void startup(WebApplication application) {
     if(databaseSeeds != null) {
       for(DatabaseSeed seed : databaseSeeds) {

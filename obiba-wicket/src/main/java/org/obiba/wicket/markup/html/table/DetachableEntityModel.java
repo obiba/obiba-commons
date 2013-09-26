@@ -17,11 +17,11 @@ public class DetachableEntityModel<T> extends LoadableDetachableModel<T> {
 
   private static final Logger log = LoggerFactory.getLogger(DetachableEntityModel.class);
 
-  private Serializable id;
+  private final Serializable id;
 
-  private Class<T> type;
+  private final Class<T> type;
 
-  private EntityQueryService service;
+  private final EntityQueryService service;
 
   public DetachableEntityModel(EntityQueryService service, T o) {
     super(o);
@@ -29,11 +29,11 @@ public class DetachableEntityModel<T> extends LoadableDetachableModel<T> {
     this.service = service;
     getEntityQueryService().refresh(o);
     if(o instanceof IEntity) {
-      this.id = ((IEntity) o).getId();
+      id = ((IEntity) o).getId();
     } else {
-      this.id = getEntityQueryService().getId(o);
+      id = getEntityQueryService().getId(o);
     }
-    this.type = (Class<T>) o.getClass();
+    type = (Class<T>) o.getClass();
   }
 
   @Override
@@ -62,13 +62,13 @@ public class DetachableEntityModel<T> extends LoadableDetachableModel<T> {
   public boolean equals(Object obj) {
     if(obj instanceof DetachableEntityModel) {
       DetachableEntityModel<T> rhs = (DetachableEntityModel<T>) obj;
-      return this.id.equals(rhs.id) && this.type.equals(rhs.type);
+      return id.equals(rhs.id) && type.equals(rhs.type);
     }
     return super.equals(obj);
   }
 
   @Override
   public int hashCode() {
-    return 37 * this.id.hashCode() * this.type.hashCode();
+    return 37 * id.hashCode() * type.hashCode();
   }
 }

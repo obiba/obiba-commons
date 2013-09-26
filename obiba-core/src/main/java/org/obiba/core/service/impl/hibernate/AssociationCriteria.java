@@ -6,11 +6,11 @@ import java.util.Map;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.sql.JoinType;
 import org.obiba.core.service.PagingClause;
 import org.obiba.core.service.SortingClause;
 import org.obiba.core.util.StringUtil;
@@ -327,12 +327,12 @@ public class AssociationCriteria {
   /**
    * The resulting Criteria "rooted" on the initial entity
    */
-  private Criteria baseCriteria;
+  private final Criteria baseCriteria;
 
   /**
    * A Map of association path to the Criteria instance
    */
-  private Map<String, Criteria> associationCriteria = new HashMap<String, Criteria>();
+  private final Map<String, Criteria> associationCriteria = new HashMap<String, Criteria>();
 
   /**
    * Builds a new instance of an AssociationCriteria for the specified entity type and the specified session.
@@ -491,11 +491,9 @@ public class AssociationCriteria {
    * @return the new {@link Criteria} instance for the specified property of the parent {@link Criteria}
    */
   protected Criteria createSubCriteria(Criteria parentCriteria, String property, boolean leftJoin) {
-    if(leftJoin) {
-      return parentCriteria.createCriteria(property, CriteriaSpecification.LEFT_JOIN);
-    } else {
-      return parentCriteria.createCriteria(property);
-    }
+    return leftJoin
+        ? parentCriteria.createCriteria(property, JoinType.LEFT_OUTER_JOIN)
+        : parentCriteria.createCriteria(property);
   }
 
   /**

@@ -23,6 +23,7 @@ abstract public class LinkPropertyColumn extends PropertyColumn {
 
       private static final long serialVersionUID = 8704288547689782855L;
 
+      @Override
       public void onLinkClicked() {
         onClick(model);
       }

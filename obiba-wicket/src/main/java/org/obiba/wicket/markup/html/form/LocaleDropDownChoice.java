@@ -54,6 +54,7 @@ public class LocaleDropDownChoice extends DropDownChoice {
       this.useSessionLocale = useSessionLocale;
     }
 
+    @Override
     public Object getDisplayValue(Object object) {
       Locale lang = (Locale) object;
       Locale displayLocale = getDisplayLocale(lang);
@@ -70,6 +71,7 @@ public class LocaleDropDownChoice extends DropDownChoice {
       return sb.toString();
     }
 
+    @Override
     public String getIdValue(Object object, int index) {
       Locale lang = (Locale) object;
       return lang.toString();

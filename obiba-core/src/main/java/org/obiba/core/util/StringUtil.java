@@ -52,7 +52,7 @@ final public class StringUtil {
 
   static public String ellipsis(String value, int maxSize) {
     if(value != null && value.length() > maxSize) {
-      return new StringBuilder(value.substring(0, maxSize - 3)).append("...").toString();
+      return value.substring(0, maxSize - 3) + "...";
     }
     return value;
   }
@@ -64,7 +64,7 @@ final public class StringUtil {
    * @param objects the array of objects for which to defer the toString call.
    * @return an Object that calls {@link StringUtil#arrayToString(Object...)} when its toString method is called.
    */
-  static public Object deferToString(Object[] objects) {
+  static public Object deferToString(Object... objects) {
     return new DeferToString(objects);
   }
 
@@ -77,12 +77,12 @@ final public class StringUtil {
 
     private String result;
 
-    public DeferToString(final Object[] objects) {
+    DeferToString(Object[] objects) {
       this.objects = objects;
     }
 
     public String toString() {
-      return result != null ? result : (result = arrayToString(this.objects));
+      return result != null ? result : (result = arrayToString(objects));
     }
   }
 

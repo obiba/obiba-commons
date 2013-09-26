@@ -324,7 +324,7 @@ public class EntityListTablePanel<T> extends Panel {
         ? dataTable.getTitleModel().toString()
         : entityNameComponent.getDefaultModelObjectAsString();
 
-    name = "_" + header;
+    name += "_" + header;
     name = name.replace(' ', '_');
     return name + "." + CsvResourceStream.FILE_SUFFIX;
   }
