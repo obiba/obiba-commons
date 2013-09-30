@@ -41,8 +41,7 @@ public class JdbcVersionModifier implements VersionModifier, InitializingBean {
     this.version = version;
     jdbcTemplate.execute("delete from version");
     jdbcTemplate.update("insert into version ( major, minor, micro, qualifier, version_string ) values (?,?,?,?,?)",
-        new Object[] { version.getMajor(), version.getMinor(), version.getMicro(), version.getQualifier(),
-            version.toString() });
+        version.getMajor(), version.getMinor(), version.getMicro(), version.getQualifier(), version.toString());
   }
 
   public void setDatasource(DataSource datasource) {
@@ -55,22 +54,19 @@ public class JdbcVersionModifier implements VersionModifier, InitializingBean {
 
     try {
       log.info("Attempting to retrieve the currently running version information from the database...");
-      List result = jdbcTemplate.queryForList("select * from version");
+      List<Map<String, Object>> result = jdbcTemplate.queryForList("select * from version");
       if(result != null && result.size() > 0) {
-        Map versionInfo = (Map) result.get(0);
+        Map<String, Object> versionInfo = result.get(0);
         String major = versionInfo.get("major").toString();
         String minor = versionInfo.get("minor").toString();
         String micro = versionInfo.get("micro").toString();
         String qualifier = versionInfo.get("qualifier").toString();
-        Version version = new Version(Integer.parseInt(major), Integer.parseInt(minor), Integer.parseInt(micro),
-            qualifier);
-
-        log.info("The current version is {} ", version.toString());
-        setVersion(version);
+        setVersion(new Version(Integer.parseInt(major), Integer.parseInt(minor), Integer.parseInt(micro), qualifier));
+        log.info("The current version is {} ", version);
       }
-    } catch(DataAccessException couldNotRetrieveCurrentVersion) {
-      log.warn(
-          "Could not retrieve the current version.  This looks like a new installation of Onyx, so no upgrades are needed.");
+    } catch(DataAccessException e) {
+      log.warn("Could not retrieve the current version. This looks like a new installation, so no upgrades are needed.",
+          e);
     }
 
   }

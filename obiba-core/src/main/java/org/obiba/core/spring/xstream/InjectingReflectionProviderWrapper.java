@@ -8,6 +8,8 @@
  ******************************************************************************/
 package org.obiba.core.spring.xstream;
 
+import javax.annotation.Nullable;
+
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 
@@ -32,6 +34,8 @@ public class InjectingReflectionProviderWrapper extends ReflectionProviderWrappe
     this.autowireType = autowireType;
   }
 
+  @Nullable
+  @SuppressWarnings("rawtypes")
   @Override
   public Object newInstance(Class type) {
     // Let the wrapped instance create the bean

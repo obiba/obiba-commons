@@ -1,7 +1,11 @@
 package org.obiba.runtime;
 
+import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Represents a version number and allows comparing to other version numbers.
@@ -11,9 +15,11 @@ import java.util.regex.Pattern;
  *
  * @author plaflamm
  */
-final public class Version implements Comparable<Version> {
+final public class Version implements Comparable<Version>, Serializable {
 
   private static final Pattern VERSION_PATTERN = Pattern.compile("(\\d+)\\.(\\d+)(\\.(\\d+))?(([\\.\\-_])(\\D.+))?");
+
+  private static final long serialVersionUID = -7474928316454405471L;
 
   private final int major;
 
@@ -21,6 +27,7 @@ final public class Version implements Comparable<Version> {
 
   private final int micro;
 
+  @Nonnull
   private final String qualifier;
 
   public Version(int major, int minor) {
@@ -31,13 +38,14 @@ final public class Version implements Comparable<Version> {
     this(major, minor, micro, null);
   }
 
-  public Version(int major, int minor, int micro, String qualifier) {
+  public Version(int major, int minor, int micro, @Nullable String qualifier) {
     this.major = major;
     this.minor = minor;
     this.micro = micro;
     this.qualifier = qualifier == null ? "" : qualifier;
   }
 
+  @SuppressWarnings("LocalVariableHidesMemberVariable")
   public Version(String version) {
     try {
       Matcher m = VERSION_PATTERN.matcher(version);
@@ -71,34 +79,18 @@ final public class Version implements Comparable<Version> {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder().append(major).append('.').append(minor).append('.').append(micro);
-    if(qualifier != null && qualifier.length() > 0) sb.append('-').append(qualifier);
+    if(qualifier.length() > 0) sb.append('-').append(qualifier);
     return sb.toString();
   }
 
-  @SuppressWarnings("SimplifiableIfStatement")
   @Override
   public boolean equals(Object obj) {
-    if(this == obj) {
-      return true;
-    }
-    if(obj == null) {
-      return false;
-    }
-    if(getClass() != obj.getClass()) {
-      return false;
-    }
-
-    Version rhs = (Version) obj;
-    if(major != rhs.major) {
-      return false;
-    }
-    if(minor != rhs.minor) {
-      return false;
-    }
-    if(micro != rhs.micro) {
-      return false;
-    }
-    return qualifier.equals(rhs.qualifier);
+    if(this == obj) return true;
+    if(obj == null) return false;
+    if(getClass() != obj.getClass()) return false;
+    Version version = (Version) obj;
+    return major == version.major && minor == version.minor && micro == version.micro &&
+        qualifier.equals(version.qualifier);
   }
 
   @Override
@@ -108,7 +100,7 @@ final public class Version implements Comparable<Version> {
     hash = PRIME * hash + major;
     hash = PRIME * hash + minor;
     hash = PRIME * hash + micro;
-    hash = PRIME * hash + (qualifier != null ? qualifier.hashCode() : 0);
+    hash = PRIME * hash + qualifier.hashCode();
     return hash;
   }
 
@@ -124,6 +116,7 @@ final public class Version implements Comparable<Version> {
     return micro;
   }
 
+  @Nonnull
   public String getQualifier() {
     return qualifier;
   }
