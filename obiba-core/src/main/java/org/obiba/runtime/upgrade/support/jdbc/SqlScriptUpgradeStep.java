@@ -14,7 +14,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.jdbc.JdbcTestUtils;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 public class SqlScriptUpgradeStep extends AbstractUpgradeStep {
 
   private static final Logger log = LoggerFactory.getLogger(SqlScriptUpgradeStep.class);
