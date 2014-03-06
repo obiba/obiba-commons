@@ -93,7 +93,9 @@ public final class FileUtil {
    * @param source
    * @param dest
    * @throws IOException
+   * @deprecated Use com.google.common.io.Files#move(java.io.File, java.io.File)
    */
+  @Deprecated
   public static void moveFile(File source, File dest) throws IOException {
     File destFile = dest.isDirectory() ? new File(dest, source.getName()) : dest;
     if(!source.renameTo(destFile)) {
