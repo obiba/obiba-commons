@@ -6,7 +6,7 @@
   <name>OBiBa Core</name>
 
   <parent>
-    <groupId>org.obiba</groupId>
+    <groupId>org.obiba.commons</groupId>
     <artifactId>obiba-commons</artifactId>
     <version>1.6-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>

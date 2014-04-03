@@ -6,7 +6,7 @@
 
   <name>OBiBa Commons parent POM</name>
 
-  <groupId>org.obiba</groupId>
+  <groupId>org.obiba.commons</groupId>
   <artifactId>obiba-commons</artifactId>
   <packaging>pom</packaging>
   <version>1.6-SNAPSHOT</version>
