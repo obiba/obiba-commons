@@ -19,7 +19,7 @@
   <dependencies>
     <!-- Set the Obiba Commons component's version in this section only -->
     <dependency>
-      <groupId>org.obiba</groupId>
+      <groupId>org.obiba.commons</groupId>
       <artifactId>obiba-core</artifactId>
     </dependency>
 

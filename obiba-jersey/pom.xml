@@ -4,7 +4,7 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <name>OBiBa Shiro Crowd Integration</name>
+  <name>OBiBa Jersey</name>
 
   <parent>
     <groupId>org.obiba.commons</groupId>
@@ -12,31 +12,18 @@
     <version>1.6-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
-
-  <artifactId>obiba-shiro-crowd</artifactId>
-  <packaging>jar</packaging>
+  <artifactId>obiba-jersey</artifactId>
 
   <dependencies>
 
     <dependency>
-      <groupId>org.obiba.commons</groupId>
-      <artifactId>obiba-shiro</artifactId>
+      <groupId>org.glassfish.jersey.containers</groupId>
+      <artifactId>jersey-container-servlet</artifactId>
     </dependency>
 
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context-support</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>com.atlassian.crowd</groupId>
-      <artifactId>crowd-integration-client</artifactId>
-    </dependency>
-
-    <!-- needed by crowd-integration-client -->
-    <dependency>
-      <groupId>commons-httpclient</groupId>
-      <artifactId>commons-httpclient</artifactId>
     </dependency>
 
   </dependencies>
