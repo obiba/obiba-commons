@@ -21,7 +21,8 @@
   <modules>
     <module>obiba-core</module>
     <module>obiba-wicket</module>
-    <module>obiba-security</module>
+    <module>obiba-shiro</module>
+    <module>obiba-shiro-crowd</module>
   </modules>
 
   <dependencyManagement>
@@ -29,6 +30,11 @@
       <dependency>
         <groupId>org.obiba</groupId>
         <artifactId>obiba-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.obiba</groupId>
+        <artifactId>obiba-shiro</artifactId>
         <version>${project.version}</version>
       </dependency>
 
@@ -256,6 +262,26 @@
         <groupId>org.apache.shiro</groupId>
         <artifactId>shiro-core</artifactId>
         <version>${shiro.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.shiro</groupId>
+        <artifactId>shiro-web</artifactId>
+        <version>${shiro.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.shiro</groupId>
+        <artifactId>shiro-spring</artifactId>
+        <version>${shiro.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.shiro</groupId>
+        <artifactId>shiro-ehcache</artifactId>
+        <version>${shiro.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>eu.flatwhite.shiro</groupId>
+        <artifactId>shiro-extras</artifactId>
+        <version>${shiro-extras.version}</version>
       </dependency>
 
       <dependency>
@@ -635,9 +661,10 @@
     <junit.version>4.11</junit.version>
     <liquibase.version>1.9.4</liquibase.version>
     <mail.version>1.5.0-b01</mail.version>
-    <shiro.version>1.2.2</shiro.version>
+    <shiro.version>1.2.3</shiro.version>
+    <shiro-extras.version>1.0.3-obiba</shiro-extras.version>
     <slf4j.version>1.7.6</slf4j.version>
-    <spring.version>4.0.2.RELEASE</spring.version>
+    <spring.version>4.0.3.RELEASE</spring.version>
     <wicket.version>1.4.17</wicket.version>
     <xstream.version>1.4.7</xstream.version>
 
