@@ -79,6 +79,8 @@ public class DefaultUpgradeManager implements UpgradeManager {
   // Constructors
   //
 
+  @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR",
+      justification = "XML deserialization")
   public DefaultUpgradeManager() {
 
   }

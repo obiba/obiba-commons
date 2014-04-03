@@ -17,7 +17,6 @@ import java.io.OutputStreamWriter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
@@ -38,27 +37,25 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Provider
 @Consumes(APPLICATION_JSON)
 @Produces(APPLICATION_JSON)
-public class ProtobufJsonProvider implements MessageBodyReader<Object>, MessageBodyWriter<Object> {
-
-  @Inject
-  protected ProtobufProviderHelper helper;
+public class ProtobufJsonProvider extends AbstractProtobufProvider
+    implements MessageBodyReader<Object>, MessageBodyWriter<Object> {
 
   @Override
   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-    return Message.class.isAssignableFrom(type) || helper.isWrapped(type, genericType);
+    return Message.class.isAssignableFrom(type) || isWrapped(type, genericType);
   }
 
   @Override
   public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType,
       MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
       throws IOException, WebApplicationException {
-    Class<Message> messageType = helper.extractMessageType(type, genericType);
+    Class<Message> messageType = extractMessageType(type, genericType);
 
-    ExtensionRegistry extensionRegistry = helper.extensions().forMessage(messageType);
-    Builder builder = helper.builders().forMessage(messageType);
+    ExtensionRegistry extensionRegistry = extensions().forMessage(messageType);
+    Builder builder = builders().forMessage(messageType);
 
     Readable input = new InputStreamReader(entityStream, Charsets.UTF_8);
-    if(helper.isWrapped(type, genericType)) {
+    if(isWrapped(type, genericType)) {
       // JsonFormat does not provide a mergeCollection method
       return JsonIoUtil.mergeCollection(input, extensionRegistry, builder);
     }
@@ -68,7 +65,7 @@ public class ProtobufJsonProvider implements MessageBodyReader<Object>, MessageB
 
   @Override
   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-    return Message.class.isAssignableFrom(type) || helper.isWrapped(type, genericType);
+    return Message.class.isAssignableFrom(type) || isWrapped(type, genericType);
   }
 
   @Override
@@ -83,7 +80,7 @@ public class ProtobufJsonProvider implements MessageBodyReader<Object>, MessageB
       throws IOException, WebApplicationException {
 
     try(OutputStreamWriter output = new OutputStreamWriter(entityStream, Charsets.UTF_8)) {
-      if(helper.isWrapped(type, genericType)) {
+      if(isWrapped(type, genericType)) {
         // JsonFormat does not provide a printList method
         JsonIoUtil.printCollection((Iterable<Message>) obj, output);
       } else {

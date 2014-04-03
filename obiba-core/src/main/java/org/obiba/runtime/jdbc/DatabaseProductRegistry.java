@@ -14,7 +14,7 @@ import com.thoughtworks.xstream.XStream;
 
 public class DatabaseProductRegistry {
 
-  private final Collection<DatabaseProduct> databaseProducts = new HashSet<DatabaseProduct>();
+  private final Collection<DatabaseProduct> databaseProducts = new HashSet<>();
 
   @SuppressWarnings("unchecked")
   public DatabaseProductRegistry() {

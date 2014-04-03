@@ -2,6 +2,8 @@ package org.obiba.runtime.jdbc;
 
 import org.springframework.util.PatternMatchUtils;
 
+@edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD",
+    justification = "XML deserialization")
 public class DatabaseProduct {
 
   public String[] databaseProductNames;

@@ -19,45 +19,34 @@ import javax.ws.rs.WebApplicationException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.ExtensionRegistry;
 import com.google.protobuf.Message;
 import com.google.protobuf.Message.Builder;
 
-@Component
-public class ProtobufProviderHelper {
+public abstract class AbstractProtobufProvider {
 
-  private static final Logger log = LoggerFactory.getLogger(ProtobufProviderHelper.class);
+  private static final Logger log = LoggerFactory.getLogger(AbstractProtobufProvider.class);
 
   private final BuilderFactory builderFactory = new BuilderFactory();
 
   private final ExtensionRegistryFactory extensionRegistryFactory = new ExtensionRegistryFactory();
 
-  private final DescriptorFactory descriptorFactory = new DescriptorFactory();
-
-  public ProtobufProviderHelper() {
-  }
-
-  public BuilderFactory builders() {
+  BuilderFactory builders() {
     return builderFactory;
   }
 
-  public ExtensionRegistryFactory extensions() {
+  ExtensionRegistryFactory extensions() {
     return extensionRegistryFactory;
   }
 
-  public DescriptorFactory descriptors() {
-    return descriptorFactory;
-  }
-
   @SuppressWarnings("unchecked")
-  public Class<Message> extractMessageType(Class<?> type, Type genericType) {
+  Class<Message> extractMessageType(Class<?> type, Type genericType) {
     return isWrapped(type, genericType) ? Types.getCollectionBaseType(type, genericType) : (Class<Message>) type;
   }
 
-  public boolean isWrapped(Class<?> type, Type genericType) {
+  boolean isWrapped(Class<?> type, Type genericType) {
     if((Iterable.class.isAssignableFrom(type) || type.isArray()) && genericType != null) {
       Class<?> baseType = Types.getCollectionBaseType(type, genericType);
       return baseType != null && Message.class.isAssignableFrom(baseType);
