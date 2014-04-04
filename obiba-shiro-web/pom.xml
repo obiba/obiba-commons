@@ -4,7 +4,7 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <name>OBiBa Shiro</name>
+  <name>OBiBa Shiro Web</name>
 
   <parent>
     <groupId>org.obiba.commons</groupId>
@@ -12,22 +12,32 @@
     <version>1.6-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
-  <artifactId>obiba-shiro</artifactId>
+  <artifactId>obiba-shiro-web</artifactId>
 
   <dependencies>
+
+    <dependency>
+      <groupId>org.obiba.commons</groupId>
+      <artifactId>obiba-shiro</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.apache.shiro</groupId>
       <artifactId>shiro-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>eu.flatwhite.shiro</groupId>
-      <artifactId>shiro-extras</artifactId>
+      <groupId>org.apache.shiro</groupId>
+      <artifactId>shiro-web</artifactId>
     </dependency>
 
     <dependency>
       <groupId>org.springframework</groupId>
-      <artifactId>spring-context-support</artifactId>
+      <artifactId>spring-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <scope>provided</scope>
     </dependency>
 
   </dependencies>

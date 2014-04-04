@@ -1,4 +1,3 @@
 # Obiba Commons
 
-## Shiro and Atlassian Crowd integration
-
+## [Shiro](http://shiro.apache.org) and [Atlassian Crowd](https://www.atlassian.com/en/software/crowd) integration

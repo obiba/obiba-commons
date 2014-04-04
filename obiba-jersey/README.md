@@ -1,4 +1,4 @@
 # Obiba Commons
 
-## Jersey
+## [Jersey](https://jersey.java.net)
 
