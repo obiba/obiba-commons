@@ -22,6 +22,7 @@
     <module>obiba-core</module>
     <module>obiba-jersey</module>
     <module>obiba-jersey-protobuf</module>
+    <module>obiba-jersey-shiro</module>
     <module>obiba-shiro</module>
     <module>obiba-shiro-crowd</module>
     <module>obiba-shiro-web</module>
@@ -107,7 +108,7 @@
       </dependency>
 
       <dependency>
-      <groupId>cglib</groupId>
+        <groupId>cglib</groupId>
         <artifactId>cglib</artifactId>
         <version>${cglib.version}</version>
       </dependency>
