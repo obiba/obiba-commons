@@ -19,9 +19,7 @@ public class SessionStorageEvaluator implements org.apache.shiro.mgt.SessionStor
 
   @Override
   public boolean isSessionStorageEnabled(Subject subject) {
-    if(subject == null) return false;
-    Object principal = subject.getPrincipal();
-    return !Objects.equals(principal, SudoRealm.SudoPrincipal.INSTANCE);
+    return subject != null && !Objects.equals(subject.getPrincipal(), SudoRealm.SudoPrincipal.INSTANCE);
   }
 
 }

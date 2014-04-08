@@ -90,7 +90,6 @@ public class AuthenticationFilter extends OncePerRequestFilter {
       response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     } catch(Exception e) {
       log.error("Exception", e);
-      // see org.obiba.opal.web.magma.provider.UnhandledExceptionMapper
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
       response.getWriter().println(e.getMessage());
     } finally {
@@ -109,7 +108,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
     Subject subject = authenticateSslCert(request);
     if(subject == null) {
-      subject = authenticateOpalAuthHeader(request);
+      subject = authenticateAuthHeader(request);
     }
     if(subject == null) {
       subject = authenticateBasicHeader(request);
@@ -141,12 +140,12 @@ public class AuthenticationFilter extends OncePerRequestFilter {
   }
 
   @Nullable
-  private Subject authenticateOpalAuthHeader(HttpServletRequest request) {
-    String opalAuthToken = request.getHeader(headerCredentials);
-    if(opalAuthToken == null || opalAuthToken.isEmpty()) return null;
+  private Subject authenticateAuthHeader(HttpServletRequest request) {
+    String authToken = request.getHeader(headerCredentials);
+    if(authToken == null || authToken.isEmpty()) return null;
 
-    AuthenticationToken token = new HttpHeaderAuthenticationToken(opalAuthToken);
-    Subject subject = new Subject.Builder(securityManager).sessionId(opalAuthToken).buildSubject();
+    AuthenticationToken token = new HttpHeaderAuthenticationToken(authToken);
+    Subject subject = new Subject.Builder(securityManager).sessionId(authToken).buildSubject();
     subject.login(token);
     return subject;
   }
