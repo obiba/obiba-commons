@@ -3,9 +3,9 @@ package org.obiba.jersey.shiro;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
-class SpringBeanUtils {
+class CglibProxyUtils {
 
-  private SpringBeanUtils() {}
+  private CglibProxyUtils() {}
 
   static boolean isSuperMethodAnnotated(Class<?> superClass, Method method,
       Class<? extends Annotation> annotationClass) {

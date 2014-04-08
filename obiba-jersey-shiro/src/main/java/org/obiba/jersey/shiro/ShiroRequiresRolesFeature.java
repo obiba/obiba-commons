@@ -21,8 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static java.util.Arrays.asList;
-import static org.obiba.jersey.shiro.SpringBeanUtils.getSuperMethodAnnotation;
-import static org.obiba.jersey.shiro.SpringBeanUtils.isSuperMethodAnnotated;
+import static org.obiba.jersey.shiro.CglibProxyUtils.getSuperMethodAnnotation;
+import static org.obiba.jersey.shiro.CglibProxyUtils.isSuperMethodAnnotated;
 
 @Provider
 public class ShiroRequiresRolesFeature implements DynamicFeature {
