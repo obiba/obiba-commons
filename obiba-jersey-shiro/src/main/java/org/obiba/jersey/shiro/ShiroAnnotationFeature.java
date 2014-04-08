@@ -20,9 +20,13 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresGuest;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Provider
 public class ShiroAnnotationFeature implements DynamicFeature {
+
+  private static final Logger log = LoggerFactory.getLogger(ShiroAnnotationFeature.class);
 
   @Override
   public void configure(ResourceInfo resourceInfo, FeatureContext context) {
@@ -36,6 +40,7 @@ public class ShiroAnnotationFeature implements DynamicFeature {
   private void requiresAuthentication(ResourceInfo resourceInfo, FeatureContext context) {
     if(resourceInfo.getResourceClass().isAnnotationPresent(RequiresAuthentication.class) ||
         resourceInfo.getResourceMethod().isAnnotationPresent(RequiresAuthentication.class)) {
+      log.debug("Register RequiresAuthenticationRequestFilter for {}", resourceInfo);
       context.register(new RequiresAuthenticationRequestFilter());
     }
   }
@@ -43,6 +48,7 @@ public class ShiroAnnotationFeature implements DynamicFeature {
   private void requiresRequiresGuest(ResourceInfo resourceInfo, FeatureContext context) {
     if(resourceInfo.getResourceClass().isAnnotationPresent(RequiresGuest.class) ||
         resourceInfo.getResourceMethod().isAnnotationPresent(RequiresGuest.class)) {
+      log.debug("Register RequiresGuestRequestFilter for {}", resourceInfo);
       context.register(new RequiresGuestRequestFilter());
     }
   }
@@ -58,6 +64,7 @@ public class ShiroAnnotationFeature implements DynamicFeature {
           .addAll(Arrays.asList(resourceInfo.getResourceMethod().getAnnotation(RequiresPermissions.class).value()));
     }
     if(!requiredPermissions.isEmpty()) {
+      log.debug("Register RequiresPermissionsRequestFilter for {} with {}", resourceInfo, requiredPermissions);
       context.register(
           new RequiresPermissionsRequestFilter(requiredPermissions.toArray(new String[requiredPermissions.size()])));
     }
@@ -72,6 +79,7 @@ public class ShiroAnnotationFeature implements DynamicFeature {
       requiredRoles.addAll(Arrays.asList(resourceInfo.getResourceMethod().getAnnotation(RequiresRoles.class).value()));
     }
     if(!requiredRoles.isEmpty()) {
+      log.debug("Register RequiresRolesRequestFilter for {} with {}", resourceInfo, requiredRoles);
       context.register(new RequiresRolesRequestFilter(requiredRoles));
     }
   }
