@@ -1,4 +1,4 @@
-package org.obiba.jersey.shiro;
+package org.obiba.jersey.shiro.authz.annotation;
 
 import java.io.IOException;
 
@@ -17,7 +17,7 @@ import org.apache.shiro.authz.annotation.RequiresGuest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.obiba.jersey.shiro.CglibProxyUtils.isSuperMethodAnnotated;
+import static org.obiba.jersey.shiro.authz.annotation.CglibProxyUtils.isSuperMethodAnnotated;
 
 @Provider
 public class ShiroRequiresGuestFeature implements DynamicFeature {

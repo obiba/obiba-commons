@@ -1,4 +1,4 @@
-package org.obiba.jersey.shiro;
+package org.obiba.jersey.shiro.authz.annotation;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;

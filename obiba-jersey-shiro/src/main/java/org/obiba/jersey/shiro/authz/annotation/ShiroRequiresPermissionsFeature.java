@@ -1,4 +1,4 @@
-package org.obiba.jersey.shiro;
+package org.obiba.jersey.shiro.authz.annotation;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -21,8 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static java.util.Arrays.asList;
-import static org.obiba.jersey.shiro.CglibProxyUtils.getSuperMethodAnnotation;
-import static org.obiba.jersey.shiro.CglibProxyUtils.isSuperMethodAnnotated;
+import static org.obiba.jersey.shiro.authz.annotation.CglibProxyUtils.getSuperMethodAnnotation;
+import static org.obiba.jersey.shiro.authz.annotation.CglibProxyUtils.isSuperMethodAnnotated;
 
 @Provider
 public class ShiroRequiresPermissionsFeature implements DynamicFeature {
