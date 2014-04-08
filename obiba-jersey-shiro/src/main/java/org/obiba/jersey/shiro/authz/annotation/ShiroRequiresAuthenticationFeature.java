@@ -1,6 +1,7 @@
 package org.obiba.jersey.shiro.authz.annotation;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 
 import javax.annotation.Priority;
 import javax.ws.rs.ForbiddenException;
@@ -26,11 +27,12 @@ public class ShiroRequiresAuthenticationFeature implements DynamicFeature {
 
   @Override
   public void configure(ResourceInfo resourceInfo, FeatureContext context) {
-    if(resourceInfo.getResourceClass().isAnnotationPresent(RequiresAuthentication.class) ||
-        resourceInfo.getResourceClass().getSuperclass().isAnnotationPresent(RequiresAuthentication.class) ||
-        resourceInfo.getResourceMethod().isAnnotationPresent(RequiresAuthentication.class) ||
-        isSuperMethodAnnotated(resourceInfo.getResourceClass().getSuperclass(), resourceInfo.getResourceMethod(),
-            RequiresAuthentication.class)) {
+    Class<?> resourceClass = resourceInfo.getResourceClass();
+    Method resourceMethod = resourceInfo.getResourceMethod();
+    if(resourceClass.isAnnotationPresent(RequiresAuthentication.class) ||
+        resourceClass.getSuperclass().isAnnotationPresent(RequiresAuthentication.class) ||
+        resourceMethod.isAnnotationPresent(RequiresAuthentication.class) ||
+        isSuperMethodAnnotated(resourceClass.getSuperclass(), resourceMethod, RequiresAuthentication.class)) {
       log.debug("Register RequiresAuthenticationRequestFilter for {}", resourceInfo);
       context.register(new RequiresAuthenticationRequestFilter());
     }

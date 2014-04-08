@@ -1,6 +1,7 @@
 package org.obiba.jersey.shiro.authz.annotation;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 
 import javax.annotation.Priority;
 import javax.ws.rs.ForbiddenException;
@@ -26,11 +27,12 @@ public class ShiroRequiresGuestFeature implements DynamicFeature {
 
   @Override
   public void configure(ResourceInfo resourceInfo, FeatureContext context) {
-    if(resourceInfo.getResourceClass().isAnnotationPresent(RequiresGuest.class) ||
-        resourceInfo.getResourceClass().getSuperclass().isAnnotationPresent(RequiresGuest.class) ||
-        resourceInfo.getResourceMethod().isAnnotationPresent(RequiresGuest.class) ||
-        isSuperMethodAnnotated(resourceInfo.getResourceClass().getSuperclass(), resourceInfo.getResourceMethod(),
-            RequiresGuest.class)) {
+    Class<?> resourceClass = resourceInfo.getResourceClass();
+    Method resourceMethod = resourceInfo.getResourceMethod();
+    if(resourceClass.isAnnotationPresent(RequiresGuest.class) ||
+        resourceClass.getSuperclass().isAnnotationPresent(RequiresGuest.class) ||
+        resourceMethod.isAnnotationPresent(RequiresGuest.class) ||
+        isSuperMethodAnnotated(resourceClass.getSuperclass(), resourceMethod, RequiresGuest.class)) {
       log.debug("Register RequiresGuestRequestFilter for {}", resourceInfo);
       context.register(new RequiresGuestRequestFilter());
     }
