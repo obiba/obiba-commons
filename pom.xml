@@ -408,6 +408,12 @@
         <version>${jgit.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>javax.validation</groupId>
+        <artifactId>validation-api</artifactId>
+        <version>${validation-api.version}</version>
+      </dependency>
+
     </dependencies>
 
   </dependencyManagement>
@@ -455,6 +461,11 @@
       <groupId>net.sourceforge.findbugs</groupId>
       <artifactId>annotations</artifactId>
       <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.validation</groupId>
+      <artifactId>validation-api</artifactId>
     </dependency>
 
   </dependencies>
@@ -738,6 +749,7 @@
     <shiro-extras.version>1.0.3-obiba</shiro-extras.version>
     <slf4j.version>1.7.6</slf4j.version>
     <spring.version>4.0.3.RELEASE</spring.version>
+    <validation-api.version>1.1.0.Final</validation-api.version>
     <wicket.version>1.4.17</wicket.version>
     <xstream.version>1.4.7</xstream.version>
 

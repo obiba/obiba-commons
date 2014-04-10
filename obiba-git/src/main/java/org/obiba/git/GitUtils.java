@@ -20,6 +20,9 @@ import org.eclipse.jgit.util.FS;
 
 public final class GitUtils {
 
+  public static final String HEAD_COMMIT_ID = "HEAD";
+
+
   private GitUtils() {}
 
   public static String getNthCommitId(String commitId, int nth) {
