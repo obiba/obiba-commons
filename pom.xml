@@ -20,6 +20,7 @@
 
   <modules>
     <module>obiba-core</module>
+    <module>obiba-git</module>
     <module>obiba-jersey</module>
     <module>obiba-jersey-protobuf</module>
     <module>obiba-jersey-shiro</module>
@@ -401,6 +402,12 @@
         <scope>provided</scope>
       </dependency>
 
+      <dependency>
+        <groupId>org.eclipse.jgit</groupId>
+        <artifactId>org.eclipse.jgit</artifactId>
+        <version>${jgit.version}</version>
+      </dependency>
+
     </dependencies>
 
   </dependencyManagement>
@@ -718,6 +725,7 @@
     <javassist.version>3.12.1.GA</javassist.version>
     <jersey.version>2.7</jersey.version>
     <jetty.version>6.1.17</jetty.version>
+    <jgit.version>3.3.1.201403241930-r</jgit.version>
     <joda-time.version>2.3</joda-time.version>
     <jsr305.version>2.0.3</jsr305.version>
     <junit.version>4.11</junit.version>

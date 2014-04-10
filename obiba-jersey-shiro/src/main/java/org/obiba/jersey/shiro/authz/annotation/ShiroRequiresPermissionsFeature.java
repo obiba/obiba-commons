@@ -42,7 +42,7 @@ public class ShiroRequiresPermissionsFeature implements DynamicFeature {
       requiredPermissions.addAll(asList(method.getAnnotation(RequiresPermissions.class).value()));
     }
 
-    // in case of Spring bean proxied by CGLIB (so without annotations)
+    // in case of Spring bean proxied by CGLIB (where we cannot access annotations anymore)
     Class<?> superClass = resourceClass.getSuperclass();
     if(superClass.isAnnotationPresent(RequiresPermissions.class)) {
       requiredPermissions.addAll(asList(superClass.getAnnotation(RequiresPermissions.class).value()));
