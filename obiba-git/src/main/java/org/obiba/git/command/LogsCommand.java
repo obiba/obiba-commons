@@ -11,18 +11,15 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LogCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.PersonIdent;
-import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.obiba.git.CommitInfo;
 import org.obiba.git.GitException;
+import org.obiba.git.GitUtils;
 
 import com.google.common.base.Strings;
 
 public class LogsCommand extends AbstractGitCommand<Iterable<CommitInfo>> {
-
-  private static final String HEAD_COMMIT_ID = "HEAD";
 
   private String path;
 
@@ -40,7 +37,7 @@ public class LogsCommand extends AbstractGitCommand<Iterable<CommitInfo>> {
 
       Collection<CommitInfo> commits = new ArrayList<>();
       // for performance, get the id before looping thru all commits preventing resolving the id each time
-      String headCommitId = getHeadCommitId(git.getRepository());
+      String headCommitId = GitUtils.getHeadCommitId(git.getRepository());
       // TODO find an efficient way of finding the current commit of a given path
       // One possible solution is implementing: 'git log  --ancestry-path <COMMIT_HAEH>^..HEAD'
       // For now, the list is in order of 'current .. oldest'
@@ -64,11 +61,6 @@ public class LogsCommand extends AbstractGitCommand<Iterable<CommitInfo>> {
     } catch(IOException | GitAPIException e) {
       throw new GitException(e);
     }
-  }
-
-  private String getHeadCommitId(Repository repository) throws IOException {
-    ObjectId id = repository.resolve(HEAD_COMMIT_ID);
-    return id == null ? "" : id.getName();
   }
 
   /**
