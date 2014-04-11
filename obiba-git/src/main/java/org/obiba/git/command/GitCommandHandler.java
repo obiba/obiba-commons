@@ -78,7 +78,7 @@ public class GitCommandHandler {
     }
   }
 
-  public <T> T execute(GitReadCommand<T> command) {
+  public <T> T execute(GitReadCommand<T> command) throws Exception {
     String path = command.getRepositoryPath().getAbsolutePath();
 
     if(!command.getRepositoryPath().exists() || !command.getRepositoryPath().isDirectory()) {
@@ -91,8 +91,7 @@ public class GitCommandHandler {
       git = new Git(getLocalRepository(command.getRepositoryPath()));
       fetchAllRepository(git);
       return command.execute(git.getRepository().getWorkTree());
-
-    } catch(IOException | GitAPIException e) {
+    } catch(GitAPIException e) {
       throw new GitException(e);
     } finally {
       if(git != null) git.close();

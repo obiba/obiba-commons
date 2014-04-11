@@ -14,7 +14,7 @@ import java.io.File;
 
 public interface GitReadCommand<T> {
 
-  T execute(File repository);
+  T execute(File repository) throws Exception;
 
   File getRepositoryPath();
 }

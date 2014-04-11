@@ -2,6 +2,7 @@ package org.obiba.git.command;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -19,6 +20,7 @@ import com.google.common.io.CharStreams;
 import com.google.common.io.Files;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 public class GitCommandsTest {
 
@@ -48,6 +50,12 @@ public class GitCommandsTest {
 
     assertThat(readFile(repo, "root.txt")).isEqualTo("This is root file");
     assertThat(readFile(repo, "dir/file.txt")).isEqualTo("This is a file in dir");
+
+    try {
+      handler.execute(new ReadFileCommand.Builder(repo, "none").build());
+      fail("Should throw FileNotFoundException");
+    } catch(FileNotFoundException ignored) {
+    }
   }
 
   @Test(expected = NoSuchGitRepositoryException.class)
@@ -64,7 +72,7 @@ public class GitCommandsTest {
     return repo;
   }
 
-  private String readFile(File repo, String path) throws IOException {
+  private String readFile(File repo, String path) throws Exception {
     InputStream inputStream = handler.execute(new ReadFileCommand.Builder(repo, path).build());
     return CharStreams.toString(new InputStreamReader(inputStream, Charsets.UTF_8));
   }

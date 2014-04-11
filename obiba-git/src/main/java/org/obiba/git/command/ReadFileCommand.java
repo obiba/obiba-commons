@@ -2,12 +2,9 @@ package org.obiba.git.command;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import javax.validation.constraints.NotNull;
-
-import org.obiba.git.GitException;
 
 public class ReadFileCommand extends AbstractGitReadCommand<InputStream> implements GitReadCommand<InputStream> {
 
@@ -19,12 +16,8 @@ public class ReadFileCommand extends AbstractGitReadCommand<InputStream> impleme
   }
 
   @Override
-  public InputStream execute(File repository) {
-    try {
-      return new FileInputStream(new File(repository, pathInRepo));
-    } catch(FileNotFoundException e) {
-      throw new GitException(e);
-    }
+  public InputStream execute(File repository) throws Exception {
+    return new FileInputStream(new File(repository, pathInRepo));
   }
 
   public static class Builder {
