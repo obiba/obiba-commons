@@ -20,13 +20,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("ClassTooDeepInInheritanceTree")
-public class AddFilesCommand extends AbstractGitCommitCommand<Iterable<PushResult>> {
+public class AddFilesCommand extends AbstractGitWriteCommand {
 
   private static final Logger log = LoggerFactory.getLogger(AddFilesCommand.class);
 
   private final Collection<FileDescriptor> files = new ArrayList<>();
 
-  public AddFilesCommand(@NotNull File repositoryPath, String commitMessage) {
+  private AddFilesCommand(@NotNull File repositoryPath, String commitMessage) {
     super(repositoryPath, commitMessage);
   }
 
@@ -34,7 +34,7 @@ public class AddFilesCommand extends AbstractGitCommitCommand<Iterable<PushResul
   public Iterable<PushResult> execute(Git git) {
     try {
       for(FileDescriptor file : files) {
-        Path path = Paths.get(getRepositoryPath().getAbsolutePath(), file.getPathInRepo());
+        Path path = Paths.get(git.getRepository().getWorkTree().getAbsolutePath(), file.getPathInRepo());
         //noinspection ResultOfMethodCallIgnored
         path.toFile().mkdirs();
         log.debug("Copy file to {}", path);

@@ -10,12 +10,12 @@
 
 package org.obiba.git.command;
 
-public interface GitCommitCommand<T> extends GitCommand<T> {
+import java.io.File;
 
-  void setCommitMessage(String commitMessage);
+public interface GitReadCommand<T> {
 
-  void setAuthorName(String authorName);
+  T execute(File repository);
 
-  void setAuthorEmail(String authorEmail);
+  File getRepositoryPath();
 }
 

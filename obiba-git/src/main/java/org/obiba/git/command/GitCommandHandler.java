@@ -12,7 +12,6 @@ import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.internal.storage.file.FileRepository;
-import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.transport.FetchResult;
 import org.eclipse.jgit.transport.RefSpec;
@@ -43,7 +42,7 @@ public class GitCommandHandler {
       .build(new CacheLoader<String, Lock>() {
                @Override
                public Lock load(@SuppressWarnings("NullableProblems") String key) throws Exception {
-                 log.debug("Create read lock for {}", key);
+                 log.trace("Create read lock for {}", key);
                  return readWriteLock.readLock();
                }
              }
@@ -53,7 +52,7 @@ public class GitCommandHandler {
       .build(new CacheLoader<String, Lock>() {
                @Override
                public Lock load(@SuppressWarnings("NullableProblems") String key) throws Exception {
-                 log.debug("Create write lock for {}", key);
+                 log.trace("Create write lock for {}", key);
                  return readWriteLock.writeLock();
                }
              }
@@ -64,9 +63,9 @@ public class GitCommandHandler {
     Git git = null;
     try {
 
-      log.debug("repositoryPath: {}", command.getRepositoryPath().getAbsolutePath());
+      File repositoryPath = command.getRepositoryPath();
+      git = new Git(getLocalRepository(repositoryPath));
 
-      git = new Git(getLocalRepository(command.getRepositoryPath()));
       fetchAllRepository(git);
       return command.execute(git);
 
@@ -78,20 +77,56 @@ public class GitCommandHandler {
     }
   }
 
+  public <T> T execute(GitReadCommand<T> command) {
+    String path = command.getRepositoryPath().getAbsolutePath();
+
+    readLock(path);
+    Git git = null;
+    try {
+      git = new Git(getLocalRepository(command.getRepositoryPath()));
+      fetchAllRepository(git);
+      return command.execute(git.getRepository().getWorkTree());
+
+    } catch(IOException | GitAPIException e) {
+      throw new GitException(e);
+    } finally {
+      if(git != null) git.close();
+      readUnlock(path);
+    }
+  }
+
   private void lock(GitCommand<?> command) {
-    log.debug("Lock for {}", command.getRepositoryPath().getAbsolutePath());
+    log.trace("Lock for {}", command.getRepositoryPath().getAbsolutePath());
     getLock(command).lock();
   }
 
   private void unlock(GitCommand<?> command) {
-    log.debug("Unlock for {}", command.getRepositoryPath().getAbsolutePath());
+    log.trace("Unlock for {}", command.getRepositoryPath().getAbsolutePath());
     getLock(command).unlock();
   }
 
   private synchronized Lock getLock(GitCommand<?> command) {
     try {
       String path = command.getRepositoryPath().getAbsolutePath();
-      return command instanceof GitCommitCommand ? writeLocks.get(path) : readLocks.get(path);
+      return command instanceof GitWriteCommand ? writeLocks.get(path) : readLocks.get(path);
+    } catch(ExecutionException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private void readLock(String path) {
+    try {
+      log.trace("Read lock for {}", path);
+      readLocks.get(path).lock();
+    } catch(ExecutionException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private void readUnlock(String path) {
+    try {
+      log.trace("Read unlock for {}", path);
+      readLocks.get(path).unlock();
     } catch(ExecutionException e) {
       throw new RuntimeException(e);
     }
@@ -101,18 +136,22 @@ public class GitCommandHandler {
     if(!repositoryPath.exists()) {
       createBareRepository(repositoryPath);
     }
+    File localRepoDir = Files.createTempDir();
 
     CloneCommand clone = new CloneCommand();
     clone.setBare(false);
     clone.setCloneAllBranches(true);
     clone.setURI("file://" + repositoryPath.getAbsolutePath());
-    clone.setDirectory(Files.createTempDir());
-    return clone.call().getRepository();
+    clone.setDirectory(localRepoDir);
+    Repository repository = clone.call().getRepository();
+
+    log.debug("Clone {} to {}", repositoryPath.getAbsolutePath(), repository.getWorkTree().getAbsolutePath());
+    return repository;
   }
 
   private Repository createBareRepository(File repositoryPath) throws IOException {
     log.debug("Create bare repository for {}", repositoryPath.getAbsolutePath());
-    Repository repository = new FileRepository(new File(repositoryPath, Constants.DOT_GIT));
+    Repository repository = new FileRepository(repositoryPath);
     repository.create(true);
     return repository;
   }

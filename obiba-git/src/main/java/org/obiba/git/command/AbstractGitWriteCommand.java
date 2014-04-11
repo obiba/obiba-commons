@@ -30,9 +30,10 @@ import com.google.common.base.Strings;
  *
  * @param <T> type of builder
  */
-public abstract class AbstractGitCommitCommand<T> extends AbstractGitCommand<T> implements GitCommitCommand<T> {
+public abstract class AbstractGitWriteCommand extends AbstractGitCommand<Iterable<PushResult>>
+    implements GitWriteCommand {
 
-  private static final Logger log = LoggerFactory.getLogger(AbstractGitCommitCommand.class);
+  private static final Logger log = LoggerFactory.getLogger(AbstractGitWriteCommand.class);
 
   private static final String DEFAULT_AUTHOR_NAME = "Anonymous";
 
@@ -46,16 +47,9 @@ public abstract class AbstractGitCommitCommand<T> extends AbstractGitCommand<T> 
 
   private String commitMessage;
 
-  public AbstractGitCommitCommand(@NotNull File repositoryPath, String commitMessage) {
+  public AbstractGitWriteCommand(@NotNull File repositoryPath, String commitMessage) {
     super(repositoryPath);
     this.commitMessage = commitMessage;
-  }
-
-  protected AbstractGitCommitCommand(@NotNull File repositoryPath, String commitMessage, String authorName,
-      String authorEmail) {
-    this(repositoryPath, commitMessage);
-    this.authorName = authorName;
-    this.authorEmail = authorEmail;
   }
 
   protected Iterable<PushResult> commitAndPush(Git git) throws GitAPIException {

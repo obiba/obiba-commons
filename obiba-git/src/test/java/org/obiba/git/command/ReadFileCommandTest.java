@@ -2,7 +2,9 @@ package org.obiba.git.command;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.mgt.DefaultSecurityManager;
@@ -11,11 +13,15 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.CharStreams;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.obiba.git.command.GitCommandTestUtils.createFile;
 
-public class AddFilesCommandTest {
+public class ReadFileCommandTest {
 
-  private static final Logger log = LoggerFactory.getLogger(AddFilesCommandTest.class);
+  private static final Logger log = LoggerFactory.getLogger(ReadFileCommandTest.class);
 
   private final GitCommandHandler handler = new GitCommandHandler();
 
@@ -25,7 +31,7 @@ public class AddFilesCommandTest {
   }
 
   @Test
-  public void test_add_files_to_new_repo() throws Exception {
+  public void test_read_files() throws Exception {
 
     File repo = File.createTempFile("obiba", "git");
     // delete it so we create a new repo
@@ -46,8 +52,13 @@ public class AddFilesCommandTest {
       handler.execute(addFilesCommand);
     }
 
-//    assertThat(new File(repo, "root.txt")).exists().isFile().hasContent("This is root file");
-//    assertThat(new File(repo, "dir/file.txt")).exists().isFile().hasContent("This is a file in dir");
+    assertThat(readFile(repo, "root.txt")).isEqualTo("This is root file");
+    assertThat(readFile(repo, "dir/file.txt")).isEqualTo("This is a file in dir");
+  }
+
+  private String readFile(File repo, String path) throws IOException {
+    InputStream inputStream = handler.execute(new ReadFileCommand.Builder(repo, path).build());
+    return CharStreams.toString(new InputStreamReader(inputStream, Charsets.UTF_8));
   }
 
 }
