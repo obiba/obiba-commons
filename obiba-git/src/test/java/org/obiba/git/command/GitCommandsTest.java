@@ -12,8 +12,6 @@ import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.obiba.git.NoSuchGitRepositoryException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
@@ -24,8 +22,6 @@ import static org.junit.Assert.fail;
 
 public class GitCommandsTest {
 
-  private static final Logger log = LoggerFactory.getLogger(GitCommandsTest.class);
-
   private final GitCommandHandler handler = new GitCommandHandler();
 
   @BeforeClass
@@ -34,18 +30,16 @@ public class GitCommandsTest {
   }
 
   @Test
-  public void test_write_read_files_in_new_repo() throws Exception {
+  public void test_create_read_files() throws Exception {
 
     File repo = getRepoPath();
-    File file1 = createFile("This is root file");
-    File file2 = createFile("This is a file in dir");
 
-    try(InputStream input1 = new FileInputStream(file1);
-        InputStream input2 = new FileInputStream(file2)) {
-      AddFilesCommand addFilesCommand = new AddFilesCommand.Builder(repo, "Initial commit") //
+    try(InputStream input1 = new FileInputStream(createFile("This is root file"));
+        InputStream input2 = new FileInputStream(createFile("This is a file in dir"))) {
+      handler.execute(new AddFilesCommand.Builder(repo, "Initial commit") //
           .addFile("root.txt", input1) //
-          .addFile("dir/file.txt", input2).build();
-      handler.execute(addFilesCommand);
+          .addFile("dir/file.txt", input2) //
+          .build());
     }
 
     assertThat(readFile(repo, "root.txt")).isEqualTo("This is root file");
@@ -61,6 +55,21 @@ public class GitCommandsTest {
   @Test(expected = NoSuchGitRepositoryException.class)
   public void test_read_files_from_invalid_repo() throws Exception {
     handler.execute(new ReadFileCommand.Builder(getRepoPath(), "file.txt").build());
+  }
+
+  @Test
+  public void test_update_read_files() throws Exception {
+
+    File repo = getRepoPath();
+
+    try(InputStream input = new FileInputStream(createFile("Version 1"))) {
+      handler.execute(new AddFilesCommand.Builder(repo, "First commit").addFile("root.txt", input).build());
+    }
+    try(InputStream input = new FileInputStream(createFile("Version 2"))) {
+      handler.execute(new AddFilesCommand.Builder(repo, "Second commit").addFile("root.txt", input).build());
+    }
+
+    assertThat(readFile(repo, "root.txt")).isEqualTo("Version 2");
   }
 
   private File getRepoPath() throws IOException {
