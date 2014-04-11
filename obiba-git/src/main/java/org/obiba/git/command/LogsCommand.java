@@ -49,10 +49,13 @@ public class LogsCommand extends AbstractGitCommand<Iterable<CommitInfo>> {
         String commitId = commit.getName();
         boolean isHeadCommit = headCommitId.equals(commitId);
         PersonIdent personIdent = commit.getAuthorIdent();
-        commits.add(new CommitInfo.Builder().setAuthor(personIdent.getName()).setDate(personIdent.getWhen())
-            .setComment(commit.getFullMessage()).setCommitId(commitId).setIsHead(isHeadCommit).setIsCurrent(isCurrent)
-            .build());
-
+        commits.add(new CommitInfo.Builder().authorName(personIdent.getName()) //
+            .authorEmail(personIdent.getEmailAddress()) //
+            .date(personIdent.getWhen()) //
+            .comment(commit.getFullMessage()) //
+            .commitId(commit.getName()) //
+            .current(isCurrent) //
+            .head(isHeadCommit).build());
         isCurrent = false;
       }
 

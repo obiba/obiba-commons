@@ -50,9 +50,12 @@ public class CommitLogCommand extends AbstractGitCommand<CommitInfo> {
       if(TreeWalk.forPath(repository, path, commit.getTree()) != null) {
         // There is indeed the path in this commit
         PersonIdent personIdent = commit.getAuthorIdent();
-        return new CommitInfo.Builder().setAuthor(personIdent.getName()).setDate(personIdent.getWhen())
-            .setComment(commit.getFullMessage()).setCommitId(commit.getName())
-            .setIsHead(GitUtils.isHead(repository, commitId)).build();
+        return new CommitInfo.Builder().authorName(personIdent.getName()) //
+            .authorEmail(personIdent.getEmailAddress()) //
+            .date(personIdent.getWhen()) //
+            .comment(commit.getFullMessage()) //
+            .commitId(commit.getName()) //
+            .head(GitUtils.isHead(repository, commitId)).build();
       }
     } catch(IOException e) {
       throw new GitException(e);

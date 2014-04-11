@@ -35,9 +35,9 @@ public abstract class AbstractGitWriteCommand extends AbstractGitCommand<Iterabl
 
   private static final Logger log = LoggerFactory.getLogger(AbstractGitWriteCommand.class);
 
-  private static final String DEFAULT_AUTHOR_NAME = "Anonymous";
+  public static final String DEFAULT_AUTHOR_NAME = "Anonymous";
 
-  private static final String DEFAULT_AUTHOR_EMAIL = "anonymous@obiba.org";
+  public static final String DEFAULT_AUTHOR_EMAIL = "anonymous@obiba.org";
 
   private static final String SHIRO_SECURITY_UTILS_CLASS = "org.apache.shiro.SecurityUtils";
 

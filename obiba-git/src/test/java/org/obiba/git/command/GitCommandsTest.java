@@ -11,9 +11,11 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.obiba.git.CommitInfo;
 import org.obiba.git.NoSuchGitRepositoryException;
 
 import com.google.common.base.Charsets;
+import com.google.common.collect.Iterables;
 import com.google.common.io.CharStreams;
 import com.google.common.io.Files;
 
@@ -45,6 +47,15 @@ public class GitCommandsTest {
     assertThat(readFile(repo, "root.txt")).isEqualTo("This is root file");
     assertThat(readFile(repo, "dir/file.txt")).isEqualTo("This is a file in dir");
 
+    Iterable<CommitInfo> commitInfos = handler.execute(new LogsCommand.Builder(repo).build());
+    assertThat(commitInfos).isNotEmpty();
+    CommitInfo commitInfo = Iterables.getFirst(commitInfos, null);
+    assertThat(commitInfo).isNotNull();
+    assertThat(commitInfo.getAuthorName()).isEqualTo(AbstractGitWriteCommand.DEFAULT_AUTHOR_NAME);
+    assertThat(commitInfo.getAuthorEmail()).isEqualTo(AbstractGitWriteCommand.DEFAULT_AUTHOR_EMAIL);
+    assertThat(commitInfo.isHead()).isTrue();
+    assertThat(commitInfo.isCurrent()).isTrue();
+
     try {
       handler.execute(new ReadFileCommand.Builder(repo, "none").build());
       fail("Should throw FileNotFoundException");
@@ -68,6 +79,8 @@ public class GitCommandsTest {
     try(InputStream input = new FileInputStream(createFile("Version 2"))) {
       handler.execute(new AddFilesCommand.Builder(repo, "Second commit").addFile("root.txt", input).build());
     }
+
+    Iterable<CommitInfo> commitInfos = handler.execute(new LogsCommand.Builder(repo).build());
 
     assertThat(readFile(repo, "root.txt")).isEqualTo("Version 2");
   }
