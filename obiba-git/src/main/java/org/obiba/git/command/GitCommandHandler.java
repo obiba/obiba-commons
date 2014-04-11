@@ -3,6 +3,7 @@ package org.obiba.git.command;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -20,6 +21,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 
@@ -35,11 +39,28 @@ public class GitCommandHandler {
 
   private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock(true);
 
-  private final Lock readLock = readWriteLock.readLock();
+  private final LoadingCache<String, Lock> readLocks = CacheBuilder.newBuilder() //
+      .build(new CacheLoader<String, Lock>() {
+               @Override
+               public Lock load(@SuppressWarnings("NullableProblems") String key) throws Exception {
+                 log.debug("Create read lock for {}", key);
+                 return readWriteLock.readLock();
+               }
+             }
+      );
 
-  private final Lock writeLock = readWriteLock.writeLock();
+  private final LoadingCache<String, Lock> writeLocks = CacheBuilder.newBuilder() //
+      .build(new CacheLoader<String, Lock>() {
+               @Override
+               public Lock load(@SuppressWarnings("NullableProblems") String key) throws Exception {
+                 log.debug("Create write lock for {}", key);
+                 return readWriteLock.writeLock();
+               }
+             }
+      );
 
   public <T> T execute(GitCommand<T> command) {
+    lock(command);
     Git git = null;
     try {
 
@@ -53,6 +74,26 @@ public class GitCommandHandler {
       throw new GitException(e);
     } finally {
       if(git != null) git.close();
+      unlock(command);
+    }
+  }
+
+  private void lock(GitCommand<?> command) {
+    log.debug("Lock for {}", command.getRepositoryPath().getAbsolutePath());
+    getLock(command).lock();
+  }
+
+  private void unlock(GitCommand<?> command) {
+    log.debug("Unlock for {}", command.getRepositoryPath().getAbsolutePath());
+    getLock(command).unlock();
+  }
+
+  private synchronized Lock getLock(GitCommand<?> command) {
+    try {
+      String path = command.getRepositoryPath().getAbsolutePath();
+      return command instanceof GitCommitCommand ? writeLocks.get(path) : readLocks.get(path);
+    } catch(ExecutionException e) {
+      throw new RuntimeException(e);
     }
   }
 

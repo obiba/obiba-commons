@@ -35,15 +35,14 @@ public class AddFilesCommand extends AbstractGitCommitCommand<Iterable<PushResul
     try {
       for(FileDescriptor file : files) {
         Path path = Paths.get(getRepositoryPath().getAbsolutePath(), file.getPathInRepo());
-        log.debug("path: {}", path);
+        //noinspection ResultOfMethodCallIgnored
         path.toFile().mkdirs();
+        log.debug("Copy file to {}", path);
         Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
       }
-
       git.add().addFilepattern(".").call();
-      Iterable<PushResult> results = commitAndPush(git);
-      log.debug("results: {}", results);
-      return results;
+      return commitAndPush(git);
+
     } catch(IOException | GitAPIException e) {
       throw new GitException(e);
     }

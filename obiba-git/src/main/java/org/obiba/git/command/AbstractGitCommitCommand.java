@@ -30,7 +30,7 @@ import com.google.common.base.Strings;
  *
  * @param <T> type of builder
  */
-public abstract class AbstractGitCommitCommand<T> extends AbstractGitCommand<T> {
+public abstract class AbstractGitCommitCommand<T> extends AbstractGitCommand<T> implements GitCommitCommand<T> {
 
   private static final Logger log = LoggerFactory.getLogger(AbstractGitCommitCommand.class);
 
@@ -44,7 +44,7 @@ public abstract class AbstractGitCommitCommand<T> extends AbstractGitCommand<T> 
 
   private String authorEmail;
 
-  private final String commitMessage;
+  private String commitMessage;
 
   public AbstractGitCommitCommand(@NotNull File repositoryPath, String commitMessage) {
     super(repositoryPath);
@@ -61,7 +61,7 @@ public abstract class AbstractGitCommitCommand<T> extends AbstractGitCommand<T> 
   protected Iterable<PushResult> commitAndPush(Git git) throws GitAPIException {
     String name = getAuthorName();
     String email = getAuthorEmail();
-    log.debug("Commit with author: {} - {} and message: {}", name, email, getCommitMessage());
+    log.debug("Commit: {} <{}> - {}", name, email, getCommitMessage());
     git.commit() //
         .setAuthor(name, email) //
         .setCommitter(name, email) //
@@ -70,10 +70,17 @@ public abstract class AbstractGitCommitCommand<T> extends AbstractGitCommand<T> 
     return git.push().setPushAll().setRemote("origin").call();
   }
 
+  @Override
+  public void setCommitMessage(String commitMessage) {
+    this.commitMessage = commitMessage;
+  }
+
+  @Override
   public void setAuthorName(String authorName) {
     this.authorName = authorName;
   }
 
+  @Override
   public void setAuthorEmail(String authorEmail) {
     this.authorEmail = authorEmail;
   }
