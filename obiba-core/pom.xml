@@ -49,6 +49,22 @@
       <optional>true</optional>
     </dependency>
 
+    <!-- Need to redefine this because we need Junit and spring-test in compilation scope  -->
+    <!--suppress MavenDuplicateDependenciesInspection -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>compile</scope>
+      <optional>true</optional>
+    </dependency>
+    <!--suppress MavenDuplicateDependenciesInspection -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+      <scope>compile</scope>
+      <optional>true</optional>
+    </dependency>
+
     <dependency>
       <groupId>com.thoughtworks.xstream</groupId>
       <artifactId>xstream</artifactId>

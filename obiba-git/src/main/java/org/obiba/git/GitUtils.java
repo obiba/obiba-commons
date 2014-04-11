@@ -22,8 +22,18 @@ public final class GitUtils {
 
   public static final String HEAD_COMMIT_ID = "HEAD";
 
-
   private GitUtils() {}
+
+  public Repository getRepository(File repoFile) {
+    if(!repoFile.exists()) {
+      throw new NoSuchGitRepositoryException(repoFile.getAbsolutePath());
+    }
+    try {
+      return new FileRepositoryBuilder().setGitDir(repoFile).readEnvironment().findGitDir().build();
+    } catch(IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
   public static String getNthCommitId(String commitId, int nth) {
     return commitId + "~" + nth;
