@@ -49,13 +49,14 @@ public class GitCommandsTest {
     assertThat(readFile(repo, "dir/file.txt")).isEqualTo("This is a file in dir");
 
     Iterable<CommitInfo> commitInfos = handler.execute(new LogsCommand.Builder(repo).build());
-    assertThat(commitInfos).isNotEmpty();
+    assertThat(commitInfos).hasSize(1);
     CommitInfo commitInfo = Iterables.getFirst(commitInfos, null);
     assertThat(commitInfo).isNotNull();
     assertThat(commitInfo.getAuthorName()).isEqualTo(AbstractGitWriteCommand.DEFAULT_AUTHOR_NAME);
     assertThat(commitInfo.getAuthorEmail()).isEqualTo(AbstractGitWriteCommand.DEFAULT_AUTHOR_EMAIL);
     assertThat(commitInfo.isHead()).isTrue();
     assertThat(commitInfo.isCurrent()).isTrue();
+    assertThat(commitInfo.getComment()).isEqualTo("Initial commit");
 
     try {
       handler.execute(new ReadFileCommand.Builder(repo, "none").build());
@@ -82,6 +83,7 @@ public class GitCommandsTest {
     }
 
     Iterable<CommitInfo> commitInfos = handler.execute(new LogsCommand.Builder(repo).build());
+    assertThat(commitInfos).hasSize(2);
 
     assertThat(readFile(repo, "root.txt")).isEqualTo("Version 2");
   }
