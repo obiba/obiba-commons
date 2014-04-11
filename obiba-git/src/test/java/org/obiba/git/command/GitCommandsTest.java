@@ -10,6 +10,7 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.obiba.git.NoSuchGitRepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,14 +34,7 @@ public class GitCommandsTest {
   @Test
   public void test_write_read_files_in_new_repo() throws Exception {
 
-    File repo = File.createTempFile("obiba", "git");
-    // delete it so we create a new repo
-    if(!repo.delete()) {
-      throw new IllegalStateException("Cannot delete git repo " + repo.getAbsolutePath());
-    }
-
-//    File repo = new File("target/repo.git");
-
+    File repo = getRepoPath();
     File file1 = createFile("This is root file");
     File file2 = createFile("This is a file in dir");
 
@@ -54,6 +48,20 @@ public class GitCommandsTest {
 
     assertThat(readFile(repo, "root.txt")).isEqualTo("This is root file");
     assertThat(readFile(repo, "dir/file.txt")).isEqualTo("This is a file in dir");
+  }
+
+  @Test(expected = NoSuchGitRepositoryException.class)
+  public void test_read_files_from_invalid_repo() throws Exception {
+    handler.execute(new ReadFileCommand.Builder(getRepoPath(), "file.txt").build());
+  }
+
+  private File getRepoPath() throws IOException {
+    File repo = File.createTempFile("obiba", "git");
+    // delete it so we create a new repo
+    if(!repo.delete()) {
+      throw new IllegalStateException("Cannot delete git repo " + repo.getAbsolutePath());
+    }
+    return repo;
   }
 
   private String readFile(File repo, String path) throws IOException {

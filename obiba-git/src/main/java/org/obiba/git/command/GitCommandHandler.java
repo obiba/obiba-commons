@@ -16,6 +16,7 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.transport.FetchResult;
 import org.eclipse.jgit.transport.RefSpec;
 import org.obiba.git.GitException;
+import org.obiba.git.NoSuchGitRepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -79,6 +80,10 @@ public class GitCommandHandler {
 
   public <T> T execute(GitReadCommand<T> command) {
     String path = command.getRepositoryPath().getAbsolutePath();
+
+    if(!command.getRepositoryPath().exists() || !command.getRepositoryPath().isDirectory()) {
+      throw new NoSuchGitRepositoryException(path);
+    }
 
     readLock(path);
     Git git = null;
