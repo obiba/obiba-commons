@@ -32,6 +32,7 @@ public class GitCommandsTest {
   }
 
   @Test
+  @SuppressWarnings("ConstantConditions")
   public void test_create_read_files() throws Exception {
 
     File repo = getRepoPath();
