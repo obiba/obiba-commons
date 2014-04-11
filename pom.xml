@@ -249,11 +249,10 @@
         <version>${hsqldb.version}</version>
       </dependency>
 
-      <!-- Use log4j during testing -->
       <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-log4j12</artifactId>
-        <version>${slf4j.version}</version>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>${logback.version}</version>
         <scope>test</scope>
       </dependency>
 
@@ -424,6 +423,10 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+    </dependency>
 
     <!-- Test dependencies -->
     <dependency>
@@ -436,15 +439,7 @@
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.dbunit</groupId>
-      <artifactId>dbunit</artifactId>
     </dependency>
     <dependency>
       <groupId>org.easymock</groupId>
@@ -741,6 +736,7 @@
     <jsr305.version>2.0.3</jsr305.version>
     <junit.version>4.11</junit.version>
     <liquibase.version>1.9.4</liquibase.version>
+    <logback.version>1.1.1</logback.version>
     <mail.version>1.5.0-b01</mail.version>
     <protobuf.version>2.5.0</protobuf.version>
     <protobuf-java-format.version>1.2.1-obiba</protobuf-java-format.version>

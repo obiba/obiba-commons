@@ -13,7 +13,7 @@ public class FileUtilTest {
   @Test
   public void testCopyFile() throws IOException {
 
-    File source = getSourceFile("log4j.properties");
+    File source = getSourceFile("logback-test.xml");
     File dest = File.createTempFile("test", "tmp");
 
     FileUtil.copyFile(source, dest);
@@ -25,9 +25,10 @@ public class FileUtilTest {
   }
 
   @Test
+  @SuppressWarnings("ResultOfMethodCallIgnored")
   public void testCopyFileInDir() throws IOException {
 
-    File source = getSourceFile("log4j.properties");
+    File source = getSourceFile("logback-test.xml");
     File dest = File.createTempFile("test", "tmp");
     dest.delete();
     dest.mkdir();
@@ -44,11 +45,9 @@ public class FileUtilTest {
   }
 
   private File getSourceFile(String name) {
-
     File target = new File("target");
     File testRoot = new File(target, "test-classes");
-
     return new File(testRoot, name);
-
   }
+
 }
