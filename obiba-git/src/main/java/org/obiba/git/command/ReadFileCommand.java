@@ -6,7 +6,7 @@ import java.io.InputStream;
 
 import javax.validation.constraints.NotNull;
 
-public class ReadFileCommand extends AbstractGitReadCommand<InputStream> implements GitReadCommand<InputStream> {
+public class ReadFileCommand extends AbstractGitReadCommand<InputStream> {
 
   private final String pathInRepo;
 
