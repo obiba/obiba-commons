@@ -35,20 +35,21 @@ public class ReadFileCommand extends AbstractGitCommand<InputStream> {
   }
 
   @Override
-  public InputStream execute(Git git) throws Exception {
-
-    Repository repository = git.getRepository();
-
-    if(Strings.isNullOrEmpty(commitId)) {
-      return new FileInputStream(new File(repository.getWorkTree(), path));
+  public InputStream execute(Git git) {
+    try {
+      Repository repository = git.getRepository();
+      if(Strings.isNullOrEmpty(commitId)) {
+        return new FileInputStream(new File(repository.getWorkTree(), path));
+      }
+      ObjectReader reader = repository.newObjectReader();
+      TreeWalk treewalk = getPathTreeWalk(repository, reader);
+      if(treewalk == null) {
+        throw new GitException(String.format("Path '%s' was not found in commit '%s'", path, commitId));
+      }
+      return new ByteArrayInputStream(reader.open(treewalk.getObjectId(0)).getBytes());
+    } catch(IOException e) {
+      throw new GitException(e);
     }
-
-    ObjectReader reader = repository.newObjectReader();
-    TreeWalk treewalk = getPathTreeWalk(repository, reader);
-    if(treewalk == null) {
-      throw new GitException(String.format("Path '%s' was not found in commit '%s'", path, commitId));
-    }
-    return new ByteArrayInputStream(reader.open(treewalk.getObjectId(0)).getBytes());
   }
 
   private TreeWalk getPathTreeWalk(Repository repository, ObjectReader reader) throws IOException {

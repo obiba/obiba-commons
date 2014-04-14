@@ -11,6 +11,7 @@
 package org.obiba.git.command;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
@@ -18,6 +19,7 @@ import java.nio.charset.Charset;
 import javax.validation.constraints.NotNull;
 
 import org.eclipse.jgit.api.Git;
+import org.obiba.git.GitException;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
@@ -40,10 +42,15 @@ public class FetchBlobCommand extends AbstractGitCommand<String> {
   }
 
   @Override
-  public String execute(Git git) throws Exception {
-    ReadFileCommand readFileCommand = new ReadFileCommand.Builder(getRepositoryPath(), path).commitId(commitId).build();
-    InputStream inputStream = readFileCommand.execute(git);
-    return CharStreams.toString(new InputStreamReader(inputStream, getEncoding()));
+  public String execute(Git git) {
+    try {
+      ReadFileCommand readFileCommand = new ReadFileCommand.Builder(getRepositoryPath(), path).commitId(commitId)
+          .build();
+      InputStream inputStream = readFileCommand.execute(git);
+      return CharStreams.toString(new InputStreamReader(inputStream, getEncoding()));
+    } catch(IOException e) {
+      throw new GitException(e);
+    }
   }
 
   private Charset getEncoding() {

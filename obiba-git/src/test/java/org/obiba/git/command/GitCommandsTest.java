@@ -12,6 +12,7 @@ import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.obiba.git.CommitInfo;
+import org.obiba.git.GitException;
 import org.obiba.git.NoSuchGitRepositoryException;
 
 import com.google.common.base.Charsets;
@@ -60,8 +61,9 @@ public class GitCommandsTest {
 
     try {
       handler.execute(new ReadFileCommand.Builder(repo, "none").build());
-      fail("Should throw FileNotFoundException");
-    } catch(FileNotFoundException ignored) {
+      fail("Should throw GitException");
+    } catch(GitException e) {
+      assertThat(e).hasRootCauseExactlyInstanceOf(FileNotFoundException.class);
     }
   }
 
