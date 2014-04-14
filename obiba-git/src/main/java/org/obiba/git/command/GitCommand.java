@@ -16,7 +16,7 @@ import org.eclipse.jgit.api.Git;
 
 public interface GitCommand<T> {
 
-  T execute(Git git);
+  T execute(Git git) throws Exception;
 
   File getRepositoryPath();
 }

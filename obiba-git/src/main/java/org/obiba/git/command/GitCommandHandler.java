@@ -16,7 +16,6 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.transport.FetchResult;
 import org.eclipse.jgit.transport.RefSpec;
 import org.obiba.git.GitException;
-import org.obiba.git.NoSuchGitRepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -59,7 +58,7 @@ public class GitCommandHandler {
              }
       );
 
-  public <T> T execute(GitCommand<T> command) {
+  public <T> T execute(GitCommand<T> command) throws Exception {
     lock(command);
     Git git = null;
     try {
@@ -70,32 +69,11 @@ public class GitCommandHandler {
       fetchAllRepository(git);
       return command.execute(git);
 
-    } catch(IOException | GitAPIException e) {
-      throw new GitException(e);
-    } finally {
-      if(git != null) git.close();
-      unlock(command);
-    }
-  }
-
-  public <T> T execute(GitReadCommand<T> command) throws Exception {
-    String path = command.getRepositoryPath().getAbsolutePath();
-
-    if(!command.getRepositoryPath().exists() || !command.getRepositoryPath().isDirectory()) {
-      throw new NoSuchGitRepositoryException(path);
-    }
-
-    readLock(path);
-    Git git = null;
-    try {
-      git = new Git(getLocalRepository(command.getRepositoryPath()));
-      fetchAllRepository(git);
-      return command.execute(git.getRepository().getWorkTree());
     } catch(GitAPIException e) {
       throw new GitException(e);
     } finally {
       if(git != null) git.close();
-      readUnlock(path);
+      unlock(command);
     }
   }
 
@@ -113,24 +91,6 @@ public class GitCommandHandler {
     try {
       String path = command.getRepositoryPath().getAbsolutePath();
       return command instanceof GitWriteCommand ? writeLocks.get(path) : readLocks.get(path);
-    } catch(ExecutionException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  private void readLock(String path) {
-    try {
-      log.trace("Read lock for {}", path);
-      readLocks.get(path).lock();
-    } catch(ExecutionException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  private void readUnlock(String path) {
-    try {
-      log.trace("Read unlock for {}", path);
-      readLocks.get(path).unlock();
     } catch(ExecutionException e) {
       throw new RuntimeException(e);
     }

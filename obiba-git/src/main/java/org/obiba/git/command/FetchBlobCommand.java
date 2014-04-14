@@ -11,23 +11,17 @@
 package org.obiba.git.command;
 
 import java.io.File;
-import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
 import javax.validation.constraints.NotNull;
 
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.jgit.lib.ObjectReader;
-import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.revwalk.RevTree;
-import org.eclipse.jgit.revwalk.RevWalk;
-import org.eclipse.jgit.treewalk.TreeWalk;
-import org.obiba.git.GitException;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
+import com.google.common.io.CharStreams;
 
 /**
  * Opal GIT command used to extract the content of a file. Folders are not supported.
@@ -36,50 +30,37 @@ public class FetchBlobCommand extends AbstractGitCommand<String> {
 
   private final String path;
 
-  private final String commitId;
+  private String commitId;
 
   private String encoding;
 
-  private FetchBlobCommand(@NotNull File repositoryPath, @NotNull String path, @NotNull String commitId) {
+  private FetchBlobCommand(@NotNull File repositoryPath, @NotNull String path) {
     super(repositoryPath);
     this.path = path;
-    this.commitId = commitId;
   }
 
   @Override
-  public String execute(Git git) {
-    try {
-      Repository repository = git.getRepository();
-      ObjectReader reader = repository.newObjectReader();
-      TreeWalk treewalk = getPathTreeWalk(repository, reader);
-      if(treewalk != null) {
-        return new String(reader.open(treewalk.getObjectId(0)).getBytes(),
-            Strings.isNullOrEmpty(encoding) ? Charsets.UTF_8 : Charset.forName(encoding));
-      }
-    } catch(IOException e) {
-      throw new GitException(e);
-    }
-    throw new GitException(String.format("Path '%s' was not found in commit '%s'", path, commitId));
+  public String execute(Git git) throws Exception {
+    ReadFileCommand readFileCommand = new ReadFileCommand.Builder(getRepositoryPath(), path).commitId(commitId).build();
+    InputStream inputStream = readFileCommand.execute(git);
+    return CharStreams.toString(new InputStreamReader(inputStream, getEncoding()));
   }
 
-  private TreeWalk getPathTreeWalk(Repository repository, ObjectReader reader) throws IOException {
-    ObjectId id = repository.resolve(commitId);
-    if(id == null) {
-      throw new GitException(String.format("No commit with id '%s'", commitId));
-    }
-
-    RevWalk walk = new RevWalk(reader);
-    RevCommit commit = walk.parseCommit(id);
-    RevTree tree = commit.getTree();
-    return TreeWalk.forPath(reader, path, tree);
+  private Charset getEncoding() {
+    return Strings.isNullOrEmpty(encoding) ? Charsets.UTF_8 : Charset.forName(encoding);
   }
 
   @SuppressWarnings("ParameterHidesMemberVariable")
   public static class Builder {
     private final FetchBlobCommand command;
 
-    public Builder(@NotNull File repositoryPath, @NotNull String path, @NotNull String commitId) {
-      command = new FetchBlobCommand(repositoryPath, path, commitId);
+    public Builder(@NotNull File repositoryPath, @NotNull String path) {
+      command = new FetchBlobCommand(repositoryPath, path);
+    }
+
+    public Builder commitId(String commitId) {
+      command.commitId = commitId;
+      return this;
     }
 
     public Builder encoding(String encoding) {
