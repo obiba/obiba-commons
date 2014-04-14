@@ -158,6 +158,12 @@ public class CommitInfo {
       return this;
     }
 
+    public static Builder createFromObject(CommitInfo commitInfo) {
+      return new Builder().authorName(commitInfo.authorName).authorEmail(commitInfo.authorEmail)
+          .comment(commitInfo.comment).commitId(commitInfo.commitId).date(commitInfo.date)
+          .diffEntries(commitInfo.diffEntries);
+    }
+
     public CommitInfo build() {
       return commitInfo;
     }
