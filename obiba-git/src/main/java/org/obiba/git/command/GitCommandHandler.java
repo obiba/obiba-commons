@@ -58,7 +58,7 @@ public class GitCommandHandler {
              }
       );
 
-  public <T> T execute(GitCommand<T> command) throws Exception {
+  public <T> T execute(GitCommand<T> command) {
     lock(command);
     Git git = null;
     try {
@@ -69,7 +69,7 @@ public class GitCommandHandler {
       fetchAllRepository(git);
       return command.execute(git);
 
-    } catch(GitAPIException e) {
+    } catch(IOException | GitAPIException e) {
       throw new GitException(e);
     } finally {
       if(git != null) git.close();
