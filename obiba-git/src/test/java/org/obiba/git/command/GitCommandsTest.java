@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.obiba.git.CommitInfo;
 import org.obiba.git.GitException;
 import org.obiba.git.NoSuchGitRepositoryException;
+import org.obiba.git.TagInfo;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Iterables;
@@ -88,6 +89,27 @@ public class GitCommandsTest {
     assertThat(commitInfos).hasSize(2);
 
     assertThat(readFile(repo, "root.txt")).isEqualTo("Version 2");
+  }
+
+  @SuppressWarnings("ConstantConditions")
+  @Test
+  public void test_tags() throws Exception {
+
+    File repo = getRepoPath();
+
+    try(InputStream input = new FileInputStream(createFile("Version 1"))) {
+      handler.execute(new AddFilesCommand.Builder(repo, "First commit").addFile("root.txt", input).build());
+    }
+
+    assertThat(handler.execute(new TagListCommand.Builder(repo).build())).isEmpty();
+
+    handler.execute(new TagCommand.Builder(repo, "Test first tag", "1.0").build());
+
+    Iterable<TagInfo> tagInfos = handler.execute(new TagListCommand.Builder(repo).build());
+    assertThat(tagInfos).hasSize(1);
+    TagInfo tagInfo = Iterables.getFirst(tagInfos, null);
+    assertThat(tagInfo).isNotNull();
+    assertThat(tagInfo.getName()).isEqualTo("1.0");
   }
 
   private File getRepoPath() throws IOException {
