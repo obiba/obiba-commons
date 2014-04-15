@@ -91,8 +91,8 @@ public class GitCommandsTest {
     assertThat(readFile(repo, "root.txt")).isEqualTo("Version 2");
   }
 
-  @SuppressWarnings("ConstantConditions")
   @Test
+  @SuppressWarnings("ConstantConditions")
   public void test_tags() throws Exception {
 
     File repo = getRepoPath();
@@ -110,6 +110,10 @@ public class GitCommandsTest {
     TagInfo tagInfo = Iterables.getFirst(tagInfos, null);
     assertThat(tagInfo).isNotNull();
     assertThat(tagInfo.getName()).isEqualTo("1.0");
+    assertThat(tagInfo.getCommitId()).isNotEmpty();
+
+    assertThat(readFileFromTag(repo, "root.txt", "1.0")).isEqualTo("Version 1");
+    assertThat(readFileFromCommit(repo, "root.txt", tagInfo.getCommitId())).isEqualTo("Version 1");
   }
 
   private File getRepoPath() throws IOException {
@@ -122,7 +126,20 @@ public class GitCommandsTest {
   }
 
   private String readFile(File repo, String path) throws Exception {
-    InputStream inputStream = handler.execute(new ReadFileCommand.Builder(repo, path).build());
+    return readFile(repo, path, null, null);
+  }
+
+  private String readFileFromTag(File repo, String path, String tag) throws Exception {
+    return readFile(repo, path, null, tag);
+  }
+
+  private String readFileFromCommit(File repo, String path, String commitId) throws Exception {
+    return readFile(repo, path, commitId, null);
+  }
+
+  private String readFile(File repo, String path, String commitId, String tag) throws Exception {
+    InputStream inputStream = handler
+        .execute(new ReadFileCommand.Builder(repo, path).commitId(commitId).tag(tag).build());
     return CharStreams.toString(new InputStreamReader(inputStream, Charsets.UTF_8));
   }
 

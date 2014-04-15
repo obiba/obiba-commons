@@ -34,6 +34,8 @@ public class FetchBlobCommand extends AbstractGitCommand<String> {
 
   private String commitId;
 
+  private String tag;
+
   private String encoding;
 
   private FetchBlobCommand(@NotNull File repositoryPath, @NotNull String path) {
@@ -45,7 +47,7 @@ public class FetchBlobCommand extends AbstractGitCommand<String> {
   public String execute(Git git) {
     try {
       ReadFileCommand readFileCommand = new ReadFileCommand.Builder(getRepositoryPath(), path).commitId(commitId)
-          .build();
+          .tag(tag).build();
       InputStream inputStream = readFileCommand.execute(git);
       return CharStreams.toString(new InputStreamReader(inputStream, getEncoding()));
     } catch(IOException e) {
@@ -67,6 +69,11 @@ public class FetchBlobCommand extends AbstractGitCommand<String> {
 
     public Builder commitId(String commitId) {
       command.commitId = commitId;
+      return this;
+    }
+
+    public Builder tag(String tag) {
+      command.tag = tag;
       return this;
     }
 

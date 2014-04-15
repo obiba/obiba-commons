@@ -27,9 +27,10 @@ public class TagListCommand extends AbstractGitCommand<Iterable<TagInfo>> {
     try {
       Collection<TagInfo> tagInfos = new ArrayList<>();
       for(Ref ref : git.tagList().call()) {
-        TagInfo tagInfo = new TagInfo.Builder().ref(ref.getName()).commitId(ref.getObjectId().getName())
-            .name(ref.getName().substring(ref.getName().lastIndexOf('/') + 1, ref.getName().length())).build();
-        tagInfos.add(tagInfo);
+        tagInfos.add(new TagInfo.Builder() //
+            .ref(ref.getName()).commitId(ref.getObjectId().getName()) //
+            .name(ref.getName().substring(ref.getName().lastIndexOf('/') + 1, ref.getName().length())) //
+            .build());
       }
       return tagInfos;
     } catch(GitAPIException e) {

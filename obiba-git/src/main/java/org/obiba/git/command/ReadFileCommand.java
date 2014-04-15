@@ -11,6 +11,7 @@ import javax.validation.constraints.NotNull;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectReader;
+import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
@@ -18,13 +19,15 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import org.obiba.git.GitException;
 import org.obiba.git.NoSuchGitRepositoryException;
 
-import com.google.common.base.Strings;
+import static com.google.common.base.Strings.isNullOrEmpty;
 
 public class ReadFileCommand extends AbstractGitCommand<InputStream> {
 
   private final String path;
 
   private String commitId;
+
+  private String tag;
 
   private ReadFileCommand(@NotNull File repositoryPath, String path) {
     super(repositoryPath);
@@ -38,27 +41,44 @@ public class ReadFileCommand extends AbstractGitCommand<InputStream> {
   public InputStream execute(Git git) {
     try {
       Repository repository = git.getRepository();
-      if(Strings.isNullOrEmpty(commitId)) {
-        return new FileInputStream(new File(repository.getWorkTree(), path));
+      if(!isNullOrEmpty(tag)) {
+        return readTag(repository);
       }
-      ObjectReader reader = repository.newObjectReader();
-      TreeWalk treewalk = getPathTreeWalk(repository, reader);
-      if(treewalk == null) {
-        throw new GitException(String.format("Path '%s' was not found in commit '%s'", path, commitId));
+      if(!isNullOrEmpty(commitId)) {
+        return readCommit(repository);
       }
-      return new ByteArrayInputStream(reader.open(treewalk.getObjectId(0)).getBytes());
+      // read current revision
+      return new FileInputStream(new File(repository.getWorkTree(), path));
     } catch(IOException e) {
       throw new GitException(e);
     }
   }
 
-  private TreeWalk getPathTreeWalk(Repository repository, ObjectReader reader) throws IOException {
+  private InputStream readTag(Repository repository) throws IOException {
+    Ref ref = repository.getTags().get(tag);
+    ObjectId objectId = repository.resolve(ref.getObjectId().getName());
+    if(objectId == null) {
+      throw new GitException(String.format("No commit with id '%s' for tag '%s'", ref.getObjectId(), tag));
+    }
+    return read(repository, objectId);
+  }
+
+  private InputStream readCommit(Repository repository) throws IOException {
     ObjectId objectId = repository.resolve(commitId);
     if(objectId == null) {
       throw new GitException(String.format("No commit with id '%s'", commitId));
     }
+    return read(repository, objectId);
+  }
+
+  private InputStream read(Repository repository, @NotNull ObjectId objectId) throws IOException {
+    ObjectReader reader = repository.newObjectReader();
     RevTree tree = new RevWalk(reader).parseCommit(objectId).getTree();
-    return TreeWalk.forPath(reader, path, tree);
+    TreeWalk treeWalk = TreeWalk.forPath(reader, path, tree);
+    if(treeWalk == null) {
+      throw new GitException(String.format("Path '%s' was not found in commit '%s'", path, objectId));
+    }
+    return new ByteArrayInputStream(reader.open(treeWalk.getObjectId(0)).getBytes());
   }
 
   @SuppressWarnings("ParameterHidesMemberVariable")
@@ -75,7 +95,15 @@ public class ReadFileCommand extends AbstractGitCommand<InputStream> {
       return this;
     }
 
+    public Builder tag(String tag) {
+      command.tag = tag;
+      return this;
+    }
+
     public ReadFileCommand build() {
+      if(!isNullOrEmpty(command.tag) && !isNullOrEmpty(command.commitId)) {
+        throw new IllegalArgumentException("Choose between tag or commitId but don't specify both");
+      }
       return command;
     }
   }
