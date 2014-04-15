@@ -31,9 +31,6 @@ public class ReadFileCommand extends AbstractGitCommand<InputStream> {
 
   private ReadFileCommand(@NotNull File repositoryPath, String path) {
     super(repositoryPath);
-    if(!repositoryPath.exists() || !repositoryPath.isDirectory()) {
-      throw new NoSuchGitRepositoryException(path);
-    }
     this.path = path;
   }
 
@@ -86,8 +83,11 @@ public class ReadFileCommand extends AbstractGitCommand<InputStream> {
 
     private final ReadFileCommand command;
 
-    public Builder(@NotNull File repositoryPath, String pathInRepo) {
-      command = new ReadFileCommand(repositoryPath, pathInRepo);
+    public Builder(@NotNull File repositoryPath, String path) {
+      if(!repositoryPath.exists() || !repositoryPath.isDirectory()) {
+        throw new NoSuchGitRepositoryException(path);
+      }
+      command = new ReadFileCommand(repositoryPath, path);
     }
 
     public Builder commitId(String commitId) {
