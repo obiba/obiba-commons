@@ -6,6 +6,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Scanner;
+import java.util.Set;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.mgt.DefaultSecurityManager;
@@ -38,14 +44,7 @@ public class GitCommandsTest {
   public void test_create_read_files() throws Exception {
 
     File repo = getRepoPath();
-
-    try(InputStream input1 = new FileInputStream(createFile("This is root file"));
-        InputStream input2 = new FileInputStream(createFile("This is a file in dir"))) {
-      handler.execute(new AddFilesCommand.Builder(repo, "Initial commit") //
-          .addFile("root.txt", input1) //
-          .addFile("dir/file.txt", input2) //
-          .build());
-    }
+    createDummyFiles(repo);
 
     assertThat(readFile(repo, "root.txt")).isEqualTo("This is root file");
     assertThat(readFile(repo, "dir/file.txt")).isEqualTo("This is a file in dir");
@@ -116,6 +115,71 @@ public class GitCommandsTest {
     assertThat(readFileFromCommit(repo, "root.txt", tagInfo.getCommitId())).isEqualTo("Version 1");
   }
 
+  @Test
+  public void test_listFilesNoFilterNotRecursive() throws Exception {
+    File repo = getRepoPath();
+    createDummyFiles(repo);
+
+    Collection<String> files = handler.execute(new ListFilesCommand.Builder(repo).build());
+    assertThat(files.size()).isEqualTo(2);
+    assertThat(files.contains("dir")).isTrue();
+    assertThat(files.contains("root.txt")).isTrue();
+  }
+
+  @Test
+  public void test_listFilesNoFilterRecursive() throws Exception {
+    File repo = getRepoPath();
+    createDummyFiles(repo);
+
+    Collection<String> files = handler.execute(new ListFilesCommand.Builder(repo).recursive(true).build());
+    assertThat(files.size()).isEqualTo(5);
+    assertThat(files.contains("dir/file.txt")).isTrue();
+    assertThat(files.contains("root.txt")).isTrue();
+  }
+
+  @Test
+  public void test_listFilesFilteredRecursive() throws Exception {
+    File repo = getRepoPath();
+    createDummyFiles(repo);
+
+    Collection<String> files = handler
+        .execute(new ListFilesCommand.Builder(repo).recursive(true).filter("\\/_titi\\.txt|^root|\\.xml$").build());
+    assertThat(files.size()).isEqualTo(3);
+    assertThat(files.contains("dir/toto.xml")).isTrue();
+    assertThat(files.contains("root.txt")).isTrue();
+    assertThat(files.contains("dir/tata/_titi.txt")).isTrue();
+  }
+
+  @Test
+  public void test_readingFiles() throws Exception {
+    File repo = getRepoPath();
+    createDummyFiles(repo);
+
+    Set<InputStream> files = handler
+        .execute(new ReadFilesCommand.Builder(repo).recursive(true).filter("\\/_titi\\.txt|^root|\\.xml$").build());
+    assertThat(files.size()).isEqualTo(3);
+
+    for (InputStream is : files) {
+      assertThat(readInputStream(is)).matches("This is another file in dir|This is root file|This is with folders");
+    }
+  }
+
+  private void createDummyFiles(File repo) throws IOException {
+    try(InputStream input1 = new FileInputStream(createFile("This is root file"));
+        InputStream input2 = new FileInputStream(createFile("This is a file in dir"));
+        InputStream input3 = new FileInputStream(createFile("This is another file in dir"));
+        InputStream input4 = new FileInputStream(createFile("This is yet another file in dir"));
+        InputStream input5 = new FileInputStream(createFile("This is with folders"))) {
+      handler.execute(new AddFilesCommand.Builder(repo, "Initial commit") //
+          .addFile("root.txt", input1) //
+          .addFile("dir/file.txt", input2) //
+          .addFile("dir/toto.xml", input3) //
+          .addFile("dir/tata_titi.txt", input4) //
+          .addFile("dir/tata/_titi.txt", input5) //
+          .build());
+    }
+  }
+
   private File getRepoPath() throws IOException {
     File repo = File.createTempFile("obiba", "git");
     // delete it so we create a new repo
@@ -148,5 +212,9 @@ public class GitCommandsTest {
     file.deleteOnExit();
     Files.write(content, file, Charsets.UTF_8);
     return file;
+  }
+
+  private String readInputStream(InputStream is) {
+    return new Scanner(is,"UTF-8").useDelimiter("\\A").next();
   }
 }
