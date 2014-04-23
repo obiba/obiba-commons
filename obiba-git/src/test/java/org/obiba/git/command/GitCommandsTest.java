@@ -6,9 +6,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Collection;
+import java.util.Scanner;
+import java.util.Set;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.mgt.DefaultSecurityManager;
+import org.eclipse.jgit.api.errors.NoMessageException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.obiba.git.CommitInfo;
@@ -38,14 +42,7 @@ public class GitCommandsTest {
   public void test_create_read_files() throws Exception {
 
     File repo = getRepoPath();
-
-    try(InputStream input1 = new FileInputStream(createFile("This is root file"));
-        InputStream input2 = new FileInputStream(createFile("This is a file in dir"))) {
-      handler.execute(new AddFilesCommand.Builder(repo, "Initial commit") //
-          .addFile("root.txt", input1) //
-          .addFile("dir/file.txt", input2) //
-          .build());
-    }
+    createDummyFiles(repo);
 
     assertThat(readFile(repo, "root.txt")).isEqualTo("This is root file");
     assertThat(readFile(repo, "dir/file.txt")).isEqualTo("This is a file in dir");
@@ -66,6 +63,65 @@ public class GitCommandsTest {
     } catch(GitException e) {
       assertThat(e).hasRootCauseExactlyInstanceOf(FileNotFoundException.class);
     }
+  }
+
+  @Test
+  @SuppressWarnings("ConstantConditions")
+  public void test_delete_files() throws Exception {
+
+    File repo = getRepoPath();
+    createDummyFiles(repo);
+
+    handler.execute(new DeleteFilesCommand.Builder(repo, "dir", "Deleting dir folder.").build());
+    assertThat(readFile(repo, "root.txt")).isEqualTo("This is root file");
+
+    try {
+      readFile(repo, "dir/file.txt");
+    } catch(GitException e) {
+      assertThat(e).hasRootCauseExactlyInstanceOf(FileNotFoundException.class);
+    }
+
+    handler.execute(new DeleteFilesCommand.Builder(repo, "root.txt", "Deleting root file").build());
+
+    try {
+      assertThat(readFile(repo, "root.txt"));
+    } catch(GitException e) {
+      assertThat(e).hasRootCauseExactlyInstanceOf(FileNotFoundException.class);
+    }
+  }
+
+  @Test
+  public void test_empty_commit_comment() throws Exception {
+    File repo = getRepoPath();
+    createDummyFiles(repo);
+
+    try {
+      handler.execute(new DeleteFilesCommand.Builder(repo, "dir", null).build());
+    } catch(GitException e) {
+      assertThat(e).hasRootCauseExactlyInstanceOf(NoMessageException.class);
+    }
+
+    try {
+      handler.execute(new DeleteFilesCommand.Builder(repo, "dir", "").build());
+    } catch(GitException e) {
+      assertThat(e).hasRootCauseExactlyInstanceOf(NoMessageException.class);
+    }
+
+  }
+
+  @Test
+  public void test_exclude_file_delete_commits() throws Exception {
+    File repo = getRepoPath();
+    createDummyFiles(repo);
+
+    handler.execute(new DeleteFilesCommand.Builder(repo, "dir", "Deleting files").build());
+
+    Iterable<CommitInfo> commitInfos = handler
+        .execute(new LogsCommand.Builder(repo).excludeDeletedCommits(true).build());
+    assertThat(commitInfos).hasSize(1);
+    CommitInfo commitInfo = Iterables.getFirst(commitInfos, null);
+    assertThat(commitInfo).isNotNull();
+    assertThat(commitInfo.getComment()).isEqualTo("Initial commit");
   }
 
   @Test(expected = NoSuchGitRepositoryException.class)
@@ -116,6 +172,71 @@ public class GitCommandsTest {
     assertThat(readFileFromCommit(repo, "root.txt", tagInfo.getCommitId())).isEqualTo("Version 1");
   }
 
+  @Test
+  public void test_listFilesNoFilterNotRecursive() throws Exception {
+    File repo = getRepoPath();
+    createDummyFiles(repo);
+
+    Collection<String> files = handler.execute(new ListFilesCommand.Builder(repo).build());
+    assertThat(files.size()).isEqualTo(2);
+    assertThat(files.contains("dir")).isTrue();
+    assertThat(files.contains("root.txt")).isTrue();
+  }
+
+  @Test
+  public void test_listFilesNoFilterRecursive() throws Exception {
+    File repo = getRepoPath();
+    createDummyFiles(repo);
+
+    Collection<String> files = handler.execute(new ListFilesCommand.Builder(repo).recursive(true).build());
+    assertThat(files.size()).isEqualTo(5);
+    assertThat(files.contains("dir/file.txt")).isTrue();
+    assertThat(files.contains("root.txt")).isTrue();
+  }
+
+  @Test
+  public void test_listFilesFilteredRecursive() throws Exception {
+    File repo = getRepoPath();
+    createDummyFiles(repo);
+
+    Collection<String> files = handler
+        .execute(new ListFilesCommand.Builder(repo).recursive(true).filter("\\/_titi\\.txt|^root|\\.xml$").build());
+    assertThat(files.size()).isEqualTo(3);
+    assertThat(files.contains("dir/toto.xml")).isTrue();
+    assertThat(files.contains("root.txt")).isTrue();
+    assertThat(files.contains("dir/tata/_titi.txt")).isTrue();
+  }
+
+  @Test
+  public void test_readingFiles() throws Exception {
+    File repo = getRepoPath();
+    createDummyFiles(repo);
+
+    Set<InputStream> files = handler
+        .execute(new ReadFilesCommand.Builder(repo).recursive(true).filter("\\/_titi\\.txt|^root|\\.xml$").build());
+    assertThat(files.size()).isEqualTo(3);
+
+    for (InputStream is : files) {
+      assertThat(readInputStream(is)).matches("This is another file in dir|This is root file|This is with folders");
+    }
+  }
+
+  private void createDummyFiles(File repo) throws IOException {
+    try(InputStream input1 = new FileInputStream(createFile("This is root file"));
+        InputStream input2 = new FileInputStream(createFile("This is a file in dir"));
+        InputStream input3 = new FileInputStream(createFile("This is another file in dir"));
+        InputStream input4 = new FileInputStream(createFile("This is yet another file in dir"));
+        InputStream input5 = new FileInputStream(createFile("This is with folders"))) {
+      handler.execute(new AddFilesCommand.Builder(repo, "Initial commit") //
+          .addFile("root.txt", input1) //
+          .addFile("dir/file.txt", input2) //
+          .addFile("dir/toto.xml", input3) //
+          .addFile("dir/tata_titi.txt", input4) //
+          .addFile("dir/tata/_titi.txt", input5) //
+          .build());
+    }
+  }
+
   private File getRepoPath() throws IOException {
     File repo = File.createTempFile("obiba", "git");
     // delete it so we create a new repo
@@ -148,5 +269,9 @@ public class GitCommandsTest {
     file.deleteOnExit();
     Files.write(content, file, Charsets.UTF_8);
     return file;
+  }
+
+  private String readInputStream(InputStream is) {
+    return new Scanner(is,"UTF-8").useDelimiter("\\A").next();
   }
 }
