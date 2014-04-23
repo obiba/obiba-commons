@@ -31,8 +31,9 @@ public abstract class AbstractErrorDtoExceptionMapper<TException extends Throwab
 
   @Override
   public Response toResponse(TException exception) {
+    log.debug("{}", exception.getClass().getSimpleName(), exception);
     GeneratedMessage.ExtendableMessage<?> errorDto = getErrorDto(exception);
-    log.debug("{} - dto: {}", exception.getClass().getSimpleName(), errorDto, exception);
+    log.debug("ErrorDto: {}", errorDto);
     return Response.status(getStatus()).type(APPLICATION_JSON).entity(errorDto).build();
   }
 
