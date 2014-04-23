@@ -1,6 +1,7 @@
 package org.obiba.runtime.upgrade.support.jdbc;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
@@ -13,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -75,7 +77,11 @@ public class SqlScriptUpgradeStep extends AbstractUpgradeStep {
   }
 
   protected void executeScript(DataSource dataSource, Resource script) {
-    JdbcTestUtils.executeSqlScript(new JdbcTemplate(dataSource), script, false);
+    try {
+      ScriptUtils.executeSqlScript(dataSource.getConnection(), script);
+    } catch(SQLException e) {
+      log.info("Script execution failed {}.", e.getStackTrace());
+    }
   }
 
   protected DatabaseProduct getDatabaseProduct(DataSource dataSource) {

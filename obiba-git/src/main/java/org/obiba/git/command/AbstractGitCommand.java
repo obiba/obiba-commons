@@ -24,7 +24,7 @@ public abstract class AbstractGitCommand<T> implements GitCommand<T> {
   @NotNull
   private final File repositoryPath;
 
-  public AbstractGitCommand(@NotNull File repositoryPath) {
+  protected AbstractGitCommand(@NotNull File repositoryPath) {
     this.repositoryPath = repositoryPath;
   }
 
