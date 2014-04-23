@@ -16,11 +16,6 @@
 
   <dependencies>
 
-    <!--<dependency>-->
-    <!--<groupId>org.obiba.commons</groupId>-->
-    <!--<artifactId>obiba-jersey</artifactId>-->
-    <!--</dependency>-->
-
     <dependency>
       <groupId>org.glassfish.jersey.containers</groupId>
       <artifactId>jersey-container-servlet-core</artifactId>
@@ -127,7 +122,8 @@
                 </exec>
 
                 <!-- PHP -->
-                <copy file="${basedir}/tools/protobuf/php/template/wrapper.proto" todir="${basedir}/src/main/resources"/>
+                <copy file="${basedir}/tools/protobuf/php/template/wrapper.proto"
+                    todir="${basedir}/src/main/resources"/>
                 <replace file="${basedir}/src/main/resources/wrapper.proto" token="__PROTO_FILE__" value="ErrorDtos"/>
                 <mkdir dir="target/generated-sources/protobuf-php"/>
                 <!--suppress MavenModelInspection -->

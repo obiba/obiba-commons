@@ -10,25 +10,29 @@
 package org.obiba.jersey.exceptionmapper;
 
 import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.obiba.web.model.ErrorDtos;
 
-import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
+import com.google.protobuf.GeneratedMessage;
+
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
 @Provider
-public class UnhandledExceptionMapper implements ExceptionMapper<Exception> {
-
-  private static final Logger log = LoggerFactory.getLogger(UnhandledExceptionMapper.class);
+public class UnhandledExceptionMapper extends AbstractErrorDtoExceptionMapper<Exception> {
 
   @Override
-  public Response toResponse(Exception exception) {
-    //TODO use ErrorDto
-    log.error("UnhandledException", exception);
-    return Response.status(INTERNAL_SERVER_ERROR).type(TEXT_PLAIN).entity(exception.getMessage()).build();
+  protected Response.Status getStatus() {
+    return INTERNAL_SERVER_ERROR;
+  }
+
+  @Override
+  protected GeneratedMessage.ExtendableMessage<?> getErrorDto(Exception exception) {
+    return ErrorDtos.ClientErrorDto.newBuilder() //
+        .setCode(getStatus().getStatusCode()) //
+        .setMessageTemplate("error.unhandledException") //
+        .setMessage(exception.getMessage()) //
+        .build();
   }
 
 }

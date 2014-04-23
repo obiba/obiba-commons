@@ -26,6 +26,9 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.base.Charsets;
 import com.google.protobuf.ExtensionRegistry;
 import com.google.protobuf.Message;
@@ -39,6 +42,8 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Produces(APPLICATION_JSON)
 public class ProtobufJsonProvider extends AbstractProtobufProvider
     implements MessageBodyReader<Object>, MessageBodyWriter<Object> {
+
+  private static final Logger log = LoggerFactory.getLogger(ProtobufJsonProvider.class);
 
   @Override
   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
@@ -82,8 +87,14 @@ public class ProtobufJsonProvider extends AbstractProtobufProvider
     try(OutputStreamWriter output = new OutputStreamWriter(entityStream, Charsets.UTF_8)) {
       if(isWrapped(type, genericType)) {
         // JsonFormat does not provide a printList method
+        if(log.isDebugEnabled()) {
+          Appendable sb = new StringBuilder();
+          JsonIoUtil.printCollection((Iterable<Message>) obj, sb);
+          log.debug("Print message collection: {}", sb);
+        }
         JsonIoUtil.printCollection((Iterable<Message>) obj, output);
       } else {
+        log.debug("Print single message: {}", JsonFormat.printToString((Message) obj));
         JsonFormat.print((Message) obj, output);
       }
       output.flush();

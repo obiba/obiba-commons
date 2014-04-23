@@ -21,7 +21,6 @@
   <modules>
     <module>obiba-core</module>
     <module>obiba-git</module>
-    <module>obiba-jersey</module>
     <module>obiba-jersey-protobuf</module>
     <module>obiba-jersey-shiro</module>
     <module>obiba-shiro</module>
@@ -42,12 +41,6 @@
         <artifactId>obiba-shiro</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.obiba.commons</groupId>
-        <artifactId>obiba-jersey</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-orm</artifactId>
@@ -432,7 +425,7 @@
     </dependency>
 
     <dependency>
-    <groupId>org.slf4j</groupId>
+      <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
     <dependency>

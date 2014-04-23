@@ -1,10 +1,11 @@
-package org.obiba.jersey.protobuf;
+package org.obiba.jersey.exceptionmapper;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
 import org.obiba.web.model.ErrorDtos;
 
+import com.google.common.collect.Lists;
 import com.google.protobuf.GeneratedMessage;
 import com.google.protobuf.UninitializedMessageException;
 
@@ -23,7 +24,7 @@ public class UninitializedMessageExceptionMapper
         .setCode(getStatus().getStatusCode()) //
         .setMessageTemplate("error.uninitializedMessage") //
         .setMessage(exception.getMessage()) //
-        .addAllArguments(exception.getMissingFields()) //
+        .addAllArguments(Lists.newArrayList(exception.getMissingFields())) //
         .build();
   }
 

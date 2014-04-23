@@ -15,7 +15,6 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
 
   @Override
   public Response toResponse(WebApplicationException exception) {
-    //TODO use ErrorDto
     log.error("WebApplicationException", exception);
     return exception.getResponse();
   }
