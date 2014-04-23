@@ -23,7 +23,7 @@ public class LogsCommand extends AbstractGitCommand<Iterable<CommitInfo>> {
 
   private String path;
 
-  private boolean excludeDeletedCommits = true;
+  private boolean excludeDeletedCommits = false;
 
   private LogsCommand(@NotNull File repositoryPath) {
     super(repositoryPath);
@@ -44,7 +44,7 @@ public class LogsCommand extends AbstractGitCommand<Iterable<CommitInfo>> {
       boolean isCurrent = true;
 
       for(RevCommit commit : logCommand.call()) {
-        if(excludeDeletedCommits && hasDeletedCommit(git, commit)) break;
+        if(excludeDeletedCommits && hasDeletedCommit(git, commit)) continue;
 
         String commitId = commit.getName();
         boolean isHeadCommit = headCommitId.equals(commitId);

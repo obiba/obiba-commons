@@ -47,9 +47,10 @@ public abstract class AbstractGitWriteCommand extends AbstractGitCommand<Iterabl
 
   private String commitMessage;
 
-  public AbstractGitWriteCommand(@NotNull File repositoryPath, String commitMessage) {
+  protected AbstractGitWriteCommand(@NotNull File repositoryPath, String commitMessage) {
     super(repositoryPath);
-    this.commitMessage = commitMessage;
+    // Current JGit API does not account for empty string and ignores an empty commit message
+    this.commitMessage = Strings.emptyToNull(commitMessage);
   }
 
   protected Iterable<PushResult> commitAndPush(Git git) throws GitAPIException {

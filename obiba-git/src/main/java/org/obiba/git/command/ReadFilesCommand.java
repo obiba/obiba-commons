@@ -25,7 +25,7 @@ public class ReadFilesCommand extends AbstractGitCommand<Set<InputStream>> {
   @Override
   public Set<InputStream> execute(Git git) {
     ListFilesCommand listFilesCommand = new ListFilesCommand.Builder(getRepositoryPath()).recursive(recursive)
-        .filter(filter).build();
+        .filter(filter).commitId(commitId).build();
 
     Set<String> files = listFilesCommand.execute(git);
     ImmutableSet.Builder<InputStream> fileContents = ImmutableSet.builder();

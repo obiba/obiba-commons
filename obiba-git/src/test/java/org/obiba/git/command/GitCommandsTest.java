@@ -6,15 +6,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Scanner;
 import java.util.Set;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.mgt.DefaultSecurityManager;
+import org.eclipse.jgit.api.errors.NoMessageException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.obiba.git.CommitInfo;
@@ -65,6 +63,65 @@ public class GitCommandsTest {
     } catch(GitException e) {
       assertThat(e).hasRootCauseExactlyInstanceOf(FileNotFoundException.class);
     }
+  }
+
+  @Test
+  @SuppressWarnings("ConstantConditions")
+  public void test_delete_files() throws Exception {
+
+    File repo = getRepoPath();
+    createDummyFiles(repo);
+
+    handler.execute(new DeleteFilesCommand.Builder(repo, "dir", "Deleting dir folder.").build());
+    assertThat(readFile(repo, "root.txt")).isEqualTo("This is root file");
+
+    try {
+      readFile(repo, "dir/file.txt");
+    } catch(GitException e) {
+      assertThat(e).hasRootCauseExactlyInstanceOf(FileNotFoundException.class);
+    }
+
+    handler.execute(new DeleteFilesCommand.Builder(repo, "root.txt", "Deleting root file").build());
+
+    try {
+      assertThat(readFile(repo, "root.txt"));
+    } catch(GitException e) {
+      assertThat(e).hasRootCauseExactlyInstanceOf(FileNotFoundException.class);
+    }
+  }
+
+  @Test
+  public void test_empty_commit_comment() throws Exception {
+    File repo = getRepoPath();
+    createDummyFiles(repo);
+
+    try {
+      handler.execute(new DeleteFilesCommand.Builder(repo, "dir", null).build());
+    } catch(GitException e) {
+      assertThat(e).hasRootCauseExactlyInstanceOf(NoMessageException.class);
+    }
+
+    try {
+      handler.execute(new DeleteFilesCommand.Builder(repo, "dir", "").build());
+    } catch(GitException e) {
+      assertThat(e).hasRootCauseExactlyInstanceOf(NoMessageException.class);
+    }
+
+  }
+
+  @Test
+  public void test_exclude_file_delete_commits() throws Exception {
+    File repo = getRepoPath();
+    createDummyFiles(repo);
+
+    handler.execute(new DeleteFilesCommand.Builder(repo, "dir", "Deleting files").build());
+
+    Iterable<CommitInfo> commitInfos = handler
+        .execute(new LogsCommand.Builder(repo).excludeDeletedCommits(true).build());
+    assertThat(commitInfos).hasSize(1);
+    CommitInfo commitInfo = Iterables.getFirst(commitInfos, null);
+    assertThat(commitInfo).isNotNull();
+    assertThat(commitInfo.getComment()).isEqualTo("Initial commit");
   }
 
   @Test(expected = NoSuchGitRepositoryException.class)
