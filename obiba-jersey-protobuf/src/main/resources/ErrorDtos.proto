@@ -1,0 +1,26 @@
+package org.obiba.error;
+
+option java_package = "org.obiba.web.model";
+
+message ClientErrorDto {
+  required int32 code = 1; // Holds the HTTP status code (4xx)
+  required string message = 2; // the default interpolated error message for this error.
+  required string messageTemplate = 3; // the non-interpolated error message for this error. This should be usable as a key in localisation bundles.
+  repeated string arguments = 4; // Arguments to be passed during localisation
+  extensions 1000 to max; // Extensions can be registered to provide additional error data on a case-by-case basis
+}
+
+message ServerErrorDto {
+  required int32 code = 1; // Holds the HTTP status code (5xx)
+  required string message = 2; // the default interpolated error message for this error.
+  required string messageTemplate = 3; // the non-interpolated error message for this error. This should be usable as a key in localisation bundles.
+  repeated string arguments = 4; // Arguments to be passed during localisation
+  extensions 1000 to max; // Extensions can be registered to provide additional error data on a case-by-case basis
+}
+
+message ConstraintViolationErrorDto {
+  required string propertyPath = 1;
+  extend ClientErrorDto {
+    repeated ConstraintViolationErrorDto errors = 1002;
+  }
+}
