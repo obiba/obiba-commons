@@ -26,6 +26,7 @@
     <module>obiba-shiro</module>
     <module>obiba-shiro-crowd</module>
     <module>obiba-shiro-web</module>
+    <module>obiba-web-model</module>
     <module>obiba-wicket</module>
   </modules>
 
@@ -39,6 +40,11 @@
       <dependency>
         <groupId>org.obiba.commons</groupId>
         <artifactId>obiba-shiro</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.obiba.commons</groupId>
+        <artifactId>obiba-web-model</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
