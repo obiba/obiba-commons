@@ -34,6 +34,7 @@ public abstract class AbstractErrorDtoExceptionMapper<TException extends Throwab
     log.debug("{}", exception.getClass().getSimpleName(), exception);
     GeneratedMessage.ExtendableMessage<?> errorDto = getErrorDto(exception);
     log.debug("ErrorDto: {}", errorDto);
+    //TODO support also application/x-protobuf
     return Response.status(getStatus()).type(APPLICATION_JSON).entity(errorDto).build();
   }
 
