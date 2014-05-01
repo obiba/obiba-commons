@@ -35,6 +35,8 @@ import com.google.protobuf.Message;
 import com.google.protobuf.Message.Builder;
 import com.googlecode.protobuf.format.JsonFormat;
 
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Provider
@@ -90,11 +92,11 @@ public class ProtobufJsonProvider extends AbstractProtobufProvider
         if(log.isDebugEnabled()) {
           Appendable sb = new StringBuilder();
           JsonIoUtil.printCollection((Iterable<Message>) obj, sb);
-          log.debug("Print message collection: {}", sb);
+          log.trace("Print message collection: {}", sb);
         }
         JsonIoUtil.printCollection((Iterable<Message>) obj, output);
       } else {
-        log.debug("Print single message: {}", JsonFormat.printToString((Message) obj));
+        log.trace("Print single message: {}", JsonFormat.printToString((Message) obj));
         JsonFormat.print((Message) obj, output);
       }
       output.flush();

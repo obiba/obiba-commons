@@ -73,6 +73,7 @@ public class GitCommandHandler {
       throw new GitException(e);
     } finally {
       if(git != null) git.close();
+      //TODO delete local clone repository folder
       unlock(command);
     }
   }
