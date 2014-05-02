@@ -13,8 +13,10 @@ import java.util.Set;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.eclipse.jgit.api.errors.NoMessageException;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.obiba.core.util.FileUtil;
 import org.obiba.git.CommitInfo;
 import org.obiba.git.GitException;
 import org.obiba.git.NoSuchGitRepositoryException;
@@ -32,9 +34,20 @@ public class GitCommandsTest {
 
   private final GitCommandHandler handler = new GitCommandHandler();
 
+  private static File testFolder;
+
   @BeforeClass
   public static void init() {
     SecurityUtils.setSecurityManager(new DefaultSecurityManager());
+    testFolder = Files.createTempDir();
+  }
+
+  @AfterClass
+  public static void cleanup() {
+    try {
+      FileUtil.delete(testFolder);
+    } catch(IOException e) {
+    }
   }
 
   @Test
@@ -238,7 +251,7 @@ public class GitCommandsTest {
   }
 
   private File getRepoPath() throws IOException {
-    File repo = File.createTempFile("obiba", "git");
+    File repo = File.createTempFile("obiba", "git", testFolder);
     // delete it so we create a new repo
     if(!repo.delete()) {
       throw new IllegalStateException("Cannot delete git repo " + repo.getAbsolutePath());
@@ -265,7 +278,7 @@ public class GitCommandsTest {
   }
 
   private File createFile(CharSequence content) throws IOException {
-    File file = File.createTempFile("obiba", "git");
+    File file = File.createTempFile("obiba", "git", testFolder);
     file.deleteOnExit();
     Files.write(content, file, Charsets.UTF_8);
     return file;
