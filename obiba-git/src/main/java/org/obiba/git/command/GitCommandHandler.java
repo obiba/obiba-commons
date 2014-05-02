@@ -15,6 +15,7 @@ import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.transport.FetchResult;
 import org.eclipse.jgit.transport.RefSpec;
+import org.obiba.core.util.FileUtil;
 import org.obiba.git.GitException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,9 +73,20 @@ public class GitCommandHandler {
     } catch(IOException | GitAPIException e) {
       throw new GitException(e);
     } finally {
-      if(git != null) git.close();
-      //TODO delete local clone repository folder
+      if(git != null) {
+        git.close();
+        deleteLocalRepository(git);
+      }
       unlock(command);
+    }
+  }
+
+  private void deleteLocalRepository(Git git) {
+    File repoFile = git.getRepository().getWorkTree();
+    try {
+      if (repoFile.exists()) FileUtil.delete(repoFile);
+    } catch(IOException e) {
+      log.error("Failed to remove local repository folder ({}).", e.getMessage());
     }
   }
 
