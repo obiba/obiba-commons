@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -60,68 +59,67 @@
                 <!-- Determine which protoc binary we can use -->
                 <condition property="os.protoc" value="${protobuf.version}-linux-x86_64">
                   <or>
-                    <os name="linux" arch="amd64"/>
-                    <os name="linux" arch="x86_64"/>
+                    <os name="linux" arch="amd64" />
+                    <os name="linux" arch="x86_64" />
                   </or>
                 </condition>
                 <condition property="os.protoc" value="${protobuf.version}-linux-x86_32">
                   <or>
-                    <os name="linux" arch="x86"/>
-                    <os name="linux" arch="i386"/>
+                    <os name="linux" arch="x86" />
+                    <os name="linux" arch="i386" />
                   </or>
                 </condition>
                 <condition property="os.protoc" value="${protobuf.version}-win32">
-                  <os family="windows"/>
+                  <os family="windows" />
                 </condition>
 
-                <fail message="No protoc binary for your OS: ${os.name} ${os.arch}." unless="os.protoc"/>
+                <fail message="No protoc binary for your OS: ${os.name} ${os.arch}." unless="os.protoc" />
 
                 <path id="protofiles">
                   <fileset dir="src/main/resources">
-                    <include name="*.proto"/>
+                    <include name="*.proto" />
                   </fileset>
                 </path>
                 <pathconvert pathsep=" " property="protofilesList" refid="protofiles">
-                  <map from="${basedir}/" to=""/>
+                  <map from="${basedir}/" to="" />
                 </pathconvert>
 
                 <!-- Compile our .proto file -->
                 <!-- Java -->
-                <mkdir dir="target/generated-sources/protobuf-java"/>
+                <mkdir dir="target/generated-sources/protobuf-java" />
                 <!--suppress MavenModelInspection -->
                 <exec dir="${basedir}" executable="${basedir}/tools/protobuf/protoc-${os.protoc}" failonerror="true">
-                  <arg value="--java_out=target/generated-sources/protobuf-java"/>
+                  <arg value="--java_out=target/generated-sources/protobuf-java" />
                   <!--suppress MavenModelInspection -->
-                  <arg line="${protofilesList}"/>
-                  <arg line="-Isrc/main/resources"/>
+                  <arg line="${protofilesList}" />
+                  <arg line="-Isrc/main/resources" />
                 </exec>
 
                 <!-- Python -->
-                <mkdir dir="target/generated-sources/protobuf-python"/>
+                <mkdir dir="target/generated-sources/protobuf-python" />
                 <!--suppress MavenModelInspection -->
                 <exec dir="${basedir}" executable="${basedir}/tools/protobuf/protoc-${os.protoc}" failonerror="true">
-                  <arg value="--python_out=target/generated-sources/protobuf-python"/>
+                  <arg value="--python_out=target/generated-sources/protobuf-python" />
                   <!--suppress MavenModelInspection -->
-                  <arg line="${protofilesList}"/>
-                  <arg line="-Isrc/main/resources"/>
+                  <arg line="${protofilesList}" />
+                  <arg line="-Isrc/main/resources" />
                 </exec>
 
                 <!-- PHP -->
-                <copy file="${basedir}/tools/protobuf/php/template/wrapper.proto"
-                    todir="${basedir}/src/main/resources"/>
-                <replace file="${basedir}/src/main/resources/wrapper.proto" token="__PROTO_FILE__" value="ErrorDtos"/>
-                <mkdir dir="target/generated-sources/protobuf-php"/>
+                <copy file="${basedir}/tools/protobuf/php/template/wrapper.proto" todir="${basedir}/src/main/resources" />
+                <replace file="${basedir}/src/main/resources/wrapper.proto" token="__PROTO_FILE__" value="ErrorDtos" />
+                <mkdir dir="target/generated-sources/protobuf-php" />
                 <!--suppress MavenModelInspection -->
                 <exec dir="${basedir}" executable="${basedir}/tools/protobuf/protoc-${os.protoc}" failonerror="true">
-                  <arg value="--php_out=target/generated-sources/protobuf-php"/>
-                  <arg line="--plugin=${basedir}/tools/protobuf/php/protoc-gen-php"/>
-                  <arg line="-I${basedir}/tools/protobuf/php/library/DrSlump/Protobuf/Compiler/protos"/>
-                  <arg line="-Isrc/main/resources"/>
-                  <arg line="-I${basedir}/tools/protobuf/php/template"/>
-                  <arg line="--proto_path=${basedir}"/>
-                  <arg line="${basedir}/src/main/resources/wrapper.proto"/>
+                  <arg value="--php_out=target/generated-sources/protobuf-php" />
+                  <arg line="--plugin=${basedir}/tools/protobuf/php/protoc-gen-php" />
+                  <arg line="-I${basedir}/tools/protobuf/php/library/DrSlump/Protobuf/Compiler/protos" />
+                  <arg line="-Isrc/main/resources" />
+                  <arg line="-I${basedir}/tools/protobuf/php/template" />
+                  <arg line="--proto_path=${basedir}" />
+                  <arg line="${basedir}/src/main/resources/wrapper.proto" />
                 </exec>
-                <delete file="${basedir}/src/main/resources/wrapper.proto"/>
+                <delete file="${basedir}/src/main/resources/wrapper.proto" />
               </tasks>
             </configuration>
             <goals>
