@@ -16,8 +16,29 @@ import org.eclipse.jgit.api.Git;
 
 public interface GitCommand<T> {
 
+  /**
+   * Execute the command.
+   * @param git The cloned repository object.
+   * @return
+   */
   T execute(Git git);
 
+  /**
+   * Bare repository path. Folder name is expected to end with ".git".
+   * @return
+   */
   File getRepositoryPath();
+
+  /**
+   * Work directory path where the bare repository will be cloned if no clone is found.
+   * @return
+   */
+  File getWorkPath();
+
+  /**
+   * Delete the cloned repository in the work directory after command execution.
+   * @return
+   */
+  boolean deleteClone();
 }
 

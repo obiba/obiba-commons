@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.Set;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import org.eclipse.jgit.api.Git;
@@ -18,8 +19,8 @@ public class ReadFilesCommand extends AbstractGitCommand<Set<InputStream>> {
 
   private boolean recursive = false;
 
-  private ReadFilesCommand(File repositoryPath) {
-    super(repositoryPath);
+  private ReadFilesCommand(File repositoryPath, @Nullable File workPath) {
+    super(repositoryPath, workPath);
   }
 
   @Override
@@ -42,7 +43,11 @@ public class ReadFilesCommand extends AbstractGitCommand<Set<InputStream>> {
     private final ReadFilesCommand command;
 
     public Builder(@NotNull File repositoryPath) {
-      command = new ReadFilesCommand(repositoryPath);
+      this(repositoryPath, null);
+    }
+
+    public Builder(@NotNull File repositoryPath, @Nullable File workPath) {
+      command = new ReadFilesCommand(repositoryPath, workPath);
     }
 
     public Builder commitId(String commitId) {

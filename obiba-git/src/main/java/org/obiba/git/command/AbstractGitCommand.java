@@ -12,7 +12,10 @@ package org.obiba.git.command;
 
 import java.io.File;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
+
+import com.google.common.io.Files;
 
 /**
  * Base class for all  GIT commands. All subclasses are immutable and must be created by their respective builders
@@ -24,8 +27,17 @@ public abstract class AbstractGitCommand<T> implements GitCommand<T> {
   @NotNull
   private final File repositoryPath;
 
+  @Nullable
+  private final File workPath;
+
   protected AbstractGitCommand(@NotNull File repositoryPath) {
+    this(repositoryPath, null);
+  }
+
+  protected AbstractGitCommand(@NotNull File repositoryPath, @Nullable File workPath) {
     this.repositoryPath = repositoryPath;
+    this.workPath = workPath;
+    if (workPath != null && !workPath.exists()) workPath.mkdirs();
   }
 
   @Override
@@ -33,4 +45,13 @@ public abstract class AbstractGitCommand<T> implements GitCommand<T> {
     return repositoryPath;
   }
 
+  @Override
+  public File getWorkPath() {
+    return workPath == null ? Files.createTempDir() : workPath;
+  }
+
+  @Override
+  public boolean deleteClone() {
+    return workPath == null;
+  }
 }

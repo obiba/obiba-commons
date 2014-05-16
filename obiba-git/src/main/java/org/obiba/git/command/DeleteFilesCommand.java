@@ -12,6 +12,7 @@ package org.obiba.git.command;
 
 import java.io.File;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import org.eclipse.jgit.api.Git;
@@ -23,8 +24,8 @@ public class DeleteFilesCommand extends AbstractGitWriteCommand {
 
   private final String filePattern;
 
-  private DeleteFilesCommand(@NotNull File repositoryPath, @NotNull String pattern, String commitMessage) {
-    super(repositoryPath, commitMessage);
+  private DeleteFilesCommand(@NotNull File repositoryPath, @Nullable File workPath, @NotNull String pattern, String commitMessage) {
+    super(repositoryPath, workPath, commitMessage);
     filePattern = pattern;
   }
 
@@ -43,7 +44,11 @@ public class DeleteFilesCommand extends AbstractGitWriteCommand {
     private final DeleteFilesCommand command;
 
     public Builder(@NotNull File repositoryPath, @NotNull String pattern, String commitMessage) {
-      command = new DeleteFilesCommand(repositoryPath, pattern, commitMessage);
+      this(repositoryPath, null, pattern, commitMessage);
+    }
+
+    public Builder(@NotNull File repositoryPath, @Nullable File workPath, @NotNull String pattern, String commitMessage) {
+      command = new DeleteFilesCommand(repositoryPath, workPath, pattern, commitMessage);
     }
 
     public DeleteFilesCommand build() {

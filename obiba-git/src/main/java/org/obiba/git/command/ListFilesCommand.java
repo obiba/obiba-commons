@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import org.eclipse.jgit.api.Git;
@@ -28,8 +29,8 @@ public class ListFilesCommand extends AbstractGitCommand<Set<String>> {
 
   private boolean recursive = false;
 
-  private ListFilesCommand(File repositoryPath) {
-    super(repositoryPath);
+  private ListFilesCommand(File repositoryPath, @Nullable File workPath) {
+    super(repositoryPath, workPath);
   }
 
   @Override
@@ -72,7 +73,11 @@ public class ListFilesCommand extends AbstractGitCommand<Set<String>> {
     private final ListFilesCommand command;
 
     public Builder(@NotNull File repositoryPath) {
-      command = new ListFilesCommand(repositoryPath);
+      this(repositoryPath, null);
+    }
+
+    public Builder(@NotNull File repositoryPath, @Nullable File workPath) {
+      command = new ListFilesCommand(repositoryPath, workPath);
     }
 
     public Builder commitId(String commitId) {

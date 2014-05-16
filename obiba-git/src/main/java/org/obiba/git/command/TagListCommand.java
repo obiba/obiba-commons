@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import org.eclipse.jgit.api.Git;
@@ -18,8 +19,8 @@ public class TagListCommand extends AbstractGitCommand<Iterable<TagInfo>> {
 
   private static final Logger log = LoggerFactory.getLogger(TagListCommand.class);
 
-  private TagListCommand(@NotNull File repositoryPath) {
-    super(repositoryPath);
+  private TagListCommand(@NotNull File repositoryPath, @Nullable File workPath) {
+    super(repositoryPath, workPath);
   }
 
   @Override
@@ -44,7 +45,11 @@ public class TagListCommand extends AbstractGitCommand<Iterable<TagInfo>> {
     private final TagListCommand command;
 
     public Builder(@NotNull File repositoryPath) {
-      command = new TagListCommand(repositoryPath);
+      this(repositoryPath, null);
+    }
+
+    public Builder(@NotNull File repositoryPath, @Nullable File workPath) {
+      command = new TagListCommand(repositoryPath, workPath);
     }
 
     public TagListCommand build() {

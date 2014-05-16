@@ -47,8 +47,8 @@ public class DiffCommand extends AbstractGitCommand<Iterable<DiffEntry>> {
 
   private int nthCommit = 1;
 
-  protected DiffCommand(@NotNull File repositoryPath, String commitId) {
-    super(repositoryPath);
+  protected DiffCommand(@NotNull File repositoryPath, @Nullable File workPath, String commitId) {
+    super(repositoryPath, workPath);
     this.commitId = commitId;
   }
 
@@ -141,7 +141,11 @@ public class DiffCommand extends AbstractGitCommand<Iterable<DiffEntry>> {
     private final DiffCommand command;
 
     public Builder(@NotNull File repositoryPath, String commitId) {
-      command = new DiffCommand(repositoryPath, commitId);
+      this(repositoryPath, null, commitId);
+    }
+
+    public Builder(@NotNull File repositoryPath, @Nullable File workPath, String commitId) {
+      command = new DiffCommand(repositoryPath, workPath, commitId);
     }
 
     public Builder path(String path) {

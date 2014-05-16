@@ -12,6 +12,7 @@ package org.obiba.git.command;
 
 import java.io.File;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import org.apache.shiro.SecurityUtils;
@@ -47,8 +48,8 @@ public abstract class AbstractGitWriteCommand extends AbstractGitCommand<Iterabl
 
   private String commitMessage;
 
-  protected AbstractGitWriteCommand(@NotNull File repositoryPath, String commitMessage) {
-    super(repositoryPath);
+  protected AbstractGitWriteCommand(@NotNull File repositoryPath, @Nullable File workPath, String commitMessage) {
+    super(repositoryPath, workPath);
     // Current JGit API does not account for empty string and ignores an empty commit message
     this.commitMessage = Strings.emptyToNull(commitMessage);
   }
