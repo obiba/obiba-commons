@@ -2,6 +2,7 @@ package org.obiba.git.command;
 
 import java.io.File;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import org.eclipse.jgit.api.Git;
@@ -17,8 +18,8 @@ public class TagCommand extends AbstractGitWriteCommand {
 
   private boolean signed;
 
-  private TagCommand(@NotNull File repositoryPath, String message, String tagName) {
-    super(repositoryPath, message);
+  private TagCommand(@NotNull File repositoryPath, @Nullable File workPath, String message, String tagName) {
+    super(repositoryPath, workPath, message);
     this.tagName = tagName;
   }
 
@@ -39,7 +40,11 @@ public class TagCommand extends AbstractGitWriteCommand {
     private final TagCommand command;
 
     public Builder(@NotNull File repositoryPath, String message, String tagName) {
-      command = new TagCommand(repositoryPath, message, tagName);
+      this(repositoryPath, null, message, tagName);
+    }
+
+    public Builder(@NotNull File repositoryPath, @Nullable File workPath, String message, String tagName) {
+      command = new TagCommand(repositoryPath, workPath, message, tagName);
     }
 
     public Builder signed(boolean signed) {

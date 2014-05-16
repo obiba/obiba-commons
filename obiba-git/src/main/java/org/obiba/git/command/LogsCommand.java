@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import org.eclipse.jgit.api.Git;
@@ -25,8 +26,8 @@ public class LogsCommand extends AbstractGitCommand<Iterable<CommitInfo>> {
 
   private boolean excludeDeletedCommits = false;
 
-  private LogsCommand(@NotNull File repositoryPath) {
-    super(repositoryPath);
+  private LogsCommand(@NotNull File repositoryPath, @Nullable File workPath) {
+    super(repositoryPath, workPath);
   }
 
   @Override
@@ -91,7 +92,11 @@ public class LogsCommand extends AbstractGitCommand<Iterable<CommitInfo>> {
     private final LogsCommand command;
 
     public Builder(@NotNull File repositoryPath) {
-      command = new LogsCommand(repositoryPath);
+      this(repositoryPath, null);
+    }
+
+    public Builder(@NotNull File repositoryPath, @Nullable File workPath) {
+      command = new LogsCommand(repositoryPath, workPath);
     }
 
     public Builder path(String path) {

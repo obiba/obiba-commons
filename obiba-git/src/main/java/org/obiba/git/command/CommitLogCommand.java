@@ -13,6 +13,7 @@ package org.obiba.git.command;
 import java.io.File;
 import java.io.IOException;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import org.eclipse.jgit.api.Git;
@@ -35,8 +36,8 @@ public class CommitLogCommand extends AbstractGitCommand<CommitInfo> {
 
   private final String commitId;
 
-  private CommitLogCommand(@NotNull File repositoryPath, @NotNull String path, @NotNull String commitId) {
-    super(repositoryPath);
+  private CommitLogCommand(@NotNull File repositoryPath, @Nullable File workPath, @NotNull String path, @NotNull String commitId) {
+    super(repositoryPath, workPath);
     this.path = path;
     this.commitId = commitId;
   }
@@ -68,7 +69,11 @@ public class CommitLogCommand extends AbstractGitCommand<CommitInfo> {
     private final CommitLogCommand command;
 
     public Builder(@NotNull File repositoryPath, @NotNull String path, @NotNull String commitId) {
-      command = new CommitLogCommand(repositoryPath, path, commitId);
+      this(repositoryPath, null, path, commitId);
+    }
+
+    public Builder(@NotNull File repositoryPath, @Nullable File workPath, @NotNull String path, @NotNull String commitId) {
+      command = new CommitLogCommand(repositoryPath, workPath, path, commitId);
     }
 
     public CommitLogCommand build() {

@@ -10,6 +10,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import org.eclipse.jgit.api.Git;
@@ -26,8 +27,8 @@ public class AddFilesCommand extends AbstractGitWriteCommand {
 
   private final Collection<FileDescriptor> files = new ArrayList<>();
 
-  private AddFilesCommand(@NotNull File repositoryPath, String commitMessage) {
-    super(repositoryPath, commitMessage);
+  private AddFilesCommand(@NotNull File repositoryPath, @Nullable File workPath, String commitMessage) {
+    super(repositoryPath, workPath, commitMessage);
   }
 
   @Override
@@ -73,7 +74,11 @@ public class AddFilesCommand extends AbstractGitWriteCommand {
     private final AddFilesCommand command;
 
     public Builder(@NotNull File repositoryPath, String commitMessage) {
-      command = new AddFilesCommand(repositoryPath, commitMessage);
+      this(repositoryPath, null, commitMessage);
+    }
+
+    public Builder(@NotNull File repositoryPath, @Nullable File workPath, String commitMessage) {
+      command = new AddFilesCommand(repositoryPath, workPath, commitMessage);
     }
 
     public Builder addFile(FileDescriptor fileDescriptor) {

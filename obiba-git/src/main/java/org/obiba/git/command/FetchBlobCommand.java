@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import org.eclipse.jgit.api.Git;
@@ -38,8 +39,8 @@ public class FetchBlobCommand extends AbstractGitCommand<String> {
 
   private String encoding;
 
-  private FetchBlobCommand(@NotNull File repositoryPath, @NotNull String path) {
-    super(repositoryPath);
+  private FetchBlobCommand(@NotNull File repositoryPath, @Nullable File workPath, @NotNull String path) {
+    super(repositoryPath, workPath);
     this.path = path;
   }
 
@@ -64,7 +65,11 @@ public class FetchBlobCommand extends AbstractGitCommand<String> {
     private final FetchBlobCommand command;
 
     public Builder(@NotNull File repositoryPath, @NotNull String path) {
-      command = new FetchBlobCommand(repositoryPath, path);
+      this(repositoryPath, null, path);
+    }
+
+    public Builder(@NotNull File repositoryPath, @Nullable File workPath, @NotNull String path) {
+      command = new FetchBlobCommand(repositoryPath, workPath, path);
     }
 
     public Builder commitId(String commitId) {

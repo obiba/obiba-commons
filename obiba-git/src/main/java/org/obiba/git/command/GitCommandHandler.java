@@ -25,7 +25,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
-import com.google.common.io.Files;
 
 @Component
 public class GitCommandHandler {
@@ -65,7 +64,7 @@ public class GitCommandHandler {
     try {
 
       File repositoryPath = command.getRepositoryPath();
-      git = new Git(getLocalRepository(repositoryPath));
+      git = new Git(getLocalRepository(repositoryPath, command.getWorkPath()));
 
       fetchAllRepository(git);
       return command.execute(git);
@@ -75,7 +74,7 @@ public class GitCommandHandler {
     } finally {
       if(git != null) {
         git.close();
-        deleteLocalRepository(git);
+        if(command.deleteClone()) deleteLocalRepository(git);
       }
       unlock(command);
     }
@@ -84,7 +83,7 @@ public class GitCommandHandler {
   private void deleteLocalRepository(Git git) {
     File repoFile = git.getRepository().getWorkTree();
     try {
-      if (repoFile.exists()) FileUtil.delete(repoFile);
+      if(repoFile.exists()) FileUtil.delete(repoFile);
     } catch(IOException e) {
       log.error("Failed to remove local repository folder ({}).", e.getMessage());
     }
@@ -109,20 +108,29 @@ public class GitCommandHandler {
     }
   }
 
-  private Repository getLocalRepository(File repositoryPath) throws IOException, GitAPIException {
+  private Repository getLocalRepository(File repositoryPath, File localRepoDir) throws IOException, GitAPIException {
     if(!repositoryPath.exists()) {
       createBareRepository(repositoryPath);
     }
-    File localRepoDir = Files.createTempDir();
 
-    CloneCommand clone = new CloneCommand();
-    clone.setBare(false);
-    clone.setCloneAllBranches(true);
-    clone.setURI("file://" + repositoryPath.getAbsolutePath());
-    clone.setDirectory(localRepoDir);
-    Repository repository = clone.call().getRepository();
+    String name = repositoryPath.getName();
+    name = name.substring(0, name.lastIndexOf(".git"));
 
-    log.debug("Clone {} to {}", repositoryPath.getAbsolutePath(), repository.getWorkTree().getAbsolutePath());
+    File cloneDir = new File(localRepoDir, name);
+    Repository repository;
+
+    if(!cloneDir.exists()) {
+      CloneCommand clone = new CloneCommand();
+      clone.setBare(false);
+      clone.setCloneAllBranches(true);
+      clone.setURI("file://" + repositoryPath.getAbsolutePath());
+      clone.setDirectory(cloneDir);
+      repository = clone.call().getRepository();
+    } else {
+      repository = new FileRepository(new File(cloneDir, ".git"));
+    }
+
+    log.debug("Using clone of {}: {}", repositoryPath.getAbsolutePath(), repository.getWorkTree().getAbsolutePath());
     return repository;
   }
 

@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import org.eclipse.jgit.api.Git;
@@ -38,8 +39,8 @@ public class DiffAsStringCommand extends AbstractGitCommand<Iterable<String>> {
 
   private int nthCommit = 1;
 
-  protected DiffAsStringCommand(@NotNull File repositoryPath, String commitId) {
-    super(repositoryPath);
+  protected DiffAsStringCommand(@NotNull File repositoryPath, @Nullable File workPath, String commitId) {
+    super(repositoryPath, workPath);
     this.commitId = commitId;
   }
 
@@ -76,7 +77,11 @@ public class DiffAsStringCommand extends AbstractGitCommand<Iterable<String>> {
     private final DiffAsStringCommand command;
 
     public Builder(@NotNull File repositoryPath, String commitId) {
-      command = new DiffAsStringCommand(repositoryPath, commitId);
+      this(repositoryPath, null, commitId);
+    }
+
+    public Builder(@NotNull File repositoryPath, @Nullable File workPath, String commitId) {
+      command = new DiffAsStringCommand(repositoryPath, workPath, commitId);
     }
 
     public Builder path(String path) {

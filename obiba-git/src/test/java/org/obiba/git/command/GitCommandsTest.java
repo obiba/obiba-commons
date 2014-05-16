@@ -251,7 +251,7 @@ public class GitCommandsTest {
   }
 
   private File getRepoPath() throws IOException {
-    File repo = File.createTempFile("obiba", "git", testFolder);
+    File repo = File.createTempFile("obiba", ".git", testFolder);
     // delete it so we create a new repo
     if(!repo.delete()) {
       throw new IllegalStateException("Cannot delete git repo " + repo.getAbsolutePath());

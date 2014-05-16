@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import org.eclipse.jgit.api.Git;
@@ -29,8 +30,8 @@ public class ReadFileCommand extends AbstractGitCommand<InputStream> {
 
   private String tag;
 
-  private ReadFileCommand(@NotNull File repositoryPath, String path) {
-    super(repositoryPath);
+  private ReadFileCommand(@NotNull File repositoryPath, @Nullable File workPath, String path) {
+    super(repositoryPath, workPath);
     this.path = path;
   }
 
@@ -84,10 +85,14 @@ public class ReadFileCommand extends AbstractGitCommand<InputStream> {
     private final ReadFileCommand command;
 
     public Builder(@NotNull File repositoryPath, String path) {
+      this(repositoryPath, null, path);
+    }
+
+    public Builder(@NotNull File repositoryPath, @Nullable File workPath, String path) {
       if(!repositoryPath.exists() || !repositoryPath.isDirectory()) {
         throw new NoSuchGitRepositoryException(path);
       }
-      command = new ReadFileCommand(repositoryPath, path);
+      command = new ReadFileCommand(repositoryPath, workPath, path);
     }
 
     public Builder commitId(String commitId) {
