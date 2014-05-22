@@ -166,10 +166,10 @@ public class AuthenticationFilter extends OncePerRequestFilter {
   private Subject authenticateCookie(HttpServletRequest request) {
     Cookie sessionCookie = WebUtils.getCookie(request, sessionIdCookieName);
     Cookie requestCookie = WebUtils.getCookie(request, requestIdCookieName);
-    if(isValid(sessionCookie) && isValid(requestCookie)) {
+    if(isValid(sessionCookie)) {
       String sessionId = extractSessionId(request, sessionCookie);
-      AuthenticationToken token = new HttpCookieAuthenticationToken(sessionId, request.getRequestURI(),
-          requestCookie.getValue());
+      String requestId = requestCookie == null ? "" : requestCookie.getValue();
+      AuthenticationToken token = new HttpCookieAuthenticationToken(sessionId, request.getRequestURI(), requestId);
       Subject subject = new Subject.Builder(securityManager).sessionId(sessionId).buildSubject();
       subject.login(token);
       return subject;

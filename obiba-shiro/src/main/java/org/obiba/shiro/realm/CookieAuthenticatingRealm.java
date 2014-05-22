@@ -12,6 +12,7 @@ package org.obiba.shiro.realm;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.SimpleAccount;
+import org.apache.shiro.authc.credential.AllowAllCredentialsMatcher;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.obiba.shiro.authc.HttpCookieAuthenticationToken;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Component;
 public class CookieAuthenticatingRealm extends AbstractHttpAuthenticatingRealm {
 
   public CookieAuthenticatingRealm() {
+    setCredentialsMatcher(new AllowAllCredentialsMatcher());
   }
 
   @Override
