@@ -27,6 +27,7 @@
     <module>obiba-shiro-web</module>
     <module>obiba-web-model</module>
     <module>obiba-wicket</module>
+    <module>obiba-mongodb</module>
   </modules>
 
   <dependencyManagement>
@@ -205,6 +206,30 @@
         <artifactId>spring-test</artifactId>
         <version>${spring.version}</version>
         <scope>test</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>org.springframework.data</groupId>
+        <artifactId>spring-data-mongodb</artifactId>
+        <version>${spring-data-mongodb.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>org.springframework.data</groupId>
+        <artifactId>spring-data-commons</artifactId>
+        <version>${spring-data-commons.version}</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
@@ -416,6 +441,12 @@
         <artifactId>assertj-core</artifactId>
         <version>${assertj-core.version}</version>
         <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+        <version>${jackson.version}</version>
       </dependency>
 
     </dependencies>
@@ -739,6 +770,7 @@
     <guava.version>16.0.1</guava.version>
     <hibernate.version>4.3.1.Final</hibernate.version>
     <hsqldb.version>2.3.2</hsqldb.version>
+    <jackson.version>2.3.3</jackson.version>
     <javassist.version>3.12.1.GA</javassist.version>
     <jersey.version>2.7</jersey.version>
     <jetty.version>6.1.17</jetty.version>
@@ -756,6 +788,8 @@
     <shiro-extras.version>1.0.3-obiba</shiro-extras.version>
     <slf4j.version>1.7.6</slf4j.version>
     <spring.version>4.0.3.RELEASE</spring.version>
+    <spring-data-commons.version>1.7.2.RELEASE</spring-data-commons.version>
+    <spring-data-mongodb.version>1.4.2.RELEASE</spring-data-mongodb.version>
     <validation-api.version>1.1.0.Final</validation-api.version>
     <wicket.version>1.4.17</wicket.version>
     <xstream.version>1.4.7</xstream.version>
