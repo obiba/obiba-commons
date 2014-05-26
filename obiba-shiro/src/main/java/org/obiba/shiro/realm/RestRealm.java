@@ -30,7 +30,7 @@ public class RestRealm extends AuthorizingRealm {
 
   public static final String DEFAULT_SESSION_CREATE_PATH = "/auth/sessions";
 
-  private String baseUrl = "http://localhost:8888";
+  private String baseUrl = "http://localhost:8081";
 
   public RestRealm() {
     this(null);
