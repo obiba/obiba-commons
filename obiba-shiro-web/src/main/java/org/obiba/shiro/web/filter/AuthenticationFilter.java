@@ -29,6 +29,7 @@ import org.apache.shiro.util.ThreadContext;
 import org.obiba.shiro.authc.HttpAuthorizationToken;
 import org.obiba.shiro.authc.HttpCookieAuthenticationToken;
 import org.obiba.shiro.authc.HttpHeaderAuthenticationToken;
+import org.obiba.shiro.authc.TicketAuthenticationToken;
 import org.obiba.shiro.authc.X509CertificateAuthenticationToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,6 +117,9 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     if(subject == null) {
       subject = authenticateCookie(request);
     }
+    if(subject == null) {
+      subject = authenticateTicket(request);
+    }
 
     if(subject != null) {
       Session session = subject.getSession();
@@ -173,6 +177,23 @@ public class AuthenticationFilter extends OncePerRequestFilter {
       Subject subject = new Subject.Builder(securityManager).sessionId(sessionId).buildSubject();
       subject.login(token);
       return subject;
+    }
+    return null;
+  }
+
+  @Nullable
+  private Subject authenticateTicket(HttpServletRequest request) {
+    Cookie ticketCookie = WebUtils.getCookie(request, "obibaid");
+    if(isValid(ticketCookie)) {
+      String ticketId = ticketCookie.getValue();
+      AuthenticationToken token = new TicketAuthenticationToken(ticketId, request.getRequestURI(), "obibaid");
+      Subject subject = SecurityUtils.getSubject();
+      try {
+        subject.login(token);
+        return subject.isAuthenticated() ? subject : null;
+      } catch(AuthenticationException e) {
+        return null;
+      }
     }
     return null;
   }
