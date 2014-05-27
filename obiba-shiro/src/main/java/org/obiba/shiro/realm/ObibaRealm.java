@@ -12,12 +12,15 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.obiba.shiro.authc.TicketAuthenticationToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -29,6 +32,8 @@ import com.google.common.base.Strings;
  */
 public class ObibaRealm extends AuthorizingRealm {
 
+  private final static Logger log = LoggerFactory.getLogger(ObibaRealm.class);
+
   public static final String OBIBA_REALM = "obiba-realm";
 
   public static final String TICKET_COOKIE_NAME = "obibaid";
@@ -39,7 +44,9 @@ public class ObibaRealm extends AuthorizingRealm {
 
   public static final String DEFAULT_VALIDATE_PATH = "/validate";
 
-  private String baseUrl = "http://localhost:8081";
+  private final HttpComponentsClientHttpRequestFactory httpRequestFactory = new HttpComponentsClientHttpRequestFactory();
+
+  private String baseUrl = "https://localhost:8444";
 
   private String serviceName;
 
@@ -72,7 +79,7 @@ public class ObibaRealm extends AuthorizingRealm {
     }
 
     try {
-      RestTemplate template = new RestTemplate();
+      RestTemplate template = newRestTemplate();
       HttpHeaders headers = new HttpHeaders();
       headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
       String form = "username=" + username + "&password=" + new String(token.getPassword());
@@ -96,6 +103,7 @@ public class ObibaRealm extends AuthorizingRealm {
     } catch(HttpClientErrorException e) {
       return null;
     } catch(Exception e) {
+      log.error("Auth failure: {}", e.getMessage(), e);
       throw new AuthenticationException("Failed authenticating on " + baseUrl, e);
     }
   }
@@ -108,7 +116,7 @@ public class ObibaRealm extends AuthorizingRealm {
     }
 
     try {
-      RestTemplate template = new RestTemplate();
+      RestTemplate template = newRestTemplate();
       ResponseEntity<String> response = template.getForEntity(getValidateUrl(token.getTicketId()), String.class);
 
       if(response.getStatusCode().equals(HttpStatus.OK)) {
@@ -169,6 +177,10 @@ public class ObibaRealm extends AuthorizingRealm {
   @Override
   public String getName() {
     return OBIBA_REALM;
+  }
+
+  private RestTemplate newRestTemplate() {
+    return new RestTemplate(httpRequestFactory);
   }
 
   private String getLoginUrl(UsernamePasswordToken token) {
