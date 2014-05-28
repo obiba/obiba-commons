@@ -1,5 +1,19 @@
 package org.obiba.shiro.realm;
 
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+import org.apache.http.client.HttpClient;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeSocketFactory;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AccountException;
 import org.apache.shiro.authc.AuthenticationException;
@@ -44,7 +58,9 @@ public class ObibaRealm extends AuthorizingRealm {
 
   public static final String DEFAULT_VALIDATE_PATH = "/validate";
 
-  private final HttpComponentsClientHttpRequestFactory httpRequestFactory = new HttpComponentsClientHttpRequestFactory();
+  private static final int DEFAULT_HTTPS_PORT = 443;
+
+  private HttpComponentsClientHttpRequestFactory httpRequestFactory;
 
   private String baseUrl = "https://localhost:8444";
 
@@ -180,7 +196,58 @@ public class ObibaRealm extends AuthorizingRealm {
   }
 
   private RestTemplate newRestTemplate() {
-    return new RestTemplate(httpRequestFactory);
+    log.info("Connecting to Agate: {}", baseUrl);
+    if (baseUrl.toLowerCase().startsWith("https://")) {
+      if(httpRequestFactory == null) {
+        httpRequestFactory = new HttpComponentsClientHttpRequestFactory(createHttpClient());
+      }
+      return new RestTemplate(httpRequestFactory);
+    } else {
+      return new RestTemplate();
+    }
+  }
+
+  private HttpClient createHttpClient() {
+    DefaultHttpClient httpClient = new DefaultHttpClient();
+    try {
+      httpClient.getConnectionManager().getSchemeRegistry()
+          .register(new Scheme("https", DEFAULT_HTTPS_PORT, getSocketFactory()));
+    } catch(NoSuchAlgorithmException | KeyManagementException e) {
+      throw new RuntimeException(e);
+    }
+
+    return httpClient;
+  }
+
+  /**
+   * Do not check anything from the remote host (Agate server is trusted).
+   * @return
+   * @throws NoSuchAlgorithmException
+   * @throws KeyManagementException
+   */
+  private SchemeSocketFactory getSocketFactory() throws NoSuchAlgorithmException, KeyManagementException {
+    // Accepts any SSL certificate
+    TrustManager tm = new X509TrustManager() {
+
+      @Override
+      public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
+
+      }
+
+      @Override
+      public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
+
+      }
+
+      @Override
+      public X509Certificate[] getAcceptedIssuers() {
+        return null;
+      }
+    };
+    SSLContext sslContext = SSLContext.getInstance("TLS");
+    sslContext.init(null, new TrustManager[] { tm }, null);
+
+    return new SSLSocketFactory(sslContext, SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
   }
 
   private String getLoginUrl(UsernamePasswordToken token) {

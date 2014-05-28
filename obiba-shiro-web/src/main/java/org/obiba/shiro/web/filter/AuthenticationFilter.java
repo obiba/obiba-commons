@@ -66,11 +66,11 @@ public class AuthenticationFilter extends OncePerRequestFilter {
   }
 
   /**
-   * Use <b>WWW-Authenticate</b> by default
+   * Use <b>Basic</b> by default
    *
    * @param headerCredentials
    */
-  @Value("${org.obiba.shiro.authenticationFilter.headerCredentials:WWW-Authenticate}")
+  @Value("${org.obiba.shiro.authenticationFilter.headerCredentials:Basic}")
   public void setHeaderCredentials(String headerCredentials) {
     this.headerCredentials = headerCredentials;
   }
