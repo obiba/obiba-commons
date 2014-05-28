@@ -1,0 +1,8 @@
+package org.obiba.auth;
+
+option java_package = "org.obiba.web.model";
+
+message SubjectDto {
+  required string username = 1;
+  repeated string groups = 2;
+}

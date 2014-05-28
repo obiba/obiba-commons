@@ -4,6 +4,7 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Collection;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -23,6 +24,7 @@ import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authc.credential.AllowAllCredentialsMatcher;
 import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.obiba.shiro.authc.TicketAuthenticationToken;
@@ -40,6 +42,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 
 /**
  * A realm for the CAS-like implementation protocol by Obiba.
@@ -54,9 +57,11 @@ public class ObibaRealm extends AuthorizingRealm {
 
   public static final String DEFAULT_REST_PREFIX = "/ws";
 
-  public static final String DEFAULT_LOGIN_PATH = "/login";
+  public static final String DEFAULT_LOGIN_PATH = "/tickets";
 
-  public static final String DEFAULT_VALIDATE_PATH = "/validate";
+  public static final String DEFAULT_VALIDATE_PATH = "/ticket/{id}/username";
+
+  public static final String DEFAULT_SUBJECT_PATH = "/tickets/subject/{name}";
 
   private static final int DEFAULT_HTTPS_PORT = 443;
 
@@ -150,7 +155,23 @@ public class ObibaRealm extends AuthorizingRealm {
 
   @Override
   protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-    return null;
+    Collection<?> thisPrincipals = principals.fromRealm(getName());
+    if(thisPrincipals != null && !thisPrincipals.isEmpty()) {
+      String username = thisPrincipals.iterator().next().toString();
+
+      try {
+        RestTemplate template = newRestTemplate();
+        ResponseEntity<Subject> response = template.getForEntity(getSubjectUrl(username), Subject.class);
+        if(response.getStatusCode().equals(HttpStatus.OK)) {
+          return new SimpleAuthorizationInfo(Sets.newHashSet(response.getBody().groups));
+        }
+      } catch(HttpClientErrorException e) {
+        return new SimpleAuthorizationInfo();
+      } catch(Exception e) {
+        throw new AuthenticationException("Failed authorizing on " + baseUrl, e);
+      }
+    }
+    return new SimpleAuthorizationInfo();
   }
 
   @Override
@@ -262,11 +283,42 @@ public class ObibaRealm extends AuthorizingRealm {
 
   private String getValidateUrl(String ticket) {
     UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUrl).path(DEFAULT_REST_PREFIX)
-        .path(DEFAULT_VALIDATE_PATH).queryParam("ticket", ticket);
+        .path(DEFAULT_VALIDATE_PATH);
     if(!Strings.isNullOrEmpty(serviceName) && !Strings.isNullOrEmpty(serviceKey)) {
       builder.queryParam("service", serviceName).queryParam("key", serviceKey);
     }
-    return builder.build().toUriString();
+    return builder.buildAndExpand(ticket).toUriString();
+  }
+
+  private String getSubjectUrl(String username) {
+    UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUrl).path(DEFAULT_REST_PREFIX)
+        .path(DEFAULT_SUBJECT_PATH);
+    if(!Strings.isNullOrEmpty(serviceName) && !Strings.isNullOrEmpty(serviceKey)) {
+      builder.queryParam("service", serviceName).queryParam("key", serviceKey);
+    }
+    return builder.buildAndExpand(username).toUriString();
+  }
+
+  public static class Subject {
+    private String username;
+
+    private String[] groups;
+
+    public String getUsername() {
+      return username;
+    }
+
+    public void setUsername(String username) {
+      this.username = username;
+    }
+
+    public String[] getGroups() {
+      return groups;
+    }
+
+    public void setGroups(String[] groups) {
+      this.groups = groups;
+    }
   }
 
 }

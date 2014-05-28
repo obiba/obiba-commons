@@ -1,3 +1,4 @@
 import "php.proto";
 
-import "__PROTO_FILE__.proto";
+import "__ERROR_PROTO_FILE__.proto";
+import "__AUTH_PROTO_FILE__.proto";
