@@ -46,6 +46,8 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
   public static final String AUTHORIZATION_HEADER = "Authorization";
 
+  public static  final String OBIBA_COOKIE_ID = "obibaid";
+
   @Autowired
   private SessionsSecurityManager securityManager;
 
@@ -54,6 +56,9 @@ public class AuthenticationFilter extends OncePerRequestFilter {
   private String requestIdCookieName;
 
   private String headerCredentials;
+
+  @Autowired(required = false)
+  private AuthenticationExecutor authenticationExecutor;
 
   @Value("${org.obiba.shiro.authenticationFilter.cookie.sessionId}")
   public void setSessionIdCookieName(String sessionIdCookieName) {
@@ -73,6 +78,10 @@ public class AuthenticationFilter extends OncePerRequestFilter {
   @Value("${org.obiba.shiro.authenticationFilter.headerCredentials:Basic}")
   public void setHeaderCredentials(String headerCredentials) {
     this.headerCredentials = headerCredentials;
+  }
+
+  public void setAuthenticationExecutor(AuthenticationExecutor authenticationExecutor) {
+    this.authenticationExecutor = authenticationExecutor;
   }
 
   @Override
@@ -117,9 +126,6 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     if(subject == null) {
       subject = authenticateCookie(request);
     }
-    if(subject == null) {
-      subject = authenticateTicket(request);
-    }
 
     if(subject != null) {
       Session session = subject.getSession();
@@ -128,6 +134,9 @@ public class AuthenticationFilter extends OncePerRequestFilter {
       ThreadContext.bind(subject);
       session.touch();
       log.debug("Successfully authenticated subject {}", SecurityUtils.getSubject().getPrincipal());
+    } else
+    if(authenticationExecutor != null) {
+      authenticateTicket(request);
     }
   }
 
@@ -183,13 +192,12 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
   @Nullable
   private Subject authenticateTicket(HttpServletRequest request) {
-    Cookie ticketCookie = WebUtils.getCookie(request, "obibaid");
+    Cookie ticketCookie = WebUtils.getCookie(request, OBIBA_COOKIE_ID);
     if(isValid(ticketCookie)) {
       String ticketId = ticketCookie.getValue();
-      AuthenticationToken token = new TicketAuthenticationToken(ticketId, request.getRequestURI(), "obibaid");
-      Subject subject = SecurityUtils.getSubject();
+      AuthenticationToken token = new TicketAuthenticationToken(ticketId, request.getRequestURI(), OBIBA_COOKIE_ID);
       try {
-        subject.login(token);
+        Subject subject = authenticationExecutor.login(token);
         return subject.isAuthenticated() ? subject : null;
       } catch(AuthenticationException e) {
         return null;
