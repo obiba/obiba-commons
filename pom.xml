@@ -28,6 +28,7 @@
     <module>obiba-web-model</module>
     <module>obiba-wicket</module>
     <module>obiba-mongodb</module>
+    <module>obiba-password-hasher</module>
   </modules>
 
   <dependencyManagement>
