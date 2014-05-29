@@ -39,7 +39,7 @@
           </descriptors>
           <archive>
             <manifest>
-              <mainClass>org.obiba.opal.tools.hasher.Hasher</mainClass>
+              <mainClass>org.obiba.shiro.tools.hasher.Hasher</mainClass>
             </manifest>
           </archive>
         </configuration>
