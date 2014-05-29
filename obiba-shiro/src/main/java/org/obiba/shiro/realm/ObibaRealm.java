@@ -275,7 +275,7 @@ public class ObibaRealm extends AuthorizingRealm {
     UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUrl).path(DEFAULT_REST_PREFIX)
         .path(DEFAULT_LOGIN_PATH);
     if(!Strings.isNullOrEmpty(serviceName) && !Strings.isNullOrEmpty(serviceKey)) {
-      builder.queryParam("service", serviceName).queryParam("key", serviceKey);
+      builder.queryParam("application", serviceName).queryParam("key", serviceKey);
     }
     builder.queryParam("rememberMe", token.isRememberMe());
     return builder.build().toUriString();
@@ -285,7 +285,7 @@ public class ObibaRealm extends AuthorizingRealm {
     UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUrl).path(DEFAULT_REST_PREFIX)
         .path(DEFAULT_VALIDATE_PATH);
     if(!Strings.isNullOrEmpty(serviceName) && !Strings.isNullOrEmpty(serviceKey)) {
-      builder.queryParam("service", serviceName).queryParam("key", serviceKey);
+      builder.queryParam("application", serviceName).queryParam("key", serviceKey);
     }
     return builder.buildAndExpand(ticket).toUriString();
   }
@@ -294,7 +294,7 @@ public class ObibaRealm extends AuthorizingRealm {
     UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUrl).path(DEFAULT_REST_PREFIX)
         .path(DEFAULT_SUBJECT_PATH);
     if(!Strings.isNullOrEmpty(serviceName) && !Strings.isNullOrEmpty(serviceKey)) {
-      builder.queryParam("service", serviceName).queryParam("key", serviceKey);
+      builder.queryParam("application", serviceName).queryParam("key", serviceKey);
     }
     return builder.buildAndExpand(username).toUriString();
   }
