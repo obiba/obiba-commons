@@ -7,7 +7,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.obiba.opal.tools.hasher;
+package org.obiba.shiro.tools.hasher;
 
 import org.apache.shiro.authc.credential.DefaultPasswordService;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
