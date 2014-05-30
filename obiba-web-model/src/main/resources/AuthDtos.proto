@@ -3,6 +3,11 @@ package org.obiba.auth;
 option java_package = "org.obiba.web.model";
 
 message SubjectDto {
+  message AttributeDto {
+    required string key = 1;
+    optional string value = 2;
+  }
   required string username = 1;
   repeated string groups = 2;
+  repeated AttributeDto attributes = 3;
 }

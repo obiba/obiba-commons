@@ -5,6 +5,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -300,9 +302,12 @@ public class ObibaRealm extends AuthorizingRealm {
   }
 
   public static class Subject {
+
     private String username;
 
-    private String[] groups;
+    private List<String> groups;
+
+    private List<Map<String, String>> attributes;
 
     public String getUsername() {
       return username;
@@ -312,12 +317,20 @@ public class ObibaRealm extends AuthorizingRealm {
       this.username = username;
     }
 
-    public String[] getGroups() {
+    public List<String> getGroups() {
       return groups;
     }
 
-    public void setGroups(String[] groups) {
+    public void setGroups(List<String> groups) {
       this.groups = groups;
+    }
+
+    public List<Map<String, String>> getAttributes() {
+      return attributes;
+    }
+
+    public void setAttributes(List<Map<String, String>> attributes) {
+      this.attributes = attributes;
     }
   }
 
