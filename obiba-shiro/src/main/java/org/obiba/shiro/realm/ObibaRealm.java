@@ -61,9 +61,13 @@ public class ObibaRealm extends AuthorizingRealm {
 
   public static final String DEFAULT_LOGIN_PATH = "/tickets";
 
-  public static final String DEFAULT_VALIDATE_PATH = "/ticket/{id}/username";
+  public static final String DEFAULT_TICKET_PATH = "/ticket/{id}";
+
+  public static final String DEFAULT_VALIDATE_PATH = DEFAULT_TICKET_PATH + "/username";
 
   public static final String DEFAULT_SUBJECT_PATH = "/tickets/subject/{name}";
+
+  private static final String SET_COOKIE_HEADER = "Set-Cookie";
 
   private static final int DEFAULT_HTTPS_PORT = 443;
 
@@ -111,10 +115,10 @@ public class ObibaRealm extends AuthorizingRealm {
 
       if(response.getStatusCode().equals(HttpStatus.CREATED)) {
         HttpHeaders responseHeaders = response.getHeaders();
-        for(String cookieValue : responseHeaders.get("Set-Cookie")) {
+        for(String cookieValue : responseHeaders.get(SET_COOKIE_HEADER)) {
           if(cookieValue.startsWith(TICKET_COOKIE_NAME + "=")) {
             // set in the subject's session the cookie that will allow to perform the single sign-on
-            SecurityUtils.getSubject().getSession().setAttribute("Set-Cookie", cookieValue);
+            SecurityUtils.getSubject().getSession().setAttribute(SET_COOKIE_HEADER, cookieValue);
           }
         }
 
@@ -178,8 +182,24 @@ public class ObibaRealm extends AuthorizingRealm {
 
   @Override
   public void onLogout(PrincipalCollection principals) {
+    if (principals.getRealmNames().contains(OBIBA_REALM)) {
+      cleanTicket();
+    }
     super.onLogout(principals);
-    // TODO: release user's ticket
+  }
+
+  private void cleanTicket() {
+    try {
+      Object cookie = SecurityUtils.getSubject().getSession().getAttribute(SET_COOKIE_HEADER);
+      if (cookie != null && cookie.toString().startsWith(TICKET_COOKIE_NAME + "=")) {
+        String ticketId = cookie.toString().split(";")[0].substring(TICKET_COOKIE_NAME.length() + 1);
+        log.info("Ticket: {}", ticketId);
+        RestTemplate template = newRestTemplate();
+        template.delete(getTicketUrl(ticketId));
+      }
+    } catch(Exception e) {
+      log.warn("Unable to clean Obiba session: " + e.getMessage(), e);
+    }
   }
 
   /**
@@ -299,6 +319,15 @@ public class ObibaRealm extends AuthorizingRealm {
       builder.queryParam("application", serviceName).queryParam("key", serviceKey);
     }
     return builder.buildAndExpand(username).toUriString();
+  }
+
+  private String getTicketUrl(String id) {
+    UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUrl).path(DEFAULT_REST_PREFIX)
+        .path(DEFAULT_TICKET_PATH);
+    if(!Strings.isNullOrEmpty(serviceName) && !Strings.isNullOrEmpty(serviceKey)) {
+      builder.queryParam("application", serviceName).queryParam("key", serviceKey);
+    }
+    return builder.buildAndExpand(id).toUriString();
   }
 
   public static class Subject {
