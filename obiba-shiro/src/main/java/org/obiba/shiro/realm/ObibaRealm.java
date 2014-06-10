@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -65,7 +66,7 @@ public class ObibaRealm extends AuthorizingRealm {
 
   public static final String DEFAULT_VALIDATE_PATH = DEFAULT_TICKET_PATH + "/username";
 
-  public static final String DEFAULT_SUBJECT_PATH = "/tickets/subject/{name}";
+  public static final String DEFAULT_SUBJECT_PATH = DEFAULT_TICKET_PATH + "/subject";
 
   private static final String SET_COOKIE_HEADER = "Set-Cookie";
 
@@ -119,6 +120,9 @@ public class ObibaRealm extends AuthorizingRealm {
           if(cookieValue.startsWith(TICKET_COOKIE_NAME + "=")) {
             // set in the subject's session the cookie that will allow to perform the single sign-on
             SecurityUtils.getSubject().getSession().setAttribute(SET_COOKIE_HEADER, cookieValue);
+            // keep ticket reference for logout
+            String ticketId = cookieValue.split(";")[0].substring(TICKET_COOKIE_NAME.length() + 1);
+            SecurityUtils.getSubject().getSession().setAttribute(TICKET_COOKIE_NAME, ticketId);
           }
         }
 
@@ -147,6 +151,8 @@ public class ObibaRealm extends AuthorizingRealm {
       ResponseEntity<String> response = template.getForEntity(getValidateUrl(token.getTicketId()), String.class);
 
       if(response.getStatusCode().equals(HttpStatus.OK)) {
+        // keep ticket reference for logout
+        SecurityUtils.getSubject().getSession().setAttribute(TICKET_COOKIE_NAME, token.getTicketId());
         return new SimpleAuthenticationInfo(response.getBody(), token.getCredentials(), getName());
       }
 
@@ -163,11 +169,9 @@ public class ObibaRealm extends AuthorizingRealm {
   protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
     Collection<?> thisPrincipals = principals.fromRealm(getName());
     if(thisPrincipals != null && !thisPrincipals.isEmpty()) {
-      String username = thisPrincipals.iterator().next().toString();
-
       try {
         RestTemplate template = newRestTemplate();
-        ResponseEntity<Subject> response = template.getForEntity(getSubjectUrl(username), Subject.class);
+        ResponseEntity<Subject> response = template.getForEntity(getSubjectUrl(getTicketFromSession()), Subject.class);
         if(response.getStatusCode().equals(HttpStatus.OK)) {
           return new SimpleAuthorizationInfo(Sets.newHashSet(response.getBody().groups));
         }
@@ -190,16 +194,25 @@ public class ObibaRealm extends AuthorizingRealm {
 
   private void cleanTicket() {
     try {
-      Object cookie = SecurityUtils.getSubject().getSession().getAttribute(SET_COOKIE_HEADER);
-      if (cookie != null && cookie.toString().startsWith(TICKET_COOKIE_NAME + "=")) {
-        String ticketId = cookie.toString().split(";")[0].substring(TICKET_COOKIE_NAME.length() + 1);
-        log.info("Ticket: {}", ticketId);
+      String ticketId = getTicketFromSession();
+      if (ticketId != null) {
+        log.debug("Deleting ticket: {}", ticketId);
         RestTemplate template = newRestTemplate();
         template.delete(getTicketUrl(ticketId));
       }
     } catch(Exception e) {
       log.warn("Unable to clean Obiba session: " + e.getMessage(), e);
     }
+  }
+
+  /**
+   * Extract ticket reference from the shiro session.
+   * @return null if not found
+   */
+  @Nullable
+  private String getTicketFromSession() {
+    Object cookie = SecurityUtils.getSubject().getSession().getAttribute(TICKET_COOKIE_NAME);
+    return cookie != null && !Strings.isNullOrEmpty(cookie.toString()) ? cookie.toString() : null;
   }
 
   /**
@@ -312,13 +325,13 @@ public class ObibaRealm extends AuthorizingRealm {
     return builder.buildAndExpand(ticket).toUriString();
   }
 
-  private String getSubjectUrl(String username) {
+  private String getSubjectUrl(String ticketId) {
     UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUrl).path(DEFAULT_REST_PREFIX)
         .path(DEFAULT_SUBJECT_PATH);
     if(!Strings.isNullOrEmpty(serviceName) && !Strings.isNullOrEmpty(serviceKey)) {
       builder.queryParam("application", serviceName).queryParam("key", serviceKey);
     }
-    return builder.buildAndExpand(username).toUriString();
+    return builder.buildAndExpand(ticketId).toUriString();
   }
 
   private String getTicketUrl(String id) {
