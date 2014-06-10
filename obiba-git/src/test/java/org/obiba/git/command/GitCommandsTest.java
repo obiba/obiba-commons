@@ -186,7 +186,13 @@ public class GitCommandsTest {
   }
 
   @Test
-  public void test_listFilesNoFilterNotRecursive() throws Exception {
+  public void test_list_files_of_empty_repo() throws Exception {
+    File repo = getRepoPath();
+    assertThat(handler.execute(new ListFilesCommand.Builder(repo).build())).isEmpty();
+  }
+
+  @Test
+  public void test_list_files_no_filter_not_recursive() throws Exception {
     File repo = getRepoPath();
     createDummyFiles(repo);
 
@@ -197,7 +203,7 @@ public class GitCommandsTest {
   }
 
   @Test
-  public void test_listFilesNoFilterRecursive() throws Exception {
+  public void test_list_files_no_filter_recursive() throws Exception {
     File repo = getRepoPath();
     createDummyFiles(repo);
 
@@ -208,7 +214,7 @@ public class GitCommandsTest {
   }
 
   @Test
-  public void test_listFilesFilteredRecursive() throws Exception {
+  public void test_list_files_filtered_recursive() throws Exception {
     File repo = getRepoPath();
     createDummyFiles(repo);
 
@@ -221,7 +227,7 @@ public class GitCommandsTest {
   }
 
   @Test
-  public void test_readingFiles() throws Exception {
+  public void test_reading_files() throws Exception {
     File repo = getRepoPath();
     createDummyFiles(repo);
 
@@ -229,7 +235,7 @@ public class GitCommandsTest {
         .execute(new ReadFilesCommand.Builder(repo).recursive(true).filter("\\/_titi\\.txt|^root|\\.xml$").build());
     assertThat(files.size()).isEqualTo(3);
 
-    for (InputStream is : files) {
+    for(InputStream is : files) {
       assertThat(readInputStream(is)).matches("This is another file in dir|This is root file|This is with folders");
     }
   }
@@ -285,6 +291,6 @@ public class GitCommandsTest {
   }
 
   private String readInputStream(InputStream is) {
-    return new Scanner(is,"UTF-8").useDelimiter("\\A").next();
+    return new Scanner(is, "UTF-8").useDelimiter("\\A").next();
   }
 }
