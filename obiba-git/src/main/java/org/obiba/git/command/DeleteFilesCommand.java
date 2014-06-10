@@ -20,6 +20,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.transport.PushResult;
 import org.obiba.git.GitException;
 
+@SuppressWarnings("ClassTooDeepInInheritanceTree")
 public class DeleteFilesCommand extends AbstractGitWriteCommand {
 
   private final String filePattern;
