@@ -2,8 +2,8 @@ package org.obiba.git.command;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
@@ -27,7 +27,7 @@ public class ListFilesCommand extends AbstractGitCommand<Set<String>> {
 
   private String commitId;
 
-  private boolean recursive = false;
+  private boolean recursive;
 
   private ListFilesCommand(File repositoryPath, @Nullable File workPath) {
     super(repositoryPath, workPath);
@@ -38,33 +38,46 @@ public class ListFilesCommand extends AbstractGitCommand<Set<String>> {
     Repository repository = git.getRepository();
     RevWalk walk = new RevWalk(repository);
     try {
-      RevCommit commit = walk.parseCommit(
-          ObjectId.fromString(Strings.isNullOrEmpty(commitId) ? GitUtils.getHeadCommitId(repository) : commitId));
+
+      RevCommit commit = getRevCommit(repository, walk);
+      if(commit == null) {
+        // no commit yet
+        return Collections.emptySet();
+      }
 
       TreeWalk commitWalk = new TreeWalk(repository);
       commitWalk.addTree(commit.getTree());
       commitWalk.setRecursive(recursive);
-
-      ImmutableSet.Builder<String> files = ImmutableSet.builder();
-      if(Strings.isNullOrEmpty(filter)) {
-        while(commitWalk.next()) {
-          files.add(commitWalk.getPathString());
-        }
-      } else {
-        Pattern pattern = Pattern.compile(filter);
-        while(commitWalk.next()) {
-          String filePath = commitWalk.getPathString();
-          Matcher matcher = pattern.matcher(filePath);
-          if(matcher.find()) files.add(filePath);
-        }
-      }
-
-      return files.build();
+      return findFiles(commitWalk);
 
     } catch(IOException e) {
       throw new GitException(e);
     }
+  }
 
+  private Set<String> findFiles(TreeWalk commitWalk) throws IOException {
+    ImmutableSet.Builder<String> files = ImmutableSet.builder();
+    if(Strings.isNullOrEmpty(filter)) {
+      while(commitWalk.next()) {
+        files.add(commitWalk.getPathString());
+      }
+    } else {
+      Pattern pattern = Pattern.compile(filter);
+      while(commitWalk.next()) {
+        String filePath = commitWalk.getPathString();
+        if(pattern.matcher(filePath).find()) {
+          files.add(filePath);
+        }
+      }
+    }
+    return files.build();
+  }
+
+  @Nullable
+  private RevCommit getRevCommit(Repository repository, RevWalk walk) throws IOException {
+
+    String commitIdToFetch = Strings.isNullOrEmpty(commitId) ? GitUtils.getHeadCommitId(repository) : commitId;
+    return Strings.isNullOrEmpty(commitIdToFetch) ? null : walk.parseCommit(ObjectId.fromString(commitIdToFetch));
   }
 
   @SuppressWarnings("ParameterHidesMemberVariable")
