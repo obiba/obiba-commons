@@ -28,6 +28,7 @@ import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authc.credential.AllowAllCredentialsMatcher;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
+import org.apache.shiro.codec.Base64;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.obiba.shiro.authc.TicketAuthenticationToken;
@@ -57,6 +58,10 @@ public class ObibaRealm extends AuthorizingRealm {
   public static final String OBIBA_REALM = "obiba-realm";
 
   public static final String TICKET_COOKIE_NAME = "obibaid";
+
+  public static final String APPLICATION_AUTH_HEADER = "X-App-Auth";
+
+  public static final String APPLICATION_AUTH_SCHEMA = "Basic";
 
   public static final String DEFAULT_REST_PREFIX = "/ws";
 
@@ -109,9 +114,11 @@ public class ObibaRealm extends AuthorizingRealm {
     try {
       RestTemplate template = newRestTemplate();
       HttpHeaders headers = new HttpHeaders();
+      headers.set(APPLICATION_AUTH_HEADER, getApplicationAuth());
       headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
       String form = "username=" + username + "&password=" + new String(token.getPassword());
       HttpEntity<String> entity = new HttpEntity<String>(form, headers);
+
       ResponseEntity<String> response = template.exchange(getLoginUrl(token), HttpMethod.POST, entity, String.class);
 
       if(response.getStatusCode().equals(HttpStatus.CREATED)) {
@@ -148,7 +155,11 @@ public class ObibaRealm extends AuthorizingRealm {
 
     try {
       RestTemplate template = newRestTemplate();
-      ResponseEntity<String> response = template.getForEntity(getValidateUrl(token.getTicketId()), String.class);
+      HttpHeaders headers = new HttpHeaders();
+      headers.set(APPLICATION_AUTH_HEADER, getApplicationAuth());
+      HttpEntity<String> entity = new HttpEntity<String>(null, headers);
+
+      ResponseEntity<String> response = template.exchange(getValidateUrl(token.getTicketId()), HttpMethod.GET, entity, String.class);
 
       if(response.getStatusCode().equals(HttpStatus.OK)) {
         // keep ticket reference for logout
@@ -171,7 +182,11 @@ public class ObibaRealm extends AuthorizingRealm {
     if(thisPrincipals != null && !thisPrincipals.isEmpty()) {
       try {
         RestTemplate template = newRestTemplate();
-        ResponseEntity<Subject> response = template.getForEntity(getSubjectUrl(getTicketFromSession()), Subject.class);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(APPLICATION_AUTH_HEADER, getApplicationAuth());
+        HttpEntity<String> entity = new HttpEntity<String>(null, headers);
+
+        ResponseEntity<Subject> response = template.exchange(getSubjectUrl(getTicketFromSession()), HttpMethod.GET, entity, Subject.class);
         if(response.getStatusCode().equals(HttpStatus.OK)) {
           return new SimpleAuthorizationInfo(Sets.newHashSet(response.getBody().groups));
         }
@@ -198,7 +213,11 @@ public class ObibaRealm extends AuthorizingRealm {
       if (ticketId != null) {
         log.debug("Deleting ticket: {}", ticketId);
         RestTemplate template = newRestTemplate();
-        template.delete(getTicketUrl(ticketId));
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(APPLICATION_AUTH_HEADER, getApplicationAuth());
+        HttpEntity<String> entity = new HttpEntity<String>(null, headers);
+
+        template.exchange(getTicketUrl(ticketId), HttpMethod.DELETE, entity, String.class);
       }
     } catch(Exception e) {
       log.warn("Unable to clean Obiba session: " + e.getMessage(), e);
@@ -309,9 +328,6 @@ public class ObibaRealm extends AuthorizingRealm {
   private String getLoginUrl(UsernamePasswordToken token) {
     UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUrl).path(DEFAULT_REST_PREFIX)
         .path(DEFAULT_LOGIN_PATH);
-    if(!Strings.isNullOrEmpty(serviceName) && !Strings.isNullOrEmpty(serviceKey)) {
-      builder.queryParam("application", serviceName).queryParam("key", serviceKey);
-    }
     builder.queryParam("rememberMe", token.isRememberMe());
     return builder.build().toUriString();
   }
@@ -319,28 +335,24 @@ public class ObibaRealm extends AuthorizingRealm {
   private String getValidateUrl(String ticket) {
     UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUrl).path(DEFAULT_REST_PREFIX)
         .path(DEFAULT_VALIDATE_PATH);
-    if(!Strings.isNullOrEmpty(serviceName) && !Strings.isNullOrEmpty(serviceKey)) {
-      builder.queryParam("application", serviceName).queryParam("key", serviceKey);
-    }
     return builder.buildAndExpand(ticket).toUriString();
   }
 
   private String getSubjectUrl(String ticketId) {
     UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUrl).path(DEFAULT_REST_PREFIX)
         .path(DEFAULT_SUBJECT_PATH);
-    if(!Strings.isNullOrEmpty(serviceName) && !Strings.isNullOrEmpty(serviceKey)) {
-      builder.queryParam("application", serviceName).queryParam("key", serviceKey);
-    }
     return builder.buildAndExpand(ticketId).toUriString();
   }
 
   private String getTicketUrl(String id) {
     UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUrl).path(DEFAULT_REST_PREFIX)
         .path(DEFAULT_TICKET_PATH);
-    if(!Strings.isNullOrEmpty(serviceName) && !Strings.isNullOrEmpty(serviceKey)) {
-      builder.queryParam("application", serviceName).queryParam("key", serviceKey);
-    }
     return builder.buildAndExpand(id).toUriString();
+  }
+
+  private String getApplicationAuth() {
+    String token = serviceName + ":" + serviceKey;
+    return APPLICATION_AUTH_SCHEMA + " " + Base64.encodeToString(token.getBytes());
   }
 
   public static class Subject {
