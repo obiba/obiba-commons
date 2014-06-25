@@ -20,17 +20,26 @@ public abstract class AbstractAuthenticationExecutor implements AuthenticationEx
 
   @Override
   public Subject login(AuthenticationToken token) throws AuthenticationException {
-    Subject subject = SecurityUtils.getSubject();
-    if (!subject.isAuthenticated()) {
+    return login(token, null);
+  }
+
+  @Override
+  public Subject login(AuthenticationToken token, String sessionId) throws AuthenticationException {
+    Subject subject = sessionId == null
+        ? SecurityUtils.getSubject()
+        : new Subject.Builder(SecurityUtils.getSecurityManager()).sessionId(sessionId).buildSubject();
+
+    if(!subject.isAuthenticated()) {
       subject.login(token);
       ThreadContext.bind(subject);
+      ensureProfile(subject);
     }
-    ensureProfile(subject);
-    return subject;
+    return subject.isAuthenticated() ? subject : null;
   }
 
   /**
    * Trigger some processing after the login evaluation.
+   *
    * @param subject
    */
   protected abstract void ensureProfile(Subject subject);

@@ -46,7 +46,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
   public static final String AUTHORIZATION_HEADER = "Authorization";
 
-  public static  final String OBIBA_COOKIE_ID = "obibaid";
+  public static final String OBIBA_COOKIE_ID = "obibaid";
 
   @Autowired
   private SessionsSecurityManager securityManager;
@@ -57,7 +57,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
   private String headerCredentials;
 
-  @Autowired(required = false)
+  @Autowired
   private AuthenticationExecutor authenticationExecutor;
 
   @Value("${org.obiba.shiro.authenticationFilter.cookie.sessionId}")
@@ -134,8 +134,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
       ThreadContext.bind(subject);
       session.touch();
       log.debug("Successfully authenticated subject {}", SecurityUtils.getSubject().getPrincipal());
-    } else
-    if(authenticationExecutor != null) {
+    } else {
       authenticateTicket(request);
     }
   }
@@ -170,9 +169,11 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
     String sessionId = extractSessionId(request);
     AuthenticationToken token = new HttpAuthorizationToken(headerCredentials, authorization);
-    Subject subject = new Subject.Builder(securityManager).sessionId(sessionId).buildSubject();
-    subject.login(token);
-    return subject;
+    try {
+      return authenticationExecutor.login(token, sessionId);
+    } catch(AuthenticationException e) {
+      return null;
+    }
   }
 
   @Nullable
@@ -197,8 +198,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
       String ticketId = ticketCookie.getValue();
       AuthenticationToken token = new TicketAuthenticationToken(ticketId, request.getRequestURI(), OBIBA_COOKIE_ID);
       try {
-        Subject subject = authenticationExecutor.login(token);
-        return subject.isAuthenticated() ? subject : null;
+        return authenticationExecutor.login(token);
       } catch(AuthenticationException e) {
         return null;
       }
