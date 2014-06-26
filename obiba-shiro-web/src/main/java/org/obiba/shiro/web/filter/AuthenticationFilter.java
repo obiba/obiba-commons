@@ -18,6 +18,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotNull;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -57,7 +58,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
   private String headerCredentials;
 
-  @Autowired
+  @Autowired(required = false)
   private AuthenticationExecutor authenticationExecutor;
 
   @Value("${org.obiba.shiro.authenticationFilter.cookie.sessionId}")
@@ -82,6 +83,19 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
   public void setAuthenticationExecutor(AuthenticationExecutor authenticationExecutor) {
     this.authenticationExecutor = authenticationExecutor;
+  }
+
+  @NotNull
+  private AuthenticationExecutor getAuthenticationExecutor() {
+    if (authenticationExecutor == null) {
+      authenticationExecutor = new AbstractAuthenticationExecutor() {
+        @Override
+        protected void ensureProfile(Subject subject) {
+          // do nothing
+        }
+      };
+    }
+    return authenticationExecutor;
   }
 
   @Override
@@ -170,7 +184,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     String sessionId = extractSessionId(request);
     AuthenticationToken token = new HttpAuthorizationToken(headerCredentials, authorization);
     try {
-      return authenticationExecutor.login(token, sessionId);
+      return getAuthenticationExecutor().login(token, sessionId);
     } catch(AuthenticationException e) {
       return null;
     }
@@ -198,7 +212,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
       String ticketId = ticketCookie.getValue();
       AuthenticationToken token = new TicketAuthenticationToken(ticketId, request.getRequestURI(), OBIBA_COOKIE_ID);
       try {
-        return authenticationExecutor.login(token);
+        return getAuthenticationExecutor().login(token);
       } catch(AuthenticationException e) {
         return null;
       }
