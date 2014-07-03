@@ -520,7 +520,7 @@ public class ObibaKeyStore {
       throw new RuntimeException(ex);
     }
 
-    private ObibaKeyStore createKeyStore(KeyStore keyStore) {
+    protected ObibaKeyStore createKeyStore(KeyStore keyStore) {
       ObibaKeyStore obibaKeyStore = new ObibaKeyStore(name, keyStore);
       obibaKeyStore.setCallbackHandler(callbackHandler);
       return obibaKeyStore;
