@@ -451,9 +451,9 @@ public class ObibaKeyStore {
   @SuppressWarnings({ "StaticMethodOnlyUsedInOneClass", "ParameterHidesMemberVariable" })
   public static class Builder {
 
-    private String name;
+    protected String name;
 
-    private CallbackHandler callbackHandler;
+    protected CallbackHandler callbackHandler;
 
     public static Builder newStore() {
       return new Builder();
@@ -490,7 +490,7 @@ public class ObibaKeyStore {
       return createKeyStore(keyStore);
     }
 
-    private KeyStore createEmptyKeyStore(CacheablePasswordCallback passwordCallback) {
+    protected KeyStore createEmptyKeyStore(CacheablePasswordCallback passwordCallback) {
       KeyStore keyStore = null;
       try {
         keyStore = KeyStore.getInstance("JCEKS");
