@@ -63,7 +63,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Maps;
 
-public class ObibaKeyStore {
+public class KeyStoreManager {
 
   public static final String PASSWORD_FOR = "Password for";
 
@@ -77,7 +77,7 @@ public class ObibaKeyStore {
 
   private CallbackHandler callbackHandler;
 
-  public ObibaKeyStore(String name, KeyStore store) {
+  public KeyStoreManager(String name, KeyStore store) {
     this.name = name;
     this.store = store;
   }
@@ -475,7 +475,7 @@ public class ObibaKeyStore {
       return passwordCallback.getPassword();
     }
 
-    public ObibaKeyStore build() {
+    public KeyStoreManager build() {
       if (name == null || name.isEmpty()) throw new IllegalArgumentException("name must not be null or empty");
       if (callbackHandler == null) throw new IllegalArgumentException("callbackHandler must not be null");
 
@@ -487,7 +487,7 @@ public class ObibaKeyStore {
 
       KeyStore keyStore = createEmptyKeyStore(passwordCallback);
 
-      return createKeyStore(keyStore);
+      return createKeyStoreManager(keyStore);
     }
 
     protected KeyStore createEmptyKeyStore(CacheablePasswordCallback passwordCallback) {
@@ -520,10 +520,10 @@ public class ObibaKeyStore {
       throw new RuntimeException(ex);
     }
 
-    protected ObibaKeyStore createKeyStore(KeyStore keyStore) {
-      ObibaKeyStore obibaKeyStore = new ObibaKeyStore(name, keyStore);
-      obibaKeyStore.setCallbackHandler(callbackHandler);
-      return obibaKeyStore;
+    protected KeyStoreManager createKeyStoreManager(KeyStore keyStore) {
+      KeyStoreManager keyStoreManager = new KeyStoreManager(name, keyStore);
+      keyStoreManager.setCallbackHandler(callbackHandler);
+      return keyStoreManager;
     }
   }
 
