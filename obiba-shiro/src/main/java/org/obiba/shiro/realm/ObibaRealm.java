@@ -42,6 +42,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -138,7 +139,7 @@ public class ObibaRealm extends AuthorizingRealm {
 
       // not an account in this realm
       return null;
-    } catch(HttpClientErrorException e) {
+    } catch(HttpClientErrorException|ResourceAccessException e) {
       return null;
     } catch(Exception e) {
       log.error("Auth failure: {}", e.getMessage(), e);
@@ -169,7 +170,7 @@ public class ObibaRealm extends AuthorizingRealm {
 
       // not an account in this realm
       return null;
-    } catch(HttpClientErrorException e) {
+    } catch(HttpClientErrorException|ResourceAccessException e) {
       return null;
     } catch(Exception e) {
       throw new AuthenticationException("Failed authenticating on " + baseUrl, e);
