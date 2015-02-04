@@ -777,40 +777,40 @@
 
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
 
-    <assertj-core.version>1.6.0</assertj-core.version>
+    <assertj-core.version>1.7.1</assertj-core.version>
     <bouncycastle.version>1.46</bouncycastle.version>
     <cglib.version>3.1</cglib.version>
-    <commons-beanutils.version>1.9.1</commons-beanutils.version>
+    <commons-beanutils.version>1.9.2</commons-beanutils.version>
     <commons-dbcp.version>1.4</commons-dbcp.version>
     <commons-httpclient.version>3.1</commons-httpclient.version>
-    <crowd.version>2.8.0-OD-1</crowd.version>
-    <dbunit.version>2.4.9</dbunit.version>
-    <easymock.version>3.2</easymock.version>
+    <crowd.version>2.9.0-OD-058</crowd.version>
+    <dbunit.version>2.5.0</dbunit.version>
+    <easymock.version>3.3.1</easymock.version>
     <findbugs.version>1.3.2</findbugs.version>
-    <guava.version>16.0.1</guava.version>
-    <hibernate.version>4.3.1.Final</hibernate.version>
+    <guava.version>18.0</guava.version>
+    <hibernate.version>4.3.8.Final</hibernate.version>
     <hsqldb.version>2.3.2</hsqldb.version>
-    <httpclient.version>4.3.3</httpclient.version>
-    <jackson.version>2.3.3</jackson.version>
+    <httpclient.version>4.4</httpclient.version>
+    <jackson.version>2.5.0</jackson.version>
     <javassist.version>3.12.1.GA</javassist.version>
-    <jersey.version>2.7</jersey.version>
-    <jetty.version>6.1.17</jetty.version>
-    <jgit.version>3.3.1.201403241930-r</jgit.version>
-    <joda-time.version>2.3</joda-time.version>
-    <jsr305.version>2.0.3</jsr305.version>
-    <junit.version>4.11</junit.version>
+    <jersey.version>2.15</jersey.version>
+    <jetty.version>6.1.26</jetty.version>
+    <jgit.version>3.6.2.201501210735-r</jgit.version>
+    <joda-time.version>2.7</joda-time.version>
+    <jsr305.version>3.0.0</jsr305.version>
+    <junit.version>4.12</junit.version>
     <liquibase.version>1.9.4</liquibase.version>
-    <logback.version>1.1.1</logback.version>
+    <logback.version>1.1.2</logback.version>
     <mail.version>1.5.0-b01</mail.version>
     <protobuf.version>2.5.0</protobuf.version>
     <protobuf-java-format.version>1.2.1-obiba</protobuf-java-format.version>
-    <servlet-api.version>3.0.1</servlet-api.version>
+    <servlet-api.version>3.1.0</servlet-api.version>
     <shiro.version>1.2.3-java8</shiro.version>
     <shiro-extras.version>1.0.3-obiba</shiro-extras.version>
-    <slf4j.version>1.7.6</slf4j.version>
-    <spring.version>4.0.3.RELEASE</spring.version>
-    <spring-data-commons.version>1.7.2.RELEASE</spring-data-commons.version>
-    <spring-data-mongodb.version>1.4.2.RELEASE</spring-data-mongodb.version>
+    <slf4j.version>1.7.10</slf4j.version>
+    <spring.version>4.1.4.RELEASE</spring.version>
+    <spring-data-commons.version>1.9.2.RELEASE</spring-data-commons.version>
+    <spring-data-mongodb.version>1.6.2.RELEASE</spring-data-mongodb.version>
     <validation-api.version>1.1.0.Final</validation-api.version>
     <wicket.version>1.4.17</wicket.version>
     <xstream.version>1.4.7</xstream.version>

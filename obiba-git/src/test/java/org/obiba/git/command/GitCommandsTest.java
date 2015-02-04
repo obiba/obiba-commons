@@ -28,7 +28,7 @@ import com.google.common.io.CharStreams;
 import com.google.common.io.Files;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.fail;
 
 public class GitCommandsTest {
 
