@@ -597,6 +597,15 @@
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>${maven-clean-plugin.version}</version>
+        <!--<configuration>-->
+          <!--<failOnError>false</failOnError>-->
+        <!--</configuration>-->
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
         <version>${maven-release-plugin.version}</version>
         <configuration>
@@ -824,6 +833,7 @@
     <maven-pmd-plugin.version>3.1</maven-pmd-plugin.version>
     <maven-release-plugin.version>2.3.2</maven-release-plugin.version>
     <maven-source-plugin.version>2.2</maven-source-plugin.version>
+    <maven-clean-plugin.version>2.6.1</maven-clean-plugin.version>
 
   </properties>
 
