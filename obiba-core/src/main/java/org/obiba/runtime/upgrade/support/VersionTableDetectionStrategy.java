@@ -14,12 +14,12 @@ import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
- * An implementation of {@link NewInstallationDetectionStrategy} that returns true if its {@code dataSource} attribute
+ * An implementation of {@link org.obiba.runtime.upgrade.support.NewInstallationDetectionStrategy} that returns true if its {@code dataSource} attribute
  * contains no table.
  */
-public class EmptyDataSourceDetectionStrategy implements NewInstallationDetectionStrategy {
+public class VersionTableDetectionStrategy implements NewInstallationDetectionStrategy {
 
-  private static final Logger log = LoggerFactory.getLogger(EmptyDataSourceDetectionStrategy.class);
+  private static final Logger log = LoggerFactory.getLogger(VersionTableDetectionStrategy.class);
 
   private JdbcTemplate jdbcTemplate;
 
@@ -35,16 +35,19 @@ public class EmptyDataSourceDetectionStrategy implements NewInstallationDetectio
         String[] types = new String[] { "TABLE" };
         ResultSet tables = con.getMetaData().getTables(null, null, null, types);
         try {
+          boolean found = false;
           if(!tables.next()) {
             log.info("DataSource does not contain any table. New installation detected.");
             return true;
           }
-          log.info("DataSource contains at least one table. This is not a new installation.");
+          log.info("DataSource contains at least one table. Looking for version table...");
           tables.first();
-          while(tables.next()) {
-            log.info("Existing table: {}", tables.getString("TABLE_NAME"));
+          while(!found && tables.next()) {
+            String tableName = tables.getString("TABLE_NAME");
+            log.info("Existing table: {}", tableName);
+            found = tableName.equalsIgnoreCase(VersionTableInstallStep.TABLE_NAME);
           }
-          return false;
+          return !found;
         } finally {
           tables.close();
         }

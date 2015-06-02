@@ -432,7 +432,8 @@ public class AssociationCriteria {
   }
 
   public int count() {
-    return (Integer) baseCriteria.setProjection(Projections.rowCount()).uniqueResult();
+    Object res = baseCriteria.setProjection(Projections.rowCount()).uniqueResult();
+    return res != null ? Long.valueOf(res.toString()).intValue() : 0;
   }
 
   @SuppressWarnings("unchecked")

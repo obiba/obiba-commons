@@ -65,8 +65,7 @@ public class JdbcVersionModifier implements VersionModifier, InitializingBean {
         log.info("The current version is {} ", version);
       }
     } catch(DataAccessException e) {
-      log.warn("Could not retrieve the current version. This looks like a new installation, so no upgrades are needed.",
-          e);
+      log.info("Could not retrieve the current version. This looks like a new installation, so no upgrade is needed.");
     }
 
   }
