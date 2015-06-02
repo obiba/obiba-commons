@@ -29,7 +29,7 @@
         <value>org.obiba.core.service.impl.hibernate.testModel.AnEntity</value>
       </list>
     </property>
-    <!--<property name="configurationClass" value="org.hibernate.cfg.AnnotationConfiguration"/>-->
+    <!--<property name="configurationClass" value="org.hibernate.cfg.Configuration"/>-->
     <property name="hibernateProperties" ref="hibernateConfig"/>
   </bean>
 
