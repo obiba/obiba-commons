@@ -126,7 +126,8 @@ public class PersistenceManagerHibernateImpl extends DefaultPersistenceManagerIm
   }
 
   protected int count(Criteria criteria) {
-    return (Integer) criteria.setProjection(Projections.rowCount()).uniqueResult();
+    Object res = criteria.setProjection(Projections.rowCount()).uniqueResult();
+    return res != null ? Long.valueOf(res.toString()).intValue() : 0;
   }
 
 }

@@ -385,22 +385,22 @@
       </dependency>
 
       <dependency>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>jetty</artifactId>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-server</artifactId>
         <version>${jetty.version}</version>
         <scope>provided</scope>
       </dependency>
 
       <dependency>
-        <groupId>org.mortbay.jetty</groupId>
+        <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-util</artifactId>
         <version>${jetty.version}</version>
         <scope>provided</scope>
       </dependency>
 
       <dependency>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>jetty-management</artifactId>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-jmx</artifactId>
         <version>${jetty.version}</version>
         <scope>provided</scope>
       </dependency>
@@ -803,7 +803,7 @@
     <jackson.version>2.5.0</jackson.version>
     <javassist.version>3.12.1.GA</javassist.version>
     <jersey.version>2.15</jersey.version>
-    <jetty.version>6.1.26</jetty.version>
+    <jetty.version>7.4.5.v20110725</jetty.version>
     <jgit.version>3.6.2.201501210735-r</jgit.version>
     <joda-time.version>2.7</joda-time.version>
     <jsr305.version>3.0.0</jsr305.version>
