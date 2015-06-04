@@ -10,8 +10,8 @@ public @interface Dataset {
 
   String dataSourceBean() default "dataSource";
 
-  DatasetOperationType beforeOperation() default DatasetOperationType.INSERT;
+  DatasetOperationType beforeOperation() default DatasetOperationType.CLEAN_INSERT;
 
-  DatasetOperationType afterOperation() default DatasetOperationType.DELETE_ALL;
+  DatasetOperationType afterOperation() default DatasetOperationType.NONE;
 
 }
