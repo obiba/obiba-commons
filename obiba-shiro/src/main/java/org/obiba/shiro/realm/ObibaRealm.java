@@ -49,6 +49,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 
+import static java.net.URLEncoder.encode;
+
 /**
  * A realm for the CAS-like implementation protocol by Obiba.
  */
@@ -117,12 +119,12 @@ public class ObibaRealm extends AuthorizingRealm {
       HttpHeaders headers = new HttpHeaders();
       headers.set(APPLICATION_AUTH_HEADER, getApplicationAuth());
       headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-      String form = "username=" + username + "&password=" + new String(token.getPassword());
+      String form = "username=" + encode(username, "UTF-8") + "&password=" + encode(new String(token.getPassword()), "UTF-8");
       HttpEntity<String> entity = new HttpEntity<String>(form, headers);
 
       ResponseEntity<String> response = template.exchange(getLoginUrl(token), HttpMethod.POST, entity, String.class);
 
-      if(response.getStatusCode().equals(HttpStatus.CREATED)) {
+      if(response.getStatusCode() == HttpStatus.CREATED) {
         HttpHeaders responseHeaders = response.getHeaders();
         for(String cookieValue : responseHeaders.get(SET_COOKIE_HEADER)) {
           if(cookieValue.startsWith(TICKET_COOKIE_NAME + "=")) {
@@ -162,7 +164,7 @@ public class ObibaRealm extends AuthorizingRealm {
 
       ResponseEntity<String> response = template.exchange(getValidateUrl(token.getTicketId()), HttpMethod.GET, entity, String.class);
 
-      if(response.getStatusCode().equals(HttpStatus.OK)) {
+      if(response.getStatusCode() == HttpStatus.OK) {
         // keep ticket reference for logout
         SecurityUtils.getSubject().getSession().setAttribute(TICKET_COOKIE_NAME, token.getTicketId());
         return new SimpleAuthenticationInfo(response.getBody(), token.getCredentials(), getName());
