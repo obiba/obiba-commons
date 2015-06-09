@@ -105,7 +105,7 @@ public class ObibaRealm extends AuthorizingRealm {
     else return doGetTicketAuthenticationInfo((TicketAuthenticationToken) token);
   }
 
-  private AuthenticationInfo doGetUsernameAuthenticationInfo(UsernamePasswordToken token)
+  private synchronized AuthenticationInfo doGetUsernameAuthenticationInfo(UsernamePasswordToken token)
       throws AuthenticationException {
     String username = token.getUsername();
 
@@ -149,7 +149,7 @@ public class ObibaRealm extends AuthorizingRealm {
     }
   }
 
-  private AuthenticationInfo doGetTicketAuthenticationInfo(TicketAuthenticationToken token)
+  private synchronized AuthenticationInfo doGetTicketAuthenticationInfo(TicketAuthenticationToken token)
       throws AuthenticationException {
     // Null ticket id is invalid
     if(Strings.isNullOrEmpty(token.getTicketId())) {
@@ -180,7 +180,7 @@ public class ObibaRealm extends AuthorizingRealm {
   }
 
   @Override
-  protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
+  protected synchronized AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
     Collection<?> thisPrincipals = principals.fromRealm(getName());
     if(thisPrincipals != null && !thisPrincipals.isEmpty()) {
       try {
