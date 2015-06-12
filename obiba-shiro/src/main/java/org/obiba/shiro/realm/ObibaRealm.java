@@ -165,9 +165,16 @@ public class ObibaRealm extends AuthorizingRealm {
       ResponseEntity<String> response = template.exchange(getValidateUrl(token.getTicketId()), HttpMethod.GET, entity, String.class);
 
       if(response.getStatusCode() == HttpStatus.OK) {
-        // keep ticket reference for logout
-        SecurityUtils.getSubject().getSession().setAttribute(TICKET_COOKIE_NAME, token.getTicketId());
-        return new SimpleAuthenticationInfo(response.getBody(), token.getCredentials(), getName());
+        HttpHeaders responseHeaders = response.getHeaders();
+        for(String cookieValue : responseHeaders.get(SET_COOKIE_HEADER)) {
+          if(cookieValue.startsWith(TICKET_COOKIE_NAME + "=")) {
+            // set in the subject's session the cookie that will allow to perform the single sign-on
+            SecurityUtils.getSubject().getSession().setAttribute(SET_COOKIE_HEADER, cookieValue);
+            // keep ticket reference for logout
+            String ticketId = cookieValue.split(";")[0].substring(TICKET_COOKIE_NAME.length() + 1);
+            SecurityUtils.getSubject().getSession().setAttribute(TICKET_COOKIE_NAME, ticketId);
+          }
+        }
       }
 
       // not an account in this realm
