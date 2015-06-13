@@ -175,6 +175,8 @@ public class ObibaRealm extends AuthorizingRealm {
             SecurityUtils.getSubject().getSession().setAttribute(TICKET_COOKIE_NAME, ticketId);
           }
         }
+
+        return new SimpleAuthenticationInfo(response.getBody(), token.getCredentials(), getName());
       }
 
       // not an account in this realm
