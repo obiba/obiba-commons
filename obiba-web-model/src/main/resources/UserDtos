@@ -1,0 +1,13 @@
+package org.obiba.user;
+
+option java_package = "org.obiba.web.model";
+
+message UserProfileDto {
+  required string name = 1;
+  optional string firstName = 2;
+  optional string lastName = 3;
+  required string email = 4;
+  repeated AttributeDto attributes = 5;
+  optional TimestampsDto timestamps = 6;
+  optional string lastLogin = 7;
+}
