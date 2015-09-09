@@ -12,7 +12,7 @@ package org.obiba.runtime.upgrade;
 import javax.sql.DataSource;
 
 import org.obiba.runtime.Version;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 public abstract class AbstractDatabaseUpgradeStep extends AbstractUpgradeStep {
 
@@ -26,11 +26,11 @@ public abstract class AbstractDatabaseUpgradeStep extends AbstractUpgradeStep {
     this.dataSource = dataSource;
   }
 
-  protected abstract void execute(Version currentVersion, SimpleJdbcTemplate template);
+  protected abstract void execute(Version currentVersion, JdbcTemplate template);
 
   @Override
   public void execute(Version currentVersion) {
-    SimpleJdbcTemplate template = new SimpleJdbcTemplate(dataSource);
+    JdbcTemplate template = new JdbcTemplate(dataSource);
     execute(currentVersion, template);
   }
 }
