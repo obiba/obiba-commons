@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.obiba.commons</groupId>
     <artifactId>obiba-commons</artifactId>
-    <version>1.7.4</version>
+    <version>1.7-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>obiba-jersey-shiro</artifactId>
