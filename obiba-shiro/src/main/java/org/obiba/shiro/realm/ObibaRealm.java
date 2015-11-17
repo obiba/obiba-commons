@@ -199,7 +199,7 @@ public class ObibaRealm extends AuthorizingRealm {
         HttpEntity<String> entity = new HttpEntity<String>(null, headers);
 
         ResponseEntity<Subject> response = template.exchange(getSubjectUrl(getTicketFromSession()), HttpMethod.GET, entity, Subject.class);
-        if(response.getStatusCode().equals(HttpStatus.OK)) {
+        if(response.getStatusCode().equals(HttpStatus.OK) && response.getBody().groups != null) {
           return new SimpleAuthorizationInfo(Sets.newHashSet(response.getBody().groups));
         }
       } catch(HttpClientErrorException e) {
