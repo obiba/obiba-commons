@@ -40,6 +40,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.WebUtils;
 
+import com.google.common.base.Strings;
+
 @Component
 public class AuthenticationFilter extends OncePerRequestFilter {
 
@@ -58,6 +60,8 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
   private String headerCredentials;
 
+  private String requestPrefix;
+
   @Autowired(required = false)
   private AuthenticationExecutor authenticationExecutor;
 
@@ -69,6 +73,11 @@ public class AuthenticationFilter extends OncePerRequestFilter {
   @Value("${org.obiba.shiro.authenticationFilter.cookie.requestId}")
   public void setRequestIdCookieName(String requestIdCookieName) {
     this.requestIdCookieName = requestIdCookieName;
+  }
+
+  @Value("${org.obiba.shiro.authenticationFilter.requestPrefix}")
+  public void setRequestPrefix(String requestPrefix) {
+    this.requestPrefix = requestPrefix;
   }
 
   /**
@@ -101,6 +110,11 @@ public class AuthenticationFilter extends OncePerRequestFilter {
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
+
+    if (!Strings.isNullOrEmpty(requestPrefix) && !request.getRequestURI().startsWith(requestPrefix)) {
+      filterChain.doFilter(request, response);
+      return;
+    }
 
     if(ThreadContext.getSubject() != null) {
       log.warn("Previous executing subject was not properly unbound from executing thread. Unbinding now.");
@@ -140,6 +154,9 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     if(subject == null) {
       subject = authenticateCookie(request);
     }
+    if (subject == null) {
+      subject = authenticateTicket(request);
+    }
 
     if(subject != null) {
       Session session = subject.getSession();
@@ -148,8 +165,6 @@ public class AuthenticationFilter extends OncePerRequestFilter {
       ThreadContext.bind(subject);
       session.touch();
       log.debug("Successfully authenticated subject {}", SecurityUtils.getSubject().getPrincipal());
-    } else {
-      authenticateTicket(request);
     }
   }
 
