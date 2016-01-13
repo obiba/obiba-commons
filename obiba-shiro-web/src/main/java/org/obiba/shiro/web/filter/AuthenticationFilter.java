@@ -1,12 +1,13 @@
-/*******************************************************************************
- * Copyright 2008(c) The OBiBa Consortium. All rights reserved.
+/*
+ * Copyright (c) 2016 OBiBa. All rights reserved.
  *
  * This program and the accompanying materials
  * are made available under the terms of the GNU Public License v3.0.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- ******************************************************************************/
+ */
+
 package org.obiba.shiro.web.filter;
 
 import java.io.IOException;
@@ -48,6 +49,8 @@ public class AuthenticationFilter extends OncePerRequestFilter {
   private static final Logger log = LoggerFactory.getLogger(AuthenticationFilter.class);
 
   public static final String AUTHORIZATION_HEADER = "Authorization";
+
+  public static final String AUTHORIZATION_BEARER_SCHEME = "Bearer";
 
   public static final String OBIBA_COOKIE_ID = "obibaid";
 
@@ -96,7 +99,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
   @NotNull
   private AuthenticationExecutor getAuthenticationExecutor() {
-    if (authenticationExecutor == null) {
+    if(authenticationExecutor == null) {
       authenticationExecutor = new AbstractAuthenticationExecutor() {
         @Override
         protected void ensureProfile(Subject subject) {
@@ -111,7 +114,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
 
-    if (!Strings.isNullOrEmpty(requestPrefix) && !request.getRequestURI().startsWith(requestPrefix)) {
+    if(!Strings.isNullOrEmpty(requestPrefix) && !request.getRequestURI().startsWith(requestPrefix)) {
       filterChain.doFilter(request, response);
       return;
     }
@@ -154,8 +157,11 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     if(subject == null) {
       subject = authenticateCookie(request);
     }
-    if (subject == null) {
+    if(subject == null) {
       subject = authenticateTicket(request);
+    }
+    if(subject == null) {
+      subject = authenticateBearerHeader(request);
     }
 
     if(subject != null) {
@@ -194,7 +200,8 @@ public class AuthenticationFilter extends OncePerRequestFilter {
   @Nullable
   private Subject authenticateBasicHeader(HttpServletRequest request) {
     String authorization = request.getHeader(AUTHORIZATION_HEADER);
-    if(authorization == null || authorization.isEmpty()) return null;
+    if(authorization == null || authorization.isEmpty() || !authorization.startsWith(headerCredentials + " "))
+      return null;
 
     String sessionId = extractSessionId(request);
     AuthenticationToken token = new HttpAuthorizationToken(headerCredentials, authorization);
@@ -220,6 +227,12 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     return null;
   }
 
+  /**
+   * The ticket token ID is the obiba cookie.
+   *
+   * @param request
+   * @return
+   */
   @Nullable
   private Subject authenticateTicket(HttpServletRequest request) {
     Cookie ticketCookie = WebUtils.getCookie(request, OBIBA_COOKIE_ID);
@@ -233,6 +246,30 @@ public class AuthenticationFilter extends OncePerRequestFilter {
       }
     }
     return null;
+  }
+
+  /**
+   * The ticket token ID is in the Authorization header with the "Bearer" scheme.
+   *
+   * @param request
+   * @return
+   */
+  @Nullable
+  private Subject authenticateBearerHeader(HttpServletRequest request) {
+    String authorization = request.getHeader(AUTHORIZATION_HEADER);
+    if(authorization == null || authorization.isEmpty()) return null;
+
+    String schemeAndToken[] = authorization.split(" ", 2);
+    if(schemeAndToken.length < 2) return null;
+    if(!AUTHORIZATION_BEARER_SCHEME.equals(schemeAndToken[0])) return null;
+    if(Strings.isNullOrEmpty(schemeAndToken[1])) return null;
+    String ticketId = schemeAndToken[1];
+    AuthenticationToken token = new TicketAuthenticationToken(ticketId, request.getRequestURI(), OBIBA_COOKIE_ID);
+    try {
+      return getAuthenticationExecutor().login(token);
+    } catch(AuthenticationException e) {
+      return null;
+    }
   }
 
   private boolean isValid(Cookie cookie) {
