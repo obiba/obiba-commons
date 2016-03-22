@@ -341,7 +341,11 @@
         <artifactId>shiro-extras</artifactId>
         <version>${shiro-extras.version}</version>
       </dependency>
-
+      <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt</artifactId>
+        <version>${io-jsonwebtoken.version}</version>
+      </dependency>
       <dependency>
         <groupId>net.sourceforge.findbugs</groupId>
         <artifactId>annotations</artifactId>
@@ -791,6 +795,7 @@
     <hibernate.version>4.3.8.Final</hibernate.version>
     <hsqldb.version>2.3.3</hsqldb.version>
     <httpclient.version>4.5</httpclient.version>
+    <io-jsonwebtoken.version>0.6.0</io-jsonwebtoken.version>
     <jackson.version>2.6.1</jackson.version>
     <javassist.version>3.12.1.GA</javassist.version>
     <jersey.version>2.21</jersey.version>
