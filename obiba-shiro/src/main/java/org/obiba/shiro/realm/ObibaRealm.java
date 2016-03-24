@@ -31,6 +31,7 @@ import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.codec.Base64;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.obiba.shiro.authc.TicketAuthenticationToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,8 +47,17 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Header;
+import io.jsonwebtoken.Jwt;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 
 import static java.net.URLEncoder.encode;
 
@@ -123,20 +133,13 @@ public class ObibaRealm extends AuthorizingRealm {
       HttpEntity<String> entity = new HttpEntity<String>(form, headers);
 
       ResponseEntity<String> response = template.exchange(getLoginUrl(token), HttpMethod.POST, entity, String.class);
-
       if(response.getStatusCode() == HttpStatus.CREATED) {
         HttpHeaders responseHeaders = response.getHeaders();
-        for(String cookieValue : responseHeaders.get(SET_COOKIE_HEADER)) {
-          if(cookieValue.startsWith(TICKET_COOKIE_NAME + "=")) {
-            // set in the subject's session the cookie that will allow to perform the single sign-on
-            SecurityUtils.getSubject().getSession().setAttribute(SET_COOKIE_HEADER, cookieValue);
-            // keep ticket reference for logout
-            String ticketId = cookieValue.split(";")[0].substring(TICKET_COOKIE_NAME.length() + 1);
-            SecurityUtils.getSubject().getSession().setAttribute(TICKET_COOKIE_NAME, ticketId);
-          }
-        }
-
-        return new SimpleAuthenticationInfo(username, token.getCredentials(), getName());
+        String ticketId = getTicketIdFromHeaders(responseHeaders);
+        SecurityUtils.getSubject().getSession().setAttribute(TICKET_COOKIE_NAME, ticketId);
+        List<String> principals = Lists.newArrayList(username);
+        if(!Strings.isNullOrEmpty(ticketId)) principals.add(ticketId);
+        return new SimpleAuthenticationInfo(new SimplePrincipalCollection(principals, getName()), token.getCredentials());
       }
 
       // not an account in this realm
@@ -166,17 +169,11 @@ public class ObibaRealm extends AuthorizingRealm {
 
       if(response.getStatusCode() == HttpStatus.OK) {
         HttpHeaders responseHeaders = response.getHeaders();
-        for(String cookieValue : responseHeaders.get(SET_COOKIE_HEADER)) {
-          if(cookieValue.startsWith(TICKET_COOKIE_NAME + "=")) {
-            // set in the subject's session the cookie that will allow to perform the single sign-on
-            SecurityUtils.getSubject().getSession().setAttribute(SET_COOKIE_HEADER, cookieValue);
-            // keep ticket reference for logout
-            String ticketId = cookieValue.split(";")[0].substring(TICKET_COOKIE_NAME.length() + 1);
-            SecurityUtils.getSubject().getSession().setAttribute(TICKET_COOKIE_NAME, ticketId);
-          }
-        }
-
-        return new SimpleAuthenticationInfo(response.getBody(), token.getCredentials(), getName());
+        String ticketId = getTicketIdFromHeaders(responseHeaders);
+        SecurityUtils.getSubject().getSession().setAttribute(TICKET_COOKIE_NAME, ticketId);
+        List<String> principals = Lists.newArrayList(response.getBody());
+        if(!Strings.isNullOrEmpty(ticketId)) principals.add(ticketId);
+        return new SimpleAuthenticationInfo(new SimplePrincipalCollection(principals, getName()),token.getCredentials());
       }
 
       // not an account in this realm
@@ -188,19 +185,45 @@ public class ObibaRealm extends AuthorizingRealm {
     }
   }
 
+  private String getTicketIdFromHeaders(HttpHeaders responseHeaders) {
+    String ticketId = null;
+
+    for(String cookieValue : responseHeaders.get(SET_COOKIE_HEADER)) {
+      if(cookieValue.startsWith(TICKET_COOKIE_NAME + "=")) {
+        // set in the subject's session the cookie that will allow to perform the single sign-on
+        SecurityUtils.getSubject().getSession().setAttribute(SET_COOKIE_HEADER, cookieValue);
+        // keep ticket reference for logout
+        ticketId = cookieValue.split(";")[0].substring(TICKET_COOKIE_NAME.length() + 1);
+      }
+    }
+
+    return ticketId;
+  }
+
   @Override
   protected synchronized AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
     Collection<?> thisPrincipals = principals.fromRealm(getName());
+
     if(thisPrincipals != null && !thisPrincipals.isEmpty()) {
       try {
-        RestTemplate template = newRestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(APPLICATION_AUTH_HEADER, getApplicationAuth());
-        HttpEntity<String> entity = new HttpEntity<String>(null, headers);
+        Jwt<Header, Claims> webToken = getWebTokenFromPrincipals(thisPrincipals);
 
-        ResponseEntity<Subject> response = template.exchange(getSubjectUrl(getTicketFromSession()), HttpMethod.GET, entity, Subject.class);
-        if(response.getStatusCode().equals(HttpStatus.OK) && response.getBody().groups != null) {
-          return new SimpleAuthorizationInfo(Sets.newHashSet(response.getBody().groups));
+        if(webToken != null) {
+          TicketContextUser user = new ObjectMapper()
+              .convertValue(webToken.getBody().get("context", Map.class).get("user"),
+                  TicketContextUser.class);
+          return new SimpleAuthorizationInfo(Sets.newHashSet(user.getGroups()));
+        } else { //backward compatibility. web token not found in principals.
+          RestTemplate template = newRestTemplate();
+          HttpHeaders headers = new HttpHeaders();
+          headers.set(APPLICATION_AUTH_HEADER, getApplicationAuth());
+          HttpEntity<String> entity = new HttpEntity<String>(null, headers);
+          ResponseEntity<Subject> response = template
+              .exchange(getSubjectUrl(getTicketFromSession()), HttpMethod.GET, entity, Subject.class);
+
+          if(response.getStatusCode().equals(HttpStatus.OK) && response.getBody().groups != null) {
+            return new SimpleAuthorizationInfo(Sets.newHashSet(response.getBody().groups));
+          }
         }
       } catch(HttpClientErrorException e) {
         return new SimpleAuthorizationInfo();
@@ -209,6 +232,21 @@ public class ObibaRealm extends AuthorizingRealm {
       }
     }
     return new SimpleAuthorizationInfo();
+  }
+
+  private Jwt<Header, Claims> getWebTokenFromPrincipals(Collection<?> principals) {
+    for(Object principal : principals) {
+      try {
+        String[] webTokenParts = ((String) principal).split("\\.");
+        if(webTokenParts.length > 1) {
+          String webToken = String.format("%s.%s.", webTokenParts[0], webTokenParts[1]); //do not validate signature
+          return Jwts.parser().parse(webToken);
+        }
+      } catch(MalformedJwtException e) {
+      }
+    }
+
+    return null;
   }
 
   @Override
@@ -400,4 +438,46 @@ public class ObibaRealm extends AuthorizingRealm {
     }
   }
 
+  private static class TicketContextUser {
+    private List<String> groups;
+    private String name;
+
+    @JsonProperty("first_name")
+    private String firstName;
+
+    @JsonProperty("last_name")
+    private String lastName;
+
+    public String getName() {
+      return name;
+    }
+
+    public void setName(String name) {
+      this.name = name;
+    }
+
+    public String getFirstName() {
+      return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+      this.firstName = firstName;
+    }
+
+    public String getLastName() {
+      return lastName;
+    }
+
+    public void setLastName(String lastName) {
+      this.lastName = lastName;
+    }
+
+    public List<String> getGroups() {
+      return groups;
+    }
+
+    public void setGroups(List<String> groups) {
+      this.groups = groups;
+    }
+  }
 }
