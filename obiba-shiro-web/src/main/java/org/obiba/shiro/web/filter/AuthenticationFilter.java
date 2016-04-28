@@ -193,7 +193,11 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
     AuthenticationToken token = new HttpHeaderAuthenticationToken(authToken);
     Subject subject = new Subject.Builder(securityManager).sessionId(authToken).buildSubject();
-    subject.login(token);
+    try {
+      subject.login(token);
+    } catch(AuthenticationException e) {
+      return null;
+    }
     return subject;
   }
 
@@ -221,7 +225,11 @@ public class AuthenticationFilter extends OncePerRequestFilter {
       String requestId = requestCookie == null ? "" : requestCookie.getValue();
       AuthenticationToken token = new HttpCookieAuthenticationToken(sessionId, request.getRequestURI(), requestId);
       Subject subject = new Subject.Builder(securityManager).sessionId(sessionId).buildSubject();
-      subject.login(token);
+      try {
+        subject.login(token);
+      } catch(AuthenticationException e) {
+        return null;
+      }
       return subject;
     }
     return null;
