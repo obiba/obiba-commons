@@ -448,6 +448,8 @@ public class ObibaRealm extends AuthorizingRealm {
     @JsonProperty("last_name")
     private String lastName;
 
+    private String locale;
+
     public String getName() {
       return name;
     }
@@ -470,6 +472,14 @@ public class ObibaRealm extends AuthorizingRealm {
 
     public void setLastName(String lastName) {
       this.lastName = lastName;
+    }
+
+    public String getLocale() {
+      return locale;
+    }
+
+    public void setLocale(String locale) {
+      this.locale = locale;
     }
 
     public List<String> getGroups() {
