@@ -823,11 +823,11 @@
     <!-- maven plugins -->
     <maven-buildnumber-plugin.version>1.2</maven-buildnumber-plugin.version>
     <maven-compiler-plugin.version>2.5.1</maven-compiler-plugin.version>
-    <maven-deploy-plugin.version>2.7</maven-deploy-plugin.version>
-    <maven-findbugs-plugin.version>2.5.2</maven-findbugs-plugin.version>
+    <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
+    <maven-findbugs-plugin.version>2.5.3</maven-findbugs-plugin.version>
     <maven-javadoc-plugin.version>2.9</maven-javadoc-plugin.version>
     <maven-pmd-plugin.version>3.1</maven-pmd-plugin.version>
-    <maven-release-plugin.version>2.3.2</maven-release-plugin.version>
+    <maven-release-plugin.version>2.5.2</maven-release-plugin.version>
     <maven-source-plugin.version>2.2</maven-source-plugin.version>
 
   </properties>
