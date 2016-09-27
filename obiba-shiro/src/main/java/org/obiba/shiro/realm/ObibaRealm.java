@@ -14,10 +14,9 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.apache.http.client.HttpClient;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeSocketFactory;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AccountException;
 import org.apache.shiro.authc.AuthenticationException;
@@ -333,15 +332,14 @@ public class ObibaRealm extends AuthorizingRealm {
   }
 
   private HttpClient createHttpClient() {
-    DefaultHttpClient httpClient = new DefaultHttpClient();
+    HttpClientBuilder builder = HttpClientBuilder.create();
     try {
-      httpClient.getConnectionManager().getSchemeRegistry()
-          .register(new Scheme("https", DEFAULT_HTTPS_PORT, getSocketFactory()));
+      builder.setSSLSocketFactory(getSocketFactory());
     } catch(NoSuchAlgorithmException | KeyManagementException e) {
       throw new RuntimeException(e);
     }
 
-    return httpClient;
+    return builder.build();
   }
 
   /**
@@ -350,7 +348,7 @@ public class ObibaRealm extends AuthorizingRealm {
    * @throws NoSuchAlgorithmException
    * @throws KeyManagementException
    */
-  private SchemeSocketFactory getSocketFactory() throws NoSuchAlgorithmException, KeyManagementException {
+  private SSLConnectionSocketFactory getSocketFactory() throws NoSuchAlgorithmException, KeyManagementException {
     // Accepts any SSL certificate
     TrustManager tm = new X509TrustManager() {
 
@@ -372,7 +370,7 @@ public class ObibaRealm extends AuthorizingRealm {
     SSLContext sslContext = SSLContext.getInstance("TLS");
     sslContext.init(null, new TrustManager[] { tm }, null);
 
-    return new SSLSocketFactory(sslContext, SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+    return new SSLConnectionSocketFactory(sslContext, new NoopHostnameVerifier());
   }
 
   private String getLoginUrl(UsernamePasswordToken token) {
