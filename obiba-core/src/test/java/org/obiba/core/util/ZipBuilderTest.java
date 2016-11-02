@@ -69,7 +69,7 @@ public class ZipBuilderTest {
 
     listEntries(output, "password");
     verifyEntries(output, 6, "password");
-    //verifyEntry(output, "src/test/resources/zip-test/file0.txt", "password", "This is test file 0, avec des caractères accentués.");
+    verifyEntry(output, "src/test/resources/zip-test/file0.txt", "password", "This is test file 0, avec des caractères accentués.");
   }
 
   private void listEntries(File zip) throws IOException {
