@@ -127,4 +127,29 @@ public final class FileUtil {
     return resource.delete();
   }
 
+  /**
+   * Zip a file/folder into a destination file.
+   *
+   * @param source
+   * @param destination
+   * @return
+   * @throws IOException
+   */
+  public static File zip(File source, File destination) throws IOException {
+    return ZipBuilder.newBuilder(destination).base(source).put(source).build();
+  }
+
+  /**
+   * Zip a file/folder into an encrypted destination file.
+   *
+   * @param source
+   * @param destination
+   * @param password
+   * @return
+   * @throws IOException
+   */
+  public static File zip(File source, File destination, String password) throws IOException {
+    return ZipBuilder.newBuilder(destination).base(source).password(password).put(source).build();
+  }
+
 }
