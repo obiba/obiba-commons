@@ -46,18 +46,18 @@ public class ZipBuilderTest {
 
     listEntries(output);
     verifyEntries(output, 6, s -> s.startsWith("src/"));
-    //verifyEntry(output, "src/test/resources/zip-test/file0.txt", "This is test file 0, avec des caractères accentués.");
+    verifyEntry(output, "src/test/resources/zip-test/file0.txt", "This is test file 0, avec des caractères accentués.");
   }
 
   @Test
   public void testZipCompressedFolder() throws IOException {
     File output = File.createTempFile("testZipCompressedFolder", ".zip");
     output.deleteOnExit();
-    ZipBuilder.newBuilder(output).compressed().put(new File("src/test/resources/zip-test")).build();
+    ZipBuilder.newBuilder(output).base(new File(".")).compressed().put(new File("src/test/resources/zip-test")).build();
 
     listEntries(output);
     verifyEntries(output, 6);
-    //verifyEntry(output, "src/test/resources/zip-test/file0.txt", "This is test file 0, avec des caractères accentués.");
+    verifyEntry(output, "src/test/resources/zip-test/file0.txt", "This is test file 0, avec des caractères accentués.");
   }
 
   @Test

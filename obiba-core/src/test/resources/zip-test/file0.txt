@@ -1,1 +1,1 @@
-This is test file 0, avec des caractères accentués.
+This is test file 0, avec des caractÃ¨res accentuÃ©s.
