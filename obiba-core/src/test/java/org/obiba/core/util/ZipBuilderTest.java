@@ -41,7 +41,7 @@ public class ZipBuilderTest {
   @Test
   public void testZipBasedFolder() throws IOException {
     File output = File.createTempFile("testZipBasedFolder", ".zip");
-    //output.deleteOnExit();
+    output.deleteOnExit();
     ZipBuilder.newBuilder(output).base(new File(".")).put(new File("src/test/resources/zip-test")).build();
 
     listEntries(output);
@@ -63,7 +63,7 @@ public class ZipBuilderTest {
   @Test
   public void testEncryptedZipFolder() throws IOException, DataFormatException {
     File output = File.createTempFile("testEncryptedZipFolder", ".zip");
-    //output.deleteOnExit();
+    output.deleteOnExit();
     ZipBuilder.newBuilder(output).base(new File("."))
         .password("password").put(new File("src/test/resources/zip-test")).build();
 
