@@ -44,7 +44,11 @@ public class ZipBuilder {
    * @return
    */
   public ZipBuilder base(File base) {
-    baseLength = base.getAbsolutePath().length() - 1;
+    String path = (base.isDirectory() ? base : base.getParentFile()).getAbsolutePath();
+    if (!path.endsWith(File.separator)) {
+      path = path + File.separator;
+    }
+    baseLength = path.length();
     return this;
   }
 

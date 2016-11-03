@@ -42,34 +42,49 @@ public class ZipBuilderTest {
   public void testZipBasedFolder() throws IOException {
     File output = File.createTempFile("testZipBasedFolder", ".zip");
     output.deleteOnExit();
-    ZipBuilder.newBuilder(output).base(new File(".")).put(new File("src/test/resources/zip-test")).build();
+    File file = new File("src/test/resources/zip-test");
+    ZipBuilder.newBuilder(output).base(file.getParentFile()).put(file).build();
 
     listEntries(output);
-    verifyEntries(output, 6, s -> s.startsWith("src/"));
-    verifyEntry(output, "src/test/resources/zip-test/file0.txt", "This is test file 0, avec des caractères accentués.");
+    verifyEntries(output, 6, s -> s.startsWith("zip-test/"));
+    verifyEntry(output, "zip-test/file0.txt", "This is test file 0, avec des caractères accentués.");
+  }
+
+  @Test
+  public void testZipBasedFile() throws IOException {
+    File output = File.createTempFile("testZipBasedFile", ".zip");
+    output.deleteOnExit();
+    File file = new File("src/test/resources/zip-test/file0.txt");
+    ZipBuilder.newBuilder(output).base(file.getParentFile()).put(file).build();
+
+    listEntries(output);
+    verifyEntries(output, 1);
+    verifyEntry(output, "file0.txt", "This is test file 0, avec des caractères accentués.");
   }
 
   @Test
   public void testZipCompressedFolder() throws IOException {
     File output = File.createTempFile("testZipCompressedFolder", ".zip");
     output.deleteOnExit();
-    ZipBuilder.newBuilder(output).base(new File(".")).compressed().put(new File("src/test/resources/zip-test")).build();
+    File file = new File("src/test/resources/zip-test");
+    ZipBuilder.newBuilder(output).base(file.getParentFile()).compressed().put(file).build();
 
     listEntries(output);
     verifyEntries(output, 6);
-    verifyEntry(output, "src/test/resources/zip-test/file0.txt", "This is test file 0, avec des caractères accentués.");
+    verifyEntry(output, "zip-test/file0.txt", "This is test file 0, avec des caractères accentués.");
   }
 
   @Test
   public void testEncryptedZipFolder() throws IOException, DataFormatException {
     File output = File.createTempFile("testEncryptedZipFolder", ".zip");
     output.deleteOnExit();
-    ZipBuilder.newBuilder(output).base(new File("."))
-        .password("password").put(new File("src/test/resources/zip-test")).build();
+    File file = new File("src/test/resources/zip-test");
+    ZipBuilder.newBuilder(output).base(file.getParentFile())
+        .password("password").put(file).build();
 
     listEntries(output, "password");
     verifyEntries(output, 6, "password");
-    verifyEntry(output, "src/test/resources/zip-test/file0.txt", "password", "This is test file 0, avec des caractères accentués.");
+    verifyEntry(output, "zip-test/file0.txt", "password", "This is test file 0, avec des caractères accentués.");
   }
 
   private void listEntries(File zip) throws IOException {
@@ -87,6 +102,7 @@ public class ZipBuilderTest {
   private void verifyEntry(File zip, String name, String expected) throws IOException {
     ZipFile zipFile = new ZipFile(zip);
     ZipEntry entry = zipFile.getEntry(name);
+    Assert.assertNotNull(entry);
     InputStream in = zipFile.getInputStream(entry);
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     StreamUtil.copy(in, out);
@@ -116,6 +132,7 @@ public class ZipBuilderTest {
   private void verifyEntry(File zip, String name, String password, String expected) throws IOException, DataFormatException {
     AesZipFileDecrypter ze = new AesZipFileDecrypter(zip, new AESDecrypterBC());
     ExtZipEntry entry = ze.getEntry(name);
+    Assert.assertNotNull(entry);
     ByteArrayOutputStream outStream = new ByteArrayOutputStream();
     ze.extractEntry(entry, outStream, password);
     System.out.println(outStream.toString("utf-8"));

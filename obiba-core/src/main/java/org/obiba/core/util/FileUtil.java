@@ -136,7 +136,7 @@ public final class FileUtil {
    * @throws IOException
    */
   public static File zip(File source, File destination) throws IOException {
-    return ZipBuilder.newBuilder(destination).base(source).put(source).build();
+    return ZipBuilder.newBuilder(destination).base(source.getParentFile()).put(source).build();
   }
 
   /**
@@ -149,7 +149,7 @@ public final class FileUtil {
    * @throws IOException
    */
   public static File zip(File source, File destination, String password) throws IOException {
-    return ZipBuilder.newBuilder(destination).base(source).password(password).put(source).build();
+    return ZipBuilder.newBuilder(destination).base(source.getParentFile()).password(password).put(source).build();
   }
 
 }
