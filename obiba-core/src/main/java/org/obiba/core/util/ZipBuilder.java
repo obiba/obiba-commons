@@ -61,8 +61,10 @@ public class ZipBuilder {
    */
   public ZipBuilder password(String password) throws ZipException {
     this.password = password;
-    this.encrypter = new AESEncrypterBC();
-    this.encrypter.init(password, 0);
+    if (hasPassword()) {
+      this.encrypter = new AESEncrypterBC();
+      this.encrypter.init(password, 0);
+    }
     return this;
   }
 

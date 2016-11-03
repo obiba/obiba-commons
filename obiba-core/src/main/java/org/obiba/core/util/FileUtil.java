@@ -128,7 +128,7 @@ public final class FileUtil {
   }
 
   /**
-   * Zip a file/folder into a destination file.
+   * Zip and compress a file/folder into a destination file.
    *
    * @param source
    * @param destination
@@ -136,11 +136,11 @@ public final class FileUtil {
    * @throws IOException
    */
   public static File zip(File source, File destination) throws IOException {
-    return ZipBuilder.newBuilder(destination).base(source.getParentFile()).put(source).build();
+    return zip(source, destination, null);
   }
 
   /**
-   * Zip a file/folder into an encrypted destination file.
+   * Zip and compress a file/folder into an encrypted destination file.
    *
    * @param source
    * @param destination
@@ -149,7 +149,7 @@ public final class FileUtil {
    * @throws IOException
    */
   public static File zip(File source, File destination, String password) throws IOException {
-    return ZipBuilder.newBuilder(destination).base(source.getParentFile()).password(password).put(source).build();
+    return ZipBuilder.newBuilder(destination).base(source.getParentFile()).password(password).compressed().put(source).build();
   }
 
 }
