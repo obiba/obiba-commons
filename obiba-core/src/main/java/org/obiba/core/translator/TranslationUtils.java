@@ -24,8 +24,13 @@ public class TranslationUtils {
   private static final Logger logger = LoggerFactory.getLogger(TranslationUtils.class);
 
   public String translate(String json, Translator translator) {
-    JSONObject jsonObject = new JSONObject(json);
-    return this.translate(jsonObject, translator).toString();
+    if (json.startsWith("[")) {
+      JSONArray jsonArray = new JSONArray(json);
+      return this.translate(jsonArray, translator).toString();
+    } else {
+      JSONObject jsonObject = new JSONObject(json);
+      return this.translate(jsonObject, translator).toString();
+    }
   }
 
   public JSONObject translate(JSONObject object, Translator translator) {
@@ -45,7 +50,7 @@ public class TranslationUtils {
     return object;
   }
 
-  private void translate(JSONArray array, Translator translator) {
+  private JSONArray translate(JSONArray array, Translator translator) {
     for (int i = 0; i < array.length(); i++) {
       Object value = array.get(i);
       if (value instanceof JSONArray) {
@@ -56,5 +61,6 @@ public class TranslationUtils {
         array.put(i, translator.translate((String) value));
       }
     }
+    return array;
   }
 }
