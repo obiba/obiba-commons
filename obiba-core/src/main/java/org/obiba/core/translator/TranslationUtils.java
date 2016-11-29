@@ -12,12 +12,12 @@
 
 package org.obiba.core.translator;
 
+import java.util.Iterator;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Iterator;
 
 public class TranslationUtils {
 
@@ -39,7 +39,7 @@ public class TranslationUtils {
       String key = keys.next();
       Object property = object.get(key);
       logger.debug("{} : {}", key, property.toString());
-      if (property instanceof String) {
+      if (property instanceof String && !"".equals(property)) {
         object.put(key, translator.translate((String) property));
       } else if (property instanceof JSONArray) {
         translate((JSONArray) property, translator);
