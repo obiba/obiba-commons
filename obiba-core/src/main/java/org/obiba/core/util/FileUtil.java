@@ -1,11 +1,6 @@
 package org.obiba.core.util;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -136,7 +131,7 @@ public final class FileUtil {
    * @throws IOException
    */
   public static File zip(File source, File destination) throws IOException {
-    return zip(source, destination, null);
+    return zip(source, null, destination, null);
   }
 
   /**
@@ -149,7 +144,21 @@ public final class FileUtil {
    * @throws IOException
    */
   public static File zip(File source, File destination, String password) throws IOException {
-    return ZipBuilder.newBuilder(destination).base(source.getParentFile()).password(password).compressed().put(source).build();
+    return zip(source, null, destination, password);
+  }
+
+  /**
+   * Zip and compress a folder into an encrypted destination file.
+   *
+   * @param source
+   * @param sourceFilter
+   * @param destination
+   * @param password
+   * @return
+   * @throws IOException
+   */
+  public static File zip(File source, FileFilter sourceFilter, File destination, String password) throws IOException {
+    return ZipBuilder.newBuilder(destination).base(source.getParentFile()).password(password).compressed().put(source, sourceFilter).build();
   }
 
 }
