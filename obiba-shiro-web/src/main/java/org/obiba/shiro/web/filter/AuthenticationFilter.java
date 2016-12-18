@@ -132,7 +132,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     } catch(Exception e) {
       log.error("Exception", e);
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-      response.getWriter().println(e.getMessage());
+      //response.getWriter().println(e.getMessage());
     } finally {
       unbind();
     }
