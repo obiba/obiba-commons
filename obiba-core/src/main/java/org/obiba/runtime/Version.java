@@ -9,10 +9,10 @@ import javax.annotation.Nullable;
 
 /**
  * Represents a version number and allows comparing to other version numbers.
- * <p/>
+ * <p>
  * Format is <code>major'.'minor('.'micro)?(('.'|'-'|'_')qualifier)?</code> <br/>
  * where major, minor and micro are composed of digits and qualifier is an arbitrary string.
- *
+ * </p>
  * @author plaflamm
  */
 final public class Version implements Comparable<Version>, Serializable {

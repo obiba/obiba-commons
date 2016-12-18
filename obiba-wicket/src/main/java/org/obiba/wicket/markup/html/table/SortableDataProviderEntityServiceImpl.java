@@ -11,8 +11,9 @@ import org.obiba.core.service.SortingClause;
 
 /**
  * Uses an instance of {@link EntityService} to implement {@link SortableDataProvider}.
- * <p/>
+ * <p>
  * The {@link SortParam} is converted to a {@link SortingClause} instance without any modification to the property name.
+ * </p>
  */
 public class SortableDataProviderEntityServiceImpl<T> extends AbstractSortableDataProvider<T> {
 

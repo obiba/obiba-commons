@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * LDAP {@link JndiLdapRealm} implementation that supports authorization.
- * <p/>
+ * <p>
  * Here is a sample config for shiro.ini for a basic OpenLDAP config:
  * <pre>
  *   # LDAP realm configuration
@@ -49,6 +49,7 @@ import org.slf4j.LoggerFactory;
  *   # Specify mapping between LDAP groups and your application roles
  *   ldapRealm.groupRolesMap = group1:SYSTEM_ADMINISTRATOR, group2:PARTICIPANT_MANAGER, group3:DATA_COLLECTION_OPERATOR
  * </pre>
+ * </p>
  */
 @SuppressWarnings("UnusedDeclaration")
 public class LdapRealm extends JndiLdapRealm {

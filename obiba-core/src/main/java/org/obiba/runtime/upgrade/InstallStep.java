@@ -4,10 +4,10 @@ import org.obiba.runtime.Version;
 
 /**
  * Interface for an installation step.
- * <p/>
+ * <p>
  * <code>InstallStep</code>s are executed by the <code>UpgradeManager</code> whenever it detects
  * a new installation.
- *
+ * </p>
  * @author cag-dspathis
  */
 public interface InstallStep {

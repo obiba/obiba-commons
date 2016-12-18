@@ -48,12 +48,14 @@ import com.atlassian.crowd.service.soap.client.SecurityServerClient;
 
 /**
  * A realm that authenticates and obtains its roles from a Atlassian Crowd server.
- * <p/>
+ * <p>
  * The Crowd server as the concept of role and group memberships. Both of which can be can be mapped to Shiro roles.
  * This realm implementation allows the deployer to select either or both memberships to map to Shiro roles.
+ * </p>
  * <h5>Crowd client configuration</h5>
- * <p/>
+ * <p>
  * In your applicationContext.xml, add the following:
+ * </p>
  * <pre>
  * {@code<!-- This will load Crowd SecurityServerClient stuff -->
  *  <import resource="classpath:org/obiba/org.obiba.security/crowd-context.xml" />
@@ -81,10 +83,12 @@ import com.atlassian.crowd.service.soap.client.SecurityServerClient;
  * You also need to tell where is the Crowd instance to SecurityServerClient by defining a crowd.properties file. You
  * can copy this file from your Crowd installation folder CROWD_INSTALL/client or from folder
  * obiba-commons/obiba-core/src/main/test/resources.
- * <p/>
+ * <p>
  * Copy also the <b>crowd-ehcache.xml</b> file to configure caching.
- * <p/>
+ * </p>
+ * <p>
  * Add these 2 properties to your config file:
+ * </p>
  * <pre>
  *   crowd.properties.path  = file:/config-path/crowd.properties
  *   crowd-ehcache.xml.path = file:/config-path/crowd-ehcache.xml
@@ -103,7 +107,6 @@ import com.atlassian.crowd.service.soap.client.SecurityServerClient;
  *  session.validationinterval  = 2
  *  session.lastvalidation      = session.lastvalidation
  * </pre>
- * <p/>
  * Add crowd-integration-client dependency to your pom.xml:
  * <pre>{@code
  *  <dependency>
@@ -137,9 +140,10 @@ public class CrowdRealm extends AuthorizingRealm {
 
   /**
    * A simple constructor for a Shiro Crowd realm.
-   * <p/>
+   * <p>
    * It is expected that an initialized Crowd client will be subsequently
    * set using {@link #setSecurityServerClient(SecurityServerClient)}.
+   * </p>
    */
   public CrowdRealm() {
   }
@@ -158,10 +162,10 @@ public class CrowdRealm extends AuthorizingRealm {
 
   /**
    * Set the client to use when communicating with the Crowd server.
-   * <p/>
+   * <p>
    * It is assumed that the Crowd client has already authenticated with the
    * Crowd server.
-   *
+   * </p>
    * @param securityServerClient the client to use when communicating with the Crowd server
    */
   public void setSecurityServerClient(SecurityServerClient securityServerClient) {

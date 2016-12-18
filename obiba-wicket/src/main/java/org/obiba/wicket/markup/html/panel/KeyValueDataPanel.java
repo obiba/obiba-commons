@@ -19,9 +19,10 @@ import org.apache.wicket.model.StringResourceModel;
 
 /**
  * A convenient class for generating tables of key/value pairs.
- * <p/>
+ * <p>
  * Data is presented in a two column table. The first column contains the keys and the second contains the values. Rows
  * are added by using one of the <code>addRow()</code> methods.
+ * </p>
  */
 @SuppressWarnings("UnusedDeclaration")
 public class KeyValueDataPanel extends Panel {

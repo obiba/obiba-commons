@@ -11,9 +11,9 @@ import java.util.Map;
 
 /**
  * Copied from resteasy-jaxrs-3.0.7.Final.jar!/org/jboss/resteasy/util/Types.class
- * <p/>
+ * <p>
  * Type conversions and generic type manipulations
- *
+ * </p>
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */

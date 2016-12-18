@@ -31,11 +31,12 @@ public class AssociationCriteria {
 
     /**
      * Used to add an {@link AssociationExample} criterion to the Criteria.
-     * <p/>
+     * <p>
      * Required values:
      * <ol>
      * <li>the template object</li>
      * </ol>
+     * </p>
      */
     match {
       @Override
@@ -50,11 +51,12 @@ public class AssociationCriteria {
 
     /**
      * Tests that a property is equal to the specified value.
-     * <p/>
+     * <p>
      * Required values:
      * <ol>
      * <li>the value to compare to</li>
      * </ol>
+     * </p>
      */
     eq {
       @Override
@@ -68,11 +70,12 @@ public class AssociationCriteria {
 
     /**
      * Tests that a property is not equal to the specified value.
-     * <p/>
+     * <p>
      * Required values:
      * <ol>
      * <li>the value to compare to</li>
      * </ol>
+     * </p>
      */
     ne {
       @Override
@@ -86,11 +89,12 @@ public class AssociationCriteria {
 
     /**
      * Tests that a property is less or equal to the specified value.
-     * <p/>
+     * <p>
      * Required values:
      * <ol>
      * <li>the value to compare to</li>
      * </ol>
+     * </p>
      */
     le {
       @Override
@@ -104,11 +108,12 @@ public class AssociationCriteria {
 
     /**
      * Tests that a property is less than the specified value.
-     * <p/>
+     * <p>
      * Required values:
      * <ol>
      * <li>the value to compare to</li>
      * </ol>
+     * </p>
      */
     lt {
       @Override
@@ -122,11 +127,12 @@ public class AssociationCriteria {
 
     /**
      * Tests that a property is greater or equal to the specified value.
-     * <p/>
+     * <p>
      * Required values:
      * <ol>
      * <li>the value to compare to</li>
      * </ol>
+     * </p>
      */
     ge {
       @Override
@@ -140,11 +146,12 @@ public class AssociationCriteria {
 
     /**
      * Tests that a property is greater than the specified value.
-     * <p/>
+     * <p>
      * Required values:
      * <ol>
      * <li>the value to compare to</li>
      * </ol>
+     * </p>
      */
     gt {
       @Override
@@ -158,11 +165,12 @@ public class AssociationCriteria {
 
     /**
      * Tests that a property is like (SQL semantic) the specified value.
-     * <p/>
+     * <p>
      * Required values:
      * <ol>
      * <li>the value to compare to</li>
      * </ol>
+     * </p>
      */
     like {
       @Override
@@ -176,11 +184,12 @@ public class AssociationCriteria {
 
     /**
      * Tests that a property is case insensitive like (SQL semantic) the specified value.
-     * <p/>
+     * <p>
      * Required values:
      * <ol>
      * <li>the value to compare to</li>
      * </ol>
+     * </p>
      */
     ilike {
       @Override
@@ -194,8 +203,9 @@ public class AssociationCriteria {
 
     /**
      * Tests that a property is empty
-     * <p/>
+     * <p>
      * Required values: none.
+     * </p>
      */
     isEmpty {
       @Override
@@ -209,8 +219,9 @@ public class AssociationCriteria {
 
     /**
      * Tests that a property is not empty
-     * <p/>
+     * <p>
      * Required values: none.
+     * </p>
      */
     isNotEmpty {
       @Override
@@ -224,8 +235,9 @@ public class AssociationCriteria {
 
     /**
      * Tests that a property is NULL
-     * <p/>
+     * <p>
      * Required values: none.
+     * </p>
      */
     isNull {
       @Override
@@ -239,8 +251,9 @@ public class AssociationCriteria {
 
     /**
      * Tests that a property is not NULL
-     * <p/>
+     * <p>
      * Required values: none.
+     * </p>
      */
     isNotNull {
       @Override
@@ -254,12 +267,13 @@ public class AssociationCriteria {
 
     /**
      * Union of two {@link Criterion} rooted at the specified path
-     * <p/>
+     * <p>
      * Required values:
      * <ol>
      * <li>first {@link Criterion}</li>
      * <li>second {@link Criterion}</li>
      * </ol>
+     * </p>
      */
     or {
       @Override
@@ -277,11 +291,12 @@ public class AssociationCriteria {
 
     /**
      * Test whether a property is equal to one of ('in') the specified values
-     * <p/>
+     * <p>
      * Required values:
      * <ol>
      * <li>Object[]</li>
      * </ol>
+     * </p>
      */
     in {
       @Override
@@ -364,11 +379,13 @@ public class AssociationCriteria {
 
   /**
    * Adds an {@link Operation} to the {@link Criteria}.
-   * <p/>
+   * <p>
    * This allows to easily create restrictions on association paths (ie: a.b.c), something
    * that the native Hibernate {@link Criteria} does not allow.
-   * <p/>
+   * </p>
+   * <p>
    * For example, one can create a "Not Null" restriction on a.b.c.name like so:
+   * </p>
    * <pre>
    * AssociationCriteria.create(A.class, session).add(Operation.isNotNull, "a.b.c.name");
    * </pre>
