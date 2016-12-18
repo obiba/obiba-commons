@@ -15,17 +15,19 @@ import org.apache.wicket.markup.html.border.MarkupComponentBorder;
  * An implementation of {@code IComponentBorder} that adds a HTML {@code &nbsp;} entity
  * after the component to which it is attached. This allows separating multiple components that
  * would otherwise be stuck together.
- * <p/>
+ * <p>
  * A common use case is when dealing with items of a {@code RepeatingView}. Consider the following markup:
+ * </p>
  * <pre>
  *   &lt;wicket:panel&gt;
  *     &lt;a wicket:id="link"&gt;Click me&lt;/a&gt;
  *   &lt;/wicket:panel&gt;
  * </pre>
- * <p/>
+ * <p>
  * Attaching a repeating view to {@code link} would produce {@code a} tags one after the other without
  * any separation in between (not even a whitespace). To add a non breaking space, attach an instance of
  * this class to each item in the {@code RepeatingView}:
+ * </p>
  * <pre>
  *   ...
  *   RepeatingView view = new RepeatingView("link");

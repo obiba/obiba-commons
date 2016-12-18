@@ -26,9 +26,10 @@ import org.springframework.util.ReflectionUtils;
 
 /**
  * TestExecutionListener implementation that handles the {@link Dataset} annotation.
- * <p/>
+ * <p>
  * Using this listener (through {@link TestExecutionListeners} allows seeding a test
  * database before executing unit test methods.
+ * </p>
  */
 public class DbUnitAwareTestExecutionListener extends AbstractTestExecutionListener {
 

@@ -29,7 +29,7 @@ public class ZipBuilder {
   /**
    * Prepare a zip file at the given location.
    *
-   * @param output
+   * @param output output file
    * @return
    * @throws FileNotFoundException
    */
@@ -40,7 +40,7 @@ public class ZipBuilder {
   /**
    * Rebase the files relatively to the provided file.
    *
-   * @param base
+   * @param base base file
    * @return
    */
   public ZipBuilder base(File base) {
@@ -55,7 +55,7 @@ public class ZipBuilder {
   /**
    * Encrypt files with a password.
    *
-   * @param password
+   * @param password encryption password
    * @return
    * @throws ZipException
    */
@@ -81,7 +81,7 @@ public class ZipBuilder {
   /**
    * Zip file or folder (recursively) without file filter.
    *
-   * @param entry
+   * @param entry zip entry
    * @return
    * @throws IOException
    */
@@ -92,8 +92,8 @@ public class ZipBuilder {
   /**
    * Zip file or folder (recursively) with file filter.
    *
-   * @param entry
-   * @param filter
+   * @param entry zip entry
+   * @param filter file filter
    * @return
    * @throws IOException
    */

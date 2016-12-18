@@ -15,9 +15,10 @@ import java.util.Map;
 
 /**
  * Interface for key providers.
- * <p/>
+ * <p>
  * This is simply an abstraction of entities that can provide cryptographic keys (public or private) upon demand. (For
  * example, a keystore may serve as a key provider.)
+ * </p>
  */
 public interface IKeyProvider {
 

@@ -16,11 +16,13 @@ import org.springframework.context.MessageSourceResolvable;
  * A model that represents a localized string obtained through Spring's l10n mechanism. Given a
  * {@code MessageSourceResolvable} this model will return the associated string using a call to
  * {@code MessageSource#getMessage(MessageSourceResolvable, Locale)}.
- * <p/>
+ * <p>
  * When not specified, the {@code MessageSource} instance defaults to the {@code ApplicationContext} which is obtained
  * through the {@code ISpringContextLocator}.
- * <p/>
+ * </p>
+ * <p>
  * When not specified, the locale model uses the current {@code WebSession}'s locale.
+ * </p>
  */
 public class MessageSourceResolvableStringModel extends AbstractReadOnlyModel {
 

@@ -26,7 +26,6 @@ import org.springframework.util.StringUtils;
  * but can be used to find classes that match any annotations. This code is based on William Mo's
  * <code>EntityBeanFinderFactoryBean</code>.
  * </p>
- * <p/>
  * <p>Example bean definition:
  * <pre>
  * &lt;bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean"&gt;
@@ -70,7 +69,6 @@ import org.springframework.util.StringUtils;
  * &lt;/bean&gt;
  * </pre>
  * </p>
- * <p/>
  * <p>This class is for automatic searching annotated entity classes (i.e. classes with <code>Entity</code> annotation)
  * for Hibernate's <code>SessionFactory</code> in the Spring application context.</p>
  *
@@ -130,9 +128,9 @@ public class AnnotatedBeanFinderFactoryBean implements ResourceLoaderAware, Fact
 
   /**
    * Return an instance (possibly shared or independent) of the object managed by this factory.
-   * <p/>
+   * <p>
    * As with a BeanFactory, this allows support for both the Singleton and Prototype design pattern.
-   *
+   * </p>
    * @return instance of the object managed by this factory
    * @throws Exception in case of creation errors
    * @see org.springframework.beans.factory.FactoryBean#getObject()

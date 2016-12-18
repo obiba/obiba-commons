@@ -33,11 +33,9 @@ import org.apache.wicket.validation.IValidator;
  * <li>{@link #onError(AjaxRequestTarget)} is called when in edit mode, the user submitted new
  * content, but that content did not validate. Get the current input by calling
  * {@link FormComponent#getInput()} on {@link #getEditor()}, and the error message by calling:
- * <p/>
  * <pre>
  * String errorMessage = editor.getFeedbackMessage().getMessage();
  * </pre>
- * <p/>
  * The default implementation of this method displays the error message in
  * <code>window.status</code>, redisplays the editor, selects the editor's content and sets the
  * focus on it.

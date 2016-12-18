@@ -49,8 +49,9 @@ public class VersionTableInstallStep implements InstallStep {
 
   /**
    * Creates the <code>version</code> table used to keep track of the currently installed version.
-   * <p/>
+   * <p>
    * This method is called in the case of a new installation (in which the table would be missing).
+   * </p>
    */
   @Override
   public void execute(Version currentVersion) {

@@ -14,10 +14,10 @@ import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
 
 /**
  * {@link FactoryBean} implementation for creating and configuring {@link XStream} instances.
- * <p/>
- * <p/>
+ * <p>
  * By default, this factory will create instances capable of injecting spring beans in objects unmarshaled by the
  * {@code XStream} instance. This behaviour can be deactivated through the {@code #injecting} property.
+ * </p>
  */
 public class XStreamFactoryBean implements FactoryBean, ApplicationContextAware {
 
