@@ -754,23 +754,13 @@
             <artifactId>maven-javadoc-plugin</artifactId>
             <executions>
               <execution>
-                <id>html-aggregate-javadocs</id>
-                <phase>verify</phase>
-                <goals>
-                  <goal>aggregate</goal>
-                </goals>
-                <configuration>
-                  <reportOutputDirectory>${obiba.docs.url}/${project.artifactId}</reportOutputDirectory>
-                  <destDir>${project.version}</destDir>
-                </configuration>
-              </execution>
-              <execution>
-                <id>jar-javadocs</id>
-                <phase>verify</phase>
+                <id>attach-javadocs</id>
                 <goals>
                   <goal>jar</goal>
-                  <goal>aggregate-jar</goal>
                 </goals>
+                <configuration>
+                  <additionalparam>-Xdoclint:none</additionalparam>
+                </configuration>
               </execution>
             </executions>
           </plugin>
