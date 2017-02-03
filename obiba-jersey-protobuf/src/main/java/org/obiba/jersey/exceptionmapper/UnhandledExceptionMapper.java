@@ -28,11 +28,13 @@ public class UnhandledExceptionMapper extends AbstractErrorDtoExceptionMapper<Ex
 
   @Override
   protected GeneratedMessage.ExtendableMessage<?> getErrorDto(Exception exception) {
-    return ErrorDtos.ClientErrorDto.newBuilder() //
-        .setCode(getStatus().getStatusCode()) //
-        .setMessageTemplate("error.unhandledException") //
-        .setMessage(exception.getMessage()) //
-        .build();
-  }
+    ErrorDtos.ClientErrorDto.Builder errorBuilder = ErrorDtos.ClientErrorDto.newBuilder()
+            .setCode(getStatus().getStatusCode())
+            .setMessageTemplate("error.unhandledException");
 
+    if (exception.getMessage() != null)
+      errorBuilder.setMessage(exception.getMessage());
+
+    return errorBuilder.build();
+  }
 }
