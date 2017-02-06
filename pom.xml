@@ -18,7 +18,7 @@
   <groupId>org.obiba.commons</groupId>
   <artifactId>obiba-commons</artifactId>
   <packaging>pom</packaging>
-  <version>1.8-SNAPSHOT</version>
+  <version>1.8.1</version>
 
   <licenses>
     <license>
@@ -750,7 +750,7 @@
     <connection>scm:git:git://github.com/obiba/obiba-commons.git</connection>
     <developerConnection>scm:git:https://github.com/obiba/obiba-commons.git</developerConnection>
     <url>https://github.com/obiba/obiba-commons</url>
-    <tag>obiba-commons-1.8.x</tag>
+    <tag>1.8.1</tag>
   </scm>
 
   <issueManagement>
