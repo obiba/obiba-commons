@@ -152,7 +152,7 @@ public class ObibaRealm extends AuthorizingRealm {
       }
 
       // not an account in this realm
-      log.info("Invalid credentials. Response status code [%s], response body [%s], credentials used [%s]", response.getStatusCode(), response.getBody(), token);
+      log.info("Invalid credentials. Response status code [{}], response body [{}], credentials used [{}]", response.getStatusCode(), response.getBody(), token);
       return null;
 
     } catch(HttpClientErrorException|ResourceAccessException e) {
