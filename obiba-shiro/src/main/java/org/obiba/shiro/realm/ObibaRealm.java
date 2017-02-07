@@ -190,8 +190,10 @@ public class ObibaRealm extends AuthorizingRealm {
       }
 
       // not an account in this realm
+      log.info("Invalid ticket. Response status code [{}], response body [{}], ticket used [{}]", response.getStatusCode(), response.getBody(), token);
       return null;
     } catch(HttpClientErrorException|ResourceAccessException e) {
+      log.error(String.format("Impossible to contact identification server: [%s]", e.getMessage()), e);
       return null;
     } catch(Exception e) {
       throw new AuthenticationException("Failed authenticating on " + baseUrl, e);
