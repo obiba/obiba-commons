@@ -15,11 +15,15 @@ import javax.ws.rs.ext.Provider;
 import org.obiba.web.model.ErrorDtos;
 
 import com.google.protobuf.GeneratedMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
 @Provider
 public class UnhandledExceptionMapper extends AbstractErrorDtoExceptionMapper<Exception> {
+
+  private static final Logger logger = LoggerFactory.getLogger(UnhandledExceptionMapper.class);
 
   @Override
   protected Response.Status getStatus() {
@@ -28,6 +32,9 @@ public class UnhandledExceptionMapper extends AbstractErrorDtoExceptionMapper<Ex
 
   @Override
   protected GeneratedMessage.ExtendableMessage<?> getErrorDto(Exception exception) {
+
+    logger.warn("Exception catched by UnhandledExceptionMapper", exception);
+
     ErrorDtos.ClientErrorDto.Builder errorBuilder = ErrorDtos.ClientErrorDto.newBuilder()
             .setCode(getStatus().getStatusCode())
             .setMessageTemplate("error.unhandledException");
