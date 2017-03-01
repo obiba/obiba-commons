@@ -128,11 +128,11 @@ public class AuthenticationFilter extends OncePerRequestFilter {
       authenticateAndBind(request);
       filterChain.doFilter(request, response);
     } catch(AuthenticationException e) {
+      log.info("AuthenticationException ", e);
       response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     } catch(Exception e) {
-      log.error("Exception", e);
+      log.error("Exception ", e);
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-      //response.getWriter().println(e.getMessage());
     } finally {
       unbind();
     }
