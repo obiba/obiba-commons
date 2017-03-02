@@ -12,9 +12,9 @@ package org.obiba.runtime.upgrade.support;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Predicate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -29,6 +29,8 @@ import org.obiba.runtime.upgrade.VersionModifier;
 import org.obiba.runtime.upgrade.VersionProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static java.util.stream.Collectors.toList;
 
 @SuppressWarnings("UnusedDeclaration")
 public class DefaultUpgradeManager implements UpgradeManager {
@@ -65,13 +67,13 @@ public class DefaultUpgradeManager implements UpgradeManager {
    * A list of all required installation steps.
    */
   @Nonnull
-  private final Collection<InstallStep> installSteps = new ArrayList<InstallStep>();
+  private final Collection<InstallStep> installSteps = new ArrayList<>();
 
   /**
    * A list of all available upgrade steps.
    */
   @Nonnull
-  private final Collection<UpgradeStep> upgradeSteps = new ArrayList<UpgradeStep>();
+  private final Collection<UpgradeStep> upgradeSteps = new ArrayList<>();
 
   /**
    * A list of listeners to be notified of step executions.
@@ -83,7 +85,7 @@ public class DefaultUpgradeManager implements UpgradeManager {
    * The comparator implementation to use for comparing two versions.
    */
   @Nonnull
-  private Comparator<Version> versionComparator = new ComparableComparator<Version>();
+  private Comparator<Version> versionComparator = new ComparableComparator<>();
 
   //
   // Constructors
@@ -280,23 +282,17 @@ public class DefaultUpgradeManager implements UpgradeManager {
    */
   @Nonnull
   protected List<UpgradeStep> getApplicableSteps() {
-    List<UpgradeStep> applicableSteps = new ArrayList<UpgradeStep>();
-    Version currentVersion = getCurrentVersion();
-    for(UpgradeStep step : upgradeSteps) {
-      int diff = versionComparator.compare(currentVersion, step.getAppliesTo());
-      if(diff < 0) {
-        applicableSteps.add(step);
-      }
-    }
 
-    // Make sure we apply upgrade steps in order of the version they apply to.
-    Collections.sort(applicableSteps, new Comparator<UpgradeStep>() {
-      @Override
-      public int compare(@Nonnull UpgradeStep step1, @Nonnull UpgradeStep step2) {
-        return versionComparator.compare(step1.getAppliesTo(), step2.getAppliesTo());
-      }
-    });
-    return applicableSteps;
+    Version currentVersion = getCurrentVersion();
+
+    return upgradeSteps.stream()
+            .filter(isNewerThanCurrentVersion(currentVersion))
+            .filter((step) -> step.mustBeApplied(getCurrentVersion(), getRuntimeVersion()))
+            .sorted((step1, step2) -> versionComparator.compare(step1.getAppliesTo(), step2.getAppliesTo()))
+            .collect(toList());
   }
 
+  private Predicate<UpgradeStep> isNewerThanCurrentVersion(Version currentVersion) {
+    return (step) -> versionComparator.compare(step.getAppliesTo(), currentVersion) > 0;
+  }
 }
