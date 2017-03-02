@@ -18,7 +18,7 @@ public interface UpgradeStep {
 
   Version getAppliesTo();
 
-  default boolean mustBeApplied(Version previousVersion, Version currentVersion) {
+  default boolean mustBeApplied(Version previousVersion, Version runtimeVersion) {
     return true;
   }
 
