@@ -18,6 +18,10 @@ public interface UpgradeStep {
 
   Version getAppliesTo();
 
+  default boolean mustBeApplied(Version previousVersion, Version currentVersion) {
+    return true;
+  }
+
   void execute(Version currentVersion);
 
 }
