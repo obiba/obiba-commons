@@ -156,11 +156,13 @@ public class ObibaRealm extends AuthorizingRealm {
       return null;
 
     } catch(HttpClientErrorException|ResourceAccessException e) {
-      log.error(String.format("Impossible to contact identification server: [%s]", e.getMessage()), e);
+      log.error(String.format("Connection failure with identification server: [%s]", e.getMessage()));
+      log.debug("Connection failure with identification server", e);
       return null;
 
     } catch(Exception e) {
-      log.error(String.format("Auth failure : [%s]", e.getMessage()), e);
+      log.error(String.format("Authentication failure: [%s]", e.getMessage()));
+      log.debug("Authentication failure", e);
       throw new AuthenticationException("Failed authenticating on " + baseUrl, e);
     }
   }
@@ -313,7 +315,7 @@ public class ObibaRealm extends AuthorizingRealm {
   /**
    * Service name issuing credentials requests.
    *
-   * @param service
+   * @param serviceName
    */
   public void setServiceName(String serviceName) {
     this.serviceName = serviceName;
@@ -322,7 +324,7 @@ public class ObibaRealm extends AuthorizingRealm {
   /**
    * Service key issuing credentials requests.
    *
-   * @param service
+   * @param serviceKey
    */
   public void setServiceKey(String serviceKey) {
     this.serviceKey = serviceKey;
