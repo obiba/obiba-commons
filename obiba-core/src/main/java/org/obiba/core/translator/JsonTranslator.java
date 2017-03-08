@@ -50,7 +50,10 @@ public class JsonTranslator implements Translator {
     try {
       return buildSafeTranslator(translationsProvider.call());
     } catch (Exception e) {
-      logger.warn("Impossible to get translations. Create an empty translator instead.", e);
+      if (logger.isDebugEnabled())
+        logger.warn("Impossible to get translations. Create an empty translator instead.", e);
+      else
+        logger.warn("Impossible to get translations. Create an empty translator instead.");
       return new EmptyTranslator();
     }
   }
