@@ -133,9 +133,9 @@ public class AuthenticationFilter extends OncePerRequestFilter {
       response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     } catch(AuthenticationException e) {
       if (log.isDebugEnabled())
-        log.warn("Unexpected authentication error: {}", e.getMessage());
-      else
         log.warn("Unexpected authentication error", e);
+      else
+        log.warn("Unexpected authentication error: {}", e.getMessage());
       response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     } catch(Exception e) {
       log.error("Exception ", e);
