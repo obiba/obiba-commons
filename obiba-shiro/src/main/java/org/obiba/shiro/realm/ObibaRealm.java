@@ -142,27 +142,39 @@ public class ObibaRealm extends AuthorizingRealm {
       HttpEntity<String> entity = new HttpEntity<String>(form, headers);
 
       ResponseEntity<String> response = template.exchange(getLoginUrl(token), HttpMethod.POST, entity, String.class);
-      if(response.getStatusCode() == HttpStatus.CREATED) {
+      if (response.getStatusCode() == HttpStatus.CREATED) {
         HttpHeaders responseHeaders = response.getHeaders();
         String ticketId = getTicketIdFromHeaders(responseHeaders);
         SecurityUtils.getSubject().getSession().setAttribute(TICKET_COOKIE_NAME, ticketId);
         List<String> principals = Lists.newArrayList(username);
-        if(!Strings.isNullOrEmpty(ticketId)) principals.add(ticketId);
+        if (!Strings.isNullOrEmpty(ticketId)) principals.add(ticketId);
         return new SimpleAuthenticationInfo(new SimplePrincipalCollection(principals, getName()), token.getCredentials());
       }
 
       // not an account in this realm
-      log.info("Invalid credentials. Response status code [{}], response body [{}], credentials used [{}]", response.getStatusCode(), response.getBody(), token);
+      log.debug("Invalid credentials. Response status code [{}], response body [{}], credentials used [{}]", response.getStatusCode(), response.getBody(), token);
       return null;
-
-    } catch(HttpClientErrorException|ResourceAccessException e) {
-      log.error(String.format("Connection failure with identification server: [%s]", e.getMessage()));
-      log.debug("Connection failure with identification server", e);
+    } catch(HttpClientErrorException e) {
+      if (HttpStatus.FORBIDDEN.equals(e.getStatusCode())) {
+        log.debug("Invalid credentials. Response status code [{}], response body [{}], credentials used [{}]", e.getStatusCode(), e.getResponseBodyAsString(), token);
+        return null;
+      }
+      if (log.isDebugEnabled())
+        log.error("Connection failure with identification server", e);
+      else
+        log.error(String.format("Connection failure with identification server: [%s]", e.getMessage()));
       return null;
-
+    } catch(ResourceAccessException e) {
+      if (log.isDebugEnabled())
+        log.error("Connection failure with identification server", e);
+      else
+        log.error(String.format("Connection failure with identification server: [%s]", e.getMessage()));
+      return null;
     } catch(Exception e) {
-      log.error(String.format("Authentication failure: [%s]", e.getMessage()));
-      log.debug("Authentication failure", e);
+      if (log.isDebugEnabled())
+        log.error("Authentication failure", e);
+      else
+        log.error(String.format("Authentication failure: [%s]", e.getMessage()));
       throw new AuthenticationException("Failed authenticating on " + baseUrl, e);
     }
   }
@@ -338,7 +350,7 @@ public class ObibaRealm extends AuthorizingRealm {
   }
 
   private RestTemplate newRestTemplate() {
-    log.info("Connecting to Agate: {}", baseUrl);
+    log.debug("Connecting to Agate: {}", baseUrl);
     if (baseUrl.toLowerCase().startsWith("https://")) {
       if(httpRequestFactory == null) {
         httpRequestFactory = new HttpComponentsClientHttpRequestFactory(createHttpClient());

@@ -24,6 +24,8 @@ import javax.validation.constraints.NotNull;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.CredentialsException;
+import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.mgt.SessionsSecurityManager;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
@@ -127,8 +129,13 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     try {
       authenticateAndBind(request);
       filterChain.doFilter(request, response);
+    } catch(CredentialsException e) {
+      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     } catch(AuthenticationException e) {
-      log.info("AuthenticationException ", e);
+      if (log.isDebugEnabled())
+        log.warn("Unexpected authentication error: {}", e.getMessage());
+      else
+        log.warn("Unexpected authentication error", e);
       response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     } catch(Exception e) {
       log.error("Exception ", e);
