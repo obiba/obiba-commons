@@ -29,6 +29,7 @@
 
   <modules>
     <module>obiba-core</module>
+    <module>obiba-plugins</module>
     <module>obiba-security</module>
     <module>obiba-git</module>
     <module>obiba-jersey-protobuf</module>
@@ -477,6 +478,11 @@
         <artifactId>jackson-annotations</artifactId>
         <version>${jackson.version}</version>
       </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
 
       <dependency>
         <groupId>com.jayway.jsonpath</groupId>
@@ -816,7 +822,7 @@
     <hsqldb.version>2.3.3</hsqldb.version>
     <httpclient.version>4.5</httpclient.version>
     <io-jsonwebtoken.version>0.6.0</io-jsonwebtoken.version>
-    <jackson.version>2.6.7</jackson.version>
+    <jackson.version>2.8.1</jackson.version>
     <json-path.version>2.0.0</json-path.version>
     <json.version>20160810</json.version>
     <javassist.version>3.12.1.GA</javassist.version>
