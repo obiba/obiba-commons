@@ -94,6 +94,13 @@ public class PluginPackage {
     return agateVersion;
   }
 
+  public Version getHostVersion() {
+    if (hasOpalVersion()) return getOpalVersion();
+    if (hasMicaVersion()) return getMicaVersion();
+    if (hasAgateVersion()) return getAgateVersion();
+    return new Version("0.0.0");
+  }
+
   public String getFileName() {
     return fileName;
   }

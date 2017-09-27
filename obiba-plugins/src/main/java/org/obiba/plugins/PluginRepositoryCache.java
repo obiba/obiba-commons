@@ -93,7 +93,7 @@ public class PluginRepositoryCache {
     Version version = new Version("0.0.0");
     for (PluginPackage pp : getOrUpdatePluginRepository().getPlugins().stream()
         .filter(pp -> pp.getName().equals(name))
-        .filter(pp -> hostVersionProvider.getVersion().compareTo(pp.getOpalVersion()) >= 0)
+        .filter(pp -> hostVersionProvider.getVersion().compareTo(pp.getHostVersion()) >= 0)
         .collect(Collectors.toList())) {
       if (pp.getVersion().compareTo(version) > 0) version = pp.getVersion();
     }
