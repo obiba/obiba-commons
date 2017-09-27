@@ -139,6 +139,21 @@ public abstract class PluginResources {
     return defaultProperties;
   }
 
+  public URLClassLoader getURLClassLoader() {
+    File[] libs = lib.listFiles();
+    URL[] urls = new URL[libs.length];
+    for (int i=0; i<libs.length; i++) {
+      try {
+        File lib = libs[i];
+        urls[i] = lib.toURI().toURL();
+        log.info("Adding library file to class loader: {}", lib);
+      } catch (Exception e) {
+        log.warn("Failed adding library file to class loader: {}", lib, e);
+      }
+    }
+    return new URLClassLoader(urls, Thread.currentThread().getContextClassLoader());
+  }
+
   public void init() {
     File[] libs = lib.listFiles();
     if (libs == null) return;
