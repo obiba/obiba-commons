@@ -29,6 +29,8 @@ public abstract class PluginResources {
 
   private static final Logger log = LoggerFactory.getLogger(PluginResources.class);
 
+  public static final String PLUGIN_DIST_SUFFIX = "-dist.zip";
+
   public static final String UNINSTALL_FILE = "uninstall";
 
   public static final String PLUGIN_PROPERTIES = "plugin.properties";
