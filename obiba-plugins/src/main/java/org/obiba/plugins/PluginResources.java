@@ -12,7 +12,9 @@ package org.obiba.plugins;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 import com.google.common.io.Files;
+import org.obiba.core.util.JarUtil;
 import org.obiba.runtime.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +25,9 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
 public abstract class PluginResources {
 
@@ -140,6 +144,10 @@ public abstract class PluginResources {
   }
 
   public URLClassLoader getURLClassLoader() {
+    return getURLClassLoader(true);
+  }
+
+  public URLClassLoader getURLClassLoader(boolean checkJars) {
     File[] libs = lib.listFiles();
     URL[] urls = new URL[libs.length];
     for (int i=0; i<libs.length; i++) {
@@ -151,18 +159,46 @@ public abstract class PluginResources {
         log.warn("Failed adding library file to class loader: {}", lib, e);
       }
     }
+    if (checkJars) checkJars(urls);
     return new URLClassLoader(urls, Thread.currentThread().getContextClassLoader());
   }
 
   public void init() {
+    init(true);
+  }
+
+  public void init(boolean checkJars) {
     File[] libs = lib.listFiles();
+    URL[] urls = new URL[libs.length];
     if (libs == null) return;
-    for (File lib : libs) {
+    for (int i=0; i<libs.length; i++) {
       try {
+        File lib = libs[i];
+        urls[i] = lib.toURI().toURL();
         addLibrary(lib);
       } catch (Exception e) {
         log.warn("Failed adding library file to classpath: {}", lib, e);
       }
+    }
+    if (checkJars) checkJars(urls);
+  }
+
+  private void checkJars(URL[] urls) {
+    try {
+      Set<URL> classpath = JarUtil.parseClassPath();
+      // check we don't have conflicting codebases
+      Set<URL> intersection = new HashSet<>(classpath);
+      Set<URL> pluginUrls = Sets.newHashSet(urls);
+      intersection.retainAll(pluginUrls);
+      if (!intersection.isEmpty()) {
+        throw new IllegalStateException("Duplicate jars between plugin and host application: " + intersection);
+      }
+      // check we don't have conflicting classes
+      Set<URL> union = new HashSet<>(classpath);
+      union.addAll(pluginUrls);
+      JarUtil.checkJars(union);
+    } catch (Exception e) {
+      throw new IllegalStateException("Failed to load plugin " + getName() + " due to jar conflict", e);
     }
   }
 

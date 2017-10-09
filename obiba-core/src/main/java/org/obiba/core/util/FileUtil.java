@@ -14,11 +14,14 @@ import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.*;
 
 import javax.annotation.Nonnull;
 
 @SuppressWarnings("UnusedDeclaration")
 public final class FileUtil {
+
+  private static final FileSystem DEFAULT_FS = FileSystems.getDefault();
 
   private FileUtil() {}
 
@@ -171,4 +174,28 @@ public final class FileUtil {
     return ZipBuilder.newBuilder(destination).base(source.getParentFile()).password(password).compressed().put(source, sourceFilter).build();
   }
 
+  /**
+   * Get path from URI.
+   *
+   * @param uri
+   * @return
+   */
+  public static Path getPath(URI uri) {
+    if (uri.getScheme().equalsIgnoreCase("file")) {
+      return DEFAULT_FS.provider().getPath(uri);
+    } else {
+      return Paths.get(uri);
+    }
+  }
+
+  /**
+   * Converts a path string, or a sequence of strings that when joined form
+   * a path string, to a {@code Path}.
+   * @param first
+   * @param more
+   * @return
+   */
+  public static Path getPath(String first, String... more) {
+    return DEFAULT_FS.getPath(first, more);
+  }
 }
