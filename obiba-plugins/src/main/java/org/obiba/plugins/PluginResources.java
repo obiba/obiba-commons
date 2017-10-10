@@ -94,6 +94,22 @@ public abstract class PluginResources {
     return getProperties().getProperty("description", "");
   }
 
+  public String getAuthor() {
+    return getProperties().getProperty("author", "-");
+  }
+
+  public String getMaintainer() {
+    return getProperties().getProperty("maintainer", "-");
+  }
+
+  public String getLicense() {
+    return getProperties().getProperty("license", "-");
+  }
+
+  public String getWebsite() {
+    return getProperties().getProperty("website");
+  }
+
   public abstract String getHostVersionKey();
 
   public abstract String getHostHome();
@@ -150,7 +166,7 @@ public abstract class PluginResources {
   public URLClassLoader getURLClassLoader(boolean checkJars) {
     File[] libs = lib.listFiles();
     URL[] urls = new URL[libs.length];
-    for (int i=0; i<libs.length; i++) {
+    for (int i = 0; i < libs.length; i++) {
       try {
         File lib = libs[i];
         urls[i] = lib.toURI().toURL();
@@ -171,7 +187,7 @@ public abstract class PluginResources {
     File[] libs = lib.listFiles();
     URL[] urls = new URL[libs.length];
     if (libs == null) return;
-    for (int i=0; i<libs.length; i++) {
+    for (int i = 0; i < libs.length; i++) {
       try {
         File lib = libs[i];
         urls[i] = lib.toURI().toURL();

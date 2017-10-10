@@ -24,6 +24,10 @@ public class PluginPackage {
   private final String type;
   private final String title;
   private final String description;
+  private final String author;
+  private final String maintainer;
+  private final String license;
+  private final String website;
   private final Version version;
   private final Version opalVersion;
   private final Version micaVersion;
@@ -34,6 +38,10 @@ public class PluginPackage {
                        @JsonProperty("type") String type,
                        @JsonProperty("title") String title,
                        @JsonProperty("description") String description,
+                       @JsonProperty("author") String author,
+                       @JsonProperty("maintainer") String maintainer,
+                       @JsonProperty("license") String license,
+                       @JsonProperty("website") String website,
                        @JsonProperty("version") String version,
                        @JsonProperty("opalVersion") String opalVersion,
                        @JsonProperty("micaVersion") String micaVersion,
@@ -43,11 +51,31 @@ public class PluginPackage {
     this.type = type;
     this.title = title;
     this.description = description;
+    this.author = author;
+    this.maintainer = maintainer;
+    this.license = license;
+    this.website = website;
     this.version = new Version(version);
     this.opalVersion = (opalVersion == null || opalVersion.isEmpty()) ? null : new Version(opalVersion);
     this.micaVersion = (micaVersion == null || micaVersion.isEmpty()) ? null : new Version(micaVersion);
     this.agateVersion = (agateVersion == null || agateVersion.isEmpty()) ? null : new Version(agateVersion);
     this.fileName = fileName;
+  }
+
+  public PluginPackage(PluginResources pluginResources) {
+    this.name = pluginResources.getName();
+    this.type = pluginResources.getType();
+    this.title = pluginResources.getTitle();
+    this.description = pluginResources.getDescription();
+    this.author = pluginResources.getAuthor();
+    this.maintainer = pluginResources.getMaintainer();
+    this.license = pluginResources.getLicense();
+    this.website = pluginResources.getWebsite();
+    this.version = pluginResources.getVersion();
+    this.opalVersion = "opal.version".equals(pluginResources.getHostVersionKey()) ? pluginResources.getHostVersion() : null;
+    this.micaVersion = "mica.version".equals(pluginResources.getHostVersionKey()) ? pluginResources.getHostVersion() : null;
+    this.agateVersion = "agate.version".equals(pluginResources.getHostVersionKey()) ? pluginResources.getHostVersion() : null;
+    this.fileName = "";
   }
 
   public String getName() {
@@ -64,6 +92,22 @@ public class PluginPackage {
 
   public String getDescription() {
     return description;
+  }
+
+  public String getAuthor() {
+    return author;
+  }
+
+  public String getMaintainer() {
+    return maintainer;
+  }
+
+  public String getLicense() {
+    return license;
+  }
+
+  public String getWebsite() {
+    return website;
   }
 
   public Version getVersion() {
@@ -114,6 +158,6 @@ public class PluginPackage {
   }
 
   public boolean isNewerThan(String name, Version version) {
-    return this.name.equals(name) && this.version.compareTo(version)>0;
+    return this.name.equals(name) && this.version.compareTo(version) > 0;
   }
 }
