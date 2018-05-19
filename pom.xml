@@ -682,6 +682,14 @@
 
     </plugins>
 
+    <extensions>
+      <extension>
+        <groupId>io.packagecloud.maven.wagon</groupId>
+        <artifactId>maven-packagecloud-wagon</artifactId>
+        <version>0.0.4</version>
+      </extension>
+    </extensions>
+
     <resources>
       <resource>
         <directory>${project.basedir}/src/main/java</directory>
@@ -746,8 +754,8 @@
     </repository>
 
     <snapshotRepository>
-      <id>obiba-snapshots</id>
-      <url>http://repo.obiba.org/libs-snapshot-local</url>
+      <id>packagecloud-travis</id>
+      <url>packagecloud+https://packagecloud.io/obiba/maven</url>
     </snapshotRepository>
 
   </distributionManagement>
