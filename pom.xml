@@ -733,9 +733,9 @@
   <repositories>
 
     <repository>
-      <id>obiba.org</id>
+      <id>obiba-repo</id>
       <name>Obiba Maven 2.x Repository</name>
-      <url>http://repo.obiba.org/repo</url>
+      <url>https://packagecloud.io/obiba/repo/maven2</url>
       <releases>
         <enabled>true</enabled>
       </releases>
@@ -749,13 +749,13 @@
   <distributionManagement>
 
     <repository>
-      <id>obiba-releases</id>
-      <url>packagecloud+https://packagecloud.io/obiba/maven</url>
+      <id>obiba-packagecloud</id>
+      <url>packagecloud+https://packagecloud.io/obiba/repo</url>
     </repository>
 
     <snapshotRepository>
-      <id>obiba-snapshots</id>
-      <url>packagecloud+https://packagecloud.io/obiba/maven-snapshots</url>
+      <id>obiba-packagecloud</id>
+      <url>packagecloud+https://packagecloud.io/obiba/repo</url>
     </snapshotRepository>
 
   </distributionManagement>
