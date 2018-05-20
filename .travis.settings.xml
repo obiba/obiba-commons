@@ -4,7 +4,11 @@
                       Http://Maven.Apache.Org/Xsd/Settings-1.0.0.Xsd">
   <servers>
     <server>
-      <id>packagecloud-travis</id>
+      <id>obiba-releases</id>
+      <password>${env.PACKAGECLOUD_TOKEN}</password>
+    </server>
+    <server>
+      <id>obiba-snapshots</id>
       <password>${env.PACKAGECLOUD_TOKEN}</password>
     </server>
   </servers>

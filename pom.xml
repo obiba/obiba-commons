@@ -750,12 +750,12 @@
 
     <repository>
       <id>obiba-releases</id>
-      <url>http://repo.obiba.org/libs-release-local</url>
+      <url>packagecloud+https://packagecloud.io/obiba/maven</url>
     </repository>
 
     <snapshotRepository>
-      <id>packagecloud-travis</id>
-      <url>packagecloud+https://packagecloud.io/obiba/maven</url>
+      <id>obiba-snapshots</id>
+      <url>packagecloud+https://packagecloud.io/obiba/maven-snapshots</url>
     </snapshotRepository>
 
   </distributionManagement>
