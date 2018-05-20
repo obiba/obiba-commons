@@ -1,8 +1,13 @@
-<settings Xmlns="Http://Maven.Apache.Org/SETTINGS/1.0.0"
-          Xmlns:Xsi="Http://Www.W3.Org/2001/XMLSchema-Instance"
-          Xsi:SchemaLocation="Http://Maven.Apache.Org/SETTINGS/1.0.0
-                      Http://Maven.Apache.Org/Xsd/Settings-1.0.0.Xsd">
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                          https://maven.apache.org/xsd/settings-1.0.0.xsd">
   <servers>
+    <server>
+      <id>obiba-bintray</id>
+      <username>${env.BINTRAY_USER}</username>
+      <password>${env.BINTRAY_API_KEY}</password>
+    </server>
     <server>
       <id>obiba-packagecloud</id>
       <password>${env.PACKAGECLOUD_TOKEN}</password>
