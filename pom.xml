@@ -20,6 +20,69 @@
   <packaging>pom</packaging>
   <version>1.11-SNAPSHOT</version>
 
+  <properties>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.source>1.8</maven.compiler.source>
+
+    <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+
+    <assertj-core.version>1.7.1</assertj-core.version>
+    <bouncycastle.version>1.46</bouncycastle.version>
+    <cglib.version>3.1</cglib.version>
+    <commons-beanutils.version>1.9.2</commons-beanutils.version>
+    <commons-dbcp.version>1.4</commons-dbcp.version>
+    <commons-httpclient.version>3.1</commons-httpclient.version>
+    <crowd.version>2.9.0-OD-074</crowd.version>
+    <dbunit.version>2.5.1</dbunit.version>
+    <easymock.version>3.4</easymock.version>
+    <findbugs.version>3.0.1</findbugs.version>
+    <guava.version>19.0</guava.version>
+    <hibernate.version>4.3.8.Final</hibernate.version>
+    <hsqldb.version>2.3.3</hsqldb.version>
+    <httpclient.version>4.5</httpclient.version>
+    <io-jsonwebtoken.version>0.6.0</io-jsonwebtoken.version>
+    <jackson.version>2.8.1</jackson.version>
+    <json-path.version>2.0.0</json-path.version>
+    <json.version>20160810</json.version>
+    <javassist.version>3.12.1.GA</javassist.version>
+    <jersey.version>2.21</jersey.version>
+    <jetty.version>9.2.18.v20160721</jetty.version>
+    <jgit.version>3.6.2.201501210735-r</jgit.version>
+    <joda-time.version>2.8.2</joda-time.version>
+    <jsr305.version>3.0.0</jsr305.version>
+    <junit.version>4.12</junit.version>
+    <liquibase.version>1.9.4</liquibase.version>
+    <logback.version>1.1.3</logback.version>
+    <mail.version>1.5.0-b01</mail.version>
+    <protobuf.version>2.5.0</protobuf.version>
+    <protobuf-java-format.version>1.2.1-obiba</protobuf-java-format.version>
+    <servlet-api.version>3.1.0</servlet-api.version>
+    <shiro.version>1.3.3-obiba</shiro.version>
+    <shiro-extras.version>1.0.3-obiba</shiro-extras.version>
+    <slf4j.version>1.7.12</slf4j.version>
+    <spring.version>4.2.7.RELEASE</spring.version>
+    <spring-data-commons.version>1.11.4.RELEASE</spring-data-commons.version>
+    <spring-data-mongodb.version>1.8.4.RELEASE</spring-data-mongodb.version>
+    <validation-api.version>1.1.0.Final</validation-api.version>
+    <wicket.version>1.4.21</wicket.version>
+    <xstream.version>1.4.8</xstream.version>
+
+    <!-- maven plugins -->
+    <bintray-maven-plugin.version>1.2.20180117184439</bintray-maven-plugin.version>
+    <maven-buildnumber-plugin.version>1.2</maven-buildnumber-plugin.version>
+    <maven-compiler-plugin.version>2.5.1</maven-compiler-plugin.version>
+    <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
+    <maven-findbugs-plugin.version>3.0.4</maven-findbugs-plugin.version>
+    <maven-javadoc-plugin.version>2.9</maven-javadoc-plugin.version>
+    <maven-pmd-plugin.version>3.1</maven-pmd-plugin.version>
+    <maven-release-plugin.version>2.5.2</maven-release-plugin.version>
+    <maven-source-plugin.version>2.2</maven-source-plugin.version>
+
+    <!-- maven extensions -->
+    <maven-packagecloud-wagon.version>0.0.4</maven-packagecloud-wagon.version>
+
+  </properties>
+
   <licenses>
     <license>
       <name>GNU Public License version 3</name>
@@ -692,7 +755,7 @@
       <extension>
         <groupId>io.packagecloud.maven.wagon</groupId>
         <artifactId>maven-packagecloud-wagon</artifactId>
-        <version>0.0.4</version>
+        <version>${maven-packagecloud-wagon.version}</version>
       </extension>
     </extensions>
 
@@ -853,65 +916,5 @@
       </build>
     </profile>
   </profiles>
-
-  <properties>
-
-    <maven.compiler.target>1.8</maven.compiler.target>
-    <maven.compiler.source>1.8</maven.compiler.source>
-
-    <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-
-    <assertj-core.version>1.7.1</assertj-core.version>
-    <bouncycastle.version>1.46</bouncycastle.version>
-    <cglib.version>3.1</cglib.version>
-    <commons-beanutils.version>1.9.2</commons-beanutils.version>
-    <commons-dbcp.version>1.4</commons-dbcp.version>
-    <commons-httpclient.version>3.1</commons-httpclient.version>
-    <crowd.version>2.9.0-OD-074</crowd.version>
-    <dbunit.version>2.5.1</dbunit.version>
-    <easymock.version>3.4</easymock.version>
-    <findbugs.version>3.0.1</findbugs.version>
-    <guava.version>19.0</guava.version>
-    <hibernate.version>4.3.8.Final</hibernate.version>
-    <hsqldb.version>2.3.3</hsqldb.version>
-    <httpclient.version>4.5</httpclient.version>
-    <io-jsonwebtoken.version>0.6.0</io-jsonwebtoken.version>
-    <jackson.version>2.8.1</jackson.version>
-    <json-path.version>2.0.0</json-path.version>
-    <json.version>20160810</json.version>
-    <javassist.version>3.12.1.GA</javassist.version>
-    <jersey.version>2.21</jersey.version>
-    <jetty.version>9.2.18.v20160721</jetty.version>
-    <jgit.version>3.6.2.201501210735-r</jgit.version>
-    <joda-time.version>2.8.2</joda-time.version>
-    <jsr305.version>3.0.0</jsr305.version>
-    <junit.version>4.12</junit.version>
-    <liquibase.version>1.9.4</liquibase.version>
-    <logback.version>1.1.3</logback.version>
-    <mail.version>1.5.0-b01</mail.version>
-    <protobuf.version>2.5.0</protobuf.version>
-    <protobuf-java-format.version>1.2.1-obiba</protobuf-java-format.version>
-    <servlet-api.version>3.1.0</servlet-api.version>
-    <shiro.version>1.4.0</shiro.version>
-    <shiro-extras.version>1.0.3-obiba</shiro-extras.version>
-    <slf4j.version>1.7.12</slf4j.version>
-    <spring.version>4.2.7.RELEASE</spring.version>
-    <spring-data-commons.version>1.11.4.RELEASE</spring-data-commons.version>
-    <spring-data-mongodb.version>1.8.4.RELEASE</spring-data-mongodb.version>
-    <validation-api.version>1.1.0.Final</validation-api.version>
-    <wicket.version>1.4.21</wicket.version>
-    <xstream.version>1.4.8</xstream.version>
-
-    <!-- maven plugins -->
-    <maven-buildnumber-plugin.version>1.2</maven-buildnumber-plugin.version>
-    <maven-compiler-plugin.version>2.5.1</maven-compiler-plugin.version>
-    <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
-    <maven-findbugs-plugin.version>3.0.4</maven-findbugs-plugin.version>
-    <maven-javadoc-plugin.version>2.9</maven-javadoc-plugin.version>
-    <maven-pmd-plugin.version>3.1</maven-pmd-plugin.version>
-    <maven-release-plugin.version>2.5.2</maven-release-plugin.version>
-    <maven-source-plugin.version>2.2</maven-source-plugin.version>
-    <bintray-maven-plugin.version>1.2.20180117184439</bintray-maven-plugin.version>
-  </properties>
 
 </project>
