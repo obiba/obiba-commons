@@ -77,10 +77,6 @@
     <maven-pmd-plugin.version>3.1</maven-pmd-plugin.version>
     <maven-release-plugin.version>2.5.2</maven-release-plugin.version>
     <maven-source-plugin.version>2.2</maven-source-plugin.version>
-
-    <!-- maven extensions -->
-    <maven-packagecloud-wagon.version>0.0.4</maven-packagecloud-wagon.version>
-
   </properties>
 
   <licenses>
@@ -751,14 +747,6 @@
 
     </plugins>
 
-    <extensions>
-      <extension>
-        <groupId>io.packagecloud.maven.wagon</groupId>
-        <artifactId>maven-packagecloud-wagon</artifactId>
-        <version>${maven-packagecloud-wagon.version}</version>
-      </extension>
-    </extensions>
-
     <resources>
       <resource>
         <directory>${project.basedir}/src/main/java</directory>
@@ -800,10 +788,9 @@
   </build>
 
   <repositories>
-
     <repository>
       <id>obiba-releases</id>
-      <name>Obiba Maven 2.x Repository</name>
+      <name>Obiba Maven Releases Repository</name>
       <url>https://dl.bintray.com/obiba/maven</url>
       <releases>
         <enabled>true</enabled>
@@ -812,11 +799,10 @@
         <enabled>false</enabled>
       </snapshots>
     </repository>
-
     <repository>
       <id>obiba-snapshots</id>
-      <name>Obiba Maven 2.x Repository</name>
-      <url>https://packagecloud.io/obiba/repo/maven2</url>
+      <name>Obiba Maven Snapshots Repository</name>
+      <url>https://obiba.jfrog.io/obiba/libs-snapshot</url>
       <releases>
         <enabled>false</enabled>
       </releases>
@@ -824,7 +810,6 @@
         <enabled>true</enabled>
       </snapshots>
     </repository>
-
     <repository>
       <id>atlassian</id>
       <name>Atlassian Maven Public</name>
@@ -836,38 +821,33 @@
         <enabled>false</enabled>
       </snapshots>
     </repository>
-
   </repositories>
 
   <distributionManagement>
-
     <repository>
       <id>obiba-bintray</id>
       <url>https://api.bintray.com/obiba/maven/</url>
     </repository>
-
     <snapshotRepository>
-      <id>obiba-packagecloud</id>
-      <url>packagecloud+https://packagecloud.io/obiba/repo</url>
+      <id>obiba-artifactory</id>
+      <url>https://obiba.jfrog.io/obiba/libs-snapshot</url>
     </snapshotRepository>
-
   </distributionManagement>
 
   <scm>
     <connection>scm:git:git://github.com/obiba/obiba-commons.git</connection>
     <developerConnection>scm:git:https://github.com/obiba/obiba-commons.git</developerConnection>
     <url>https://github.com/obiba/obiba-commons</url>
-    <tag>1.4.0</tag>
   </scm>
 
   <issueManagement>
-    <system>JIRA</system>
-    <url>http://jira.obiba.org</url>
+    <system>GitHub</system>
+    <url>https://github.com/obiba/obiba-commons/issues</url>
   </issueManagement>
 
   <ciManagement>
-    <system>Jenkins</system>
-    <url>http://ci.obiba.org/view/OBiBa%20Commons/job/Obiba%20Commons</url>
+    <system>Travis</system>
+    <url>https://travis-ci.org/obiba/obiba-commons</url>
   </ciManagement>
 
   <mailingLists>
