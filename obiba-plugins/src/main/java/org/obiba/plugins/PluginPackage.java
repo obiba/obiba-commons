@@ -13,6 +13,7 @@ package org.obiba.plugins;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.Strings;
 import org.obiba.runtime.Version;
 
 /**
@@ -33,6 +34,7 @@ public class PluginPackage {
   private final Version micaVersion;
   private final Version agateVersion;
   private final String fileName;
+  private final String url;
 
   public PluginPackage(@JsonProperty("name") String name,
                        @JsonProperty("type") String type,
@@ -46,7 +48,8 @@ public class PluginPackage {
                        @JsonProperty("opalVersion") String opalVersion,
                        @JsonProperty("micaVersion") String micaVersion,
                        @JsonProperty("agateVersion") String agateVersion,
-                       @JsonProperty("file") String fileName) {
+                       @JsonProperty("file") String fileName,
+                       @JsonProperty("url") String url) {
     this.name = name;
     this.type = type;
     this.title = title;
@@ -60,6 +63,7 @@ public class PluginPackage {
     this.micaVersion = (micaVersion == null || micaVersion.isEmpty()) ? null : new Version(micaVersion);
     this.agateVersion = (agateVersion == null || agateVersion.isEmpty()) ? null : new Version(agateVersion);
     this.fileName = fileName;
+    this.url = url;
   }
 
   public PluginPackage(PluginResources pluginResources) {
@@ -76,6 +80,7 @@ public class PluginPackage {
     this.micaVersion = "mica.version".equals(pluginResources.getHostVersionKey()) ? pluginResources.getHostVersion() : null;
     this.agateVersion = "agate.version".equals(pluginResources.getHostVersionKey()) ? pluginResources.getHostVersion() : null;
     this.fileName = "";
+    this.url = "";
   }
 
   public String getName() {
@@ -147,6 +152,14 @@ public class PluginPackage {
 
   public String getFileName() {
     return fileName;
+  }
+
+  public boolean hasUrl() {
+    return !Strings.isNullOrEmpty(url);
+  }
+
+  public String getUrl() {
+    return url;
   }
 
   public boolean isSameAs(String name) {

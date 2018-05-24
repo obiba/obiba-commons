@@ -62,12 +62,11 @@ public class PluginRepositoryCache {
     if (!pluginPackage.isPresent())
       throw new NoSuchElementException("Plugin " + name + ":" + version + " cannot be found");
     File pluginFile = new File(tmpDir, pluginPackage.get().getFileName());
-    ReadableByteChannel rbc = Channels.newChannel(getRepositoryURL(pluginFile.getName()).openStream());
+    ReadableByteChannel rbc = Channels.newChannel(getRepositoryURL(pluginPackage.get()).openStream());
     FileOutputStream fos = new FileOutputStream(pluginFile);
     fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
     return pluginFile;
   }
-
 
   private void initializePluginRepository() {
     ObjectMapper mapper = new ObjectMapper();
@@ -82,6 +81,11 @@ public class PluginRepositoryCache {
 
   private long nowInSeconds() {
     return new Date().getTime() / 1000;
+  }
+
+  private URL getRepositoryURL(PluginPackage pluginPackage) throws MalformedURLException {
+    if (pluginPackage.hasUrl()) return new URL(pluginPackage.getUrl());
+    return getRepositoryURL(pluginPackage.getFileName());
   }
 
   private URL getRepositoryURL(String fileName) throws MalformedURLException {
