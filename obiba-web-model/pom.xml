@@ -51,7 +51,6 @@
               <sources>
                 <source>${project.build.directory}/generated-sources/protobuf-java</source>
                 <source>${project.build.directory}/generated-sources/protobuf-python</source>
-                <source>${project.build.directory}/generated-sources/protobuf-php</source>
               </sources>
             </configuration>
           </execution>
@@ -115,21 +114,6 @@
                   <arg line="-Isrc/main/resources" />
                 </exec>
 
-                <!-- PHP -->
-                <copy file="${basedir}/tools/protobuf/php/template/wrapper.proto" todir="${basedir}/src/main/resources" />
-                <replace file="${basedir}/src/main/resources/wrapper.proto" token="__ERROR_PROTO_FILE__" value="ErrorDtos" />
-                <replace file="${basedir}/src/main/resources/wrapper.proto" token="__AUTH_PROTO_FILE__" value="AuthDtos" />
-                <mkdir dir="target/generated-sources/protobuf-php" />
-                <!--suppress MavenModelInspection -->
-                <exec dir="${basedir}" executable="${basedir}/tools/protobuf/protoc-${os.protoc}" failonerror="true">
-                  <arg value="--php_out=target/generated-sources/protobuf-php" />
-                  <arg line="--plugin=${basedir}/tools/protobuf/php/protoc-gen-php" />
-                  <arg line="-I${basedir}/tools/protobuf/php/library/DrSlump/Protobuf/Compiler/protos" />
-                  <arg line="-Isrc/main/resources" />
-                  <arg line="-I${basedir}/tools/protobuf/php/template" />
-                  <arg line="--proto_path=${basedir}" />
-                  <arg line="${basedir}/src/main/resources/wrapper.proto" />
-                </exec>
                 <delete file="${basedir}/src/main/resources/wrapper.proto" />
               </tasks>
             </configuration>
