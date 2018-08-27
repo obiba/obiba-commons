@@ -46,12 +46,12 @@ public abstract class AbstractAuthenticationExecutor implements AuthenticationEx
     /**
      * Time span in which the max retry should happen before starting a ban period, in seconds.
      */
-    private int retryTime = 10;
+    private int retryTime = 300;
 
     /**
      * Ban period after max retry was reached, in seconds.
      */
-    private int banTime = 600;
+    private int banTime = 300;
 
     @Override
     public Subject login(AuthenticationToken token) throws AuthenticationException {
