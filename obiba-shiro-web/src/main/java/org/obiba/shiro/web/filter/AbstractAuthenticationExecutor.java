@@ -12,7 +12,6 @@ package org.obiba.shiro.web.filter;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.RemovalListener;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.shiro.SecurityUtils;
@@ -24,7 +23,6 @@ import org.apache.shiro.util.ThreadContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -41,12 +39,12 @@ public abstract class AbstractAuthenticationExecutor implements AuthenticationEx
     /**
      * Number of attempts before being banned.
      */
-    private int maxRetry = 3;
+    private int maxTry = 3;
 
     /**
-     * Time span in which the max retry should happen before starting a ban period, in seconds.
+     * Time span in which the maximum of tries count should happen before starting a ban period, in seconds.
      */
-    private int retryTime = 300;
+    private int trialTime = 300;
 
     /**
      * Ban period after max retry was reached, in seconds.
@@ -99,13 +97,13 @@ public abstract class AbstractAuthenticationExecutor implements AuthenticationEx
     /**
      * Configure the user ban check.
      *
-     * @param maxRetry  Maximum count of failed logins
-     * @param retryTime Time period during which the maximum of tries were recorded. No time limit if not positive
+     * @param maxTry  Maximum count of failed logins
+     * @param trialTime Time period during which the maximum of tries were recorded. No time limit if not positive
      * @param banTime   Ban time, enabled if positive
      */
-    protected void configureBan(int maxRetry, int retryTime, int banTime) {
-        this.maxRetry = maxRetry;
-        this.retryTime = retryTime;
+    protected void configureBan(int maxTry, int trialTime, int banTime) {
+        this.maxTry = maxTry;
+        this.trialTime = trialTime;
         this.banTime = banTime;
         if (banTime > 0) {
             banCache = CacheBuilder.newBuilder()
@@ -140,7 +138,7 @@ public abstract class AbstractAuthenticationExecutor implements AuthenticationEx
             if (isToBeBanned(failures)) {
                 log.warn("Banning user '{}' for {}s", uToken.getUsername(), banTime);
                 loginFailures.remove(uToken.getUsername());
-                banCache.put(uToken.getUsername(), maxRetry);
+                banCache.put(uToken.getUsername(), maxTry);
             }
         }
     }
@@ -152,11 +150,11 @@ public abstract class AbstractAuthenticationExecutor implements AuthenticationEx
      * @return
      */
     private boolean isToBeBanned(List<Date> failures) {
-        if (failures.size() < maxRetry) return false;
-        if (retryTime <= 0) return true;
-        Date firstFailure = failures.get(failures.size() - maxRetry);
+        if (failures.size() < maxTry) return false;
+        if (trialTime <= 0) return true;
+        Date firstFailure = failures.get(failures.size() - maxTry);
         Date lastFailure = failures.get(failures.size() - 1);
-        return (lastFailure.getTime() - firstFailure.getTime()) <= (retryTime * 1000);
+        return (lastFailure.getTime() - firstFailure.getTime()) <= (trialTime * 1000);
     }
 
 }
