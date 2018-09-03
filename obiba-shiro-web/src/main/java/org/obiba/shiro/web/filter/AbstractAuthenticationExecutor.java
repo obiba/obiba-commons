@@ -62,7 +62,7 @@ public abstract class AbstractAuthenticationExecutor implements AuthenticationEx
             UsernamePasswordToken uToken = (UsernamePasswordToken) token;
             if (banCache.getIfPresent(uToken.getUsername()) != null) {
                 log.warn("User '{}' is banned!", uToken.getUsername());
-                throw new UserBannedException("User is banned: " + uToken.getUsername());
+                throw new UserBannedException("User is banned: " + uToken.getUsername(), uToken.getUsername(), banTime);
             }
         }
         Subject subject = sessionId == null
