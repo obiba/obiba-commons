@@ -34,7 +34,7 @@ public abstract class AbstractAuthenticationExecutor implements AuthenticationEx
 
     private Map<String, List<Date>> loginFailures = Maps.newConcurrentMap();
 
-    private Cache<String, Integer> banCache;
+    private Cache<String, Date> banCache;
 
     /**
      * Number of attempts before being banned.
@@ -62,7 +62,9 @@ public abstract class AbstractAuthenticationExecutor implements AuthenticationEx
             UsernamePasswordToken uToken = (UsernamePasswordToken) token;
             if (banCache.getIfPresent(uToken.getUsername()) != null) {
                 log.warn("User '{}' is banned!", uToken.getUsername());
-                throw new UserBannedException("User is banned: " + uToken.getUsername(), uToken.getUsername(), banTime);
+                Date banDate = banCache.getIfPresent(uToken.getUsername());
+                int remainingBanTime = banTime - (int)(new Date().getTime() - banDate.getTime())/1000;
+                throw new UserBannedException("User is banned: " + uToken.getUsername(), uToken.getUsername(), remainingBanTime);
             }
         }
         Subject subject = sessionId == null
@@ -138,7 +140,7 @@ public abstract class AbstractAuthenticationExecutor implements AuthenticationEx
             if (isToBeBanned(failures)) {
                 log.warn("Banning user '{}' for {}s", uToken.getUsername(), banTime);
                 loginFailures.remove(uToken.getUsername());
-                banCache.put(uToken.getUsername(), maxTry);
+                banCache.put(uToken.getUsername(), new Date());
             }
         }
     }
