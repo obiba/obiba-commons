@@ -34,17 +34,13 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.validation.constraints.NotNull;
 
+import com.google.common.collect.*;
 import org.bouncycastle.asn1.x509.X509Name;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openssl.PEMReader;
@@ -58,10 +54,6 @@ import org.obiba.crypt.KeyProviderSecurityException;
 import org.obiba.crypt.ObibaCryptRuntimeException;
 
 import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Iterators;
-import com.google.common.collect.Maps;
 
 public class KeyStoreManager {
 
@@ -327,13 +319,13 @@ public class KeyStoreManager {
    * @param certificate certificate in the PEM format
    */
   public void importKey(String alias, InputStream privateKey, InputStream certificate) {
-    storeKeyEntry(alias, getPrivateKey(privateKey), getCertificate(certificate));
+    storeKeyEntry(alias, getPrivateKey(privateKey), getCertificates(certificate));
   }
 
-  private void storeKeyEntry(String alias, Key key, X509Certificate cert) {
+  private void storeKeyEntry(String alias, Key key, X509Certificate[] certs) {
     CacheablePasswordCallback passwordCallback = createPasswordCallback(getPasswordFor(alias));
     try {
-      store.setKeyEntry(alias, key, getKeyPassword(passwordCallback), new X509Certificate[] { cert });
+      store.setKeyEntry(alias, key, getKeyPassword(passwordCallback), certs);
     } catch(KeyStoreException | IOException | UnsupportedCallbackException e) {
       throw new RuntimeException(e);
     }
@@ -412,13 +404,32 @@ public class KeyStoreManager {
     throw new RuntimeException("Unexpected type [" + pemObject + "]. Expected KeyPair or Key.");
   }
 
-  protected X509Certificate getCertificate(InputStream certificate) {
+  private X509Certificate getCertificate(InputStream certificate) {
     try(PEMReader pemReader = getPEMReader(certificate)) {
       Object object = getPemObject(pemReader);
       if(object instanceof X509Certificate) {
         return (X509Certificate) object;
       }
       throw new RuntimeException("Unexpected type [" + object + "]. Expected X509Certificate.");
+    } catch(IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private X509Certificate[] getCertificates(InputStream certificates) {
+    List<X509Certificate> certs = Lists.newArrayList();
+    try(PEMReader pemReader = getPEMReader(certificates)) {
+      Object object = getPemObject(pemReader);
+      while (object != null) {
+        if (object instanceof X509Certificate) {
+          certs.add((X509Certificate) object);
+        } else {
+          throw new RuntimeException("Unexpected type [" + object + "]. Expected X509Certificate.");
+        }
+        // read next certificate
+        object = pemReader.readObject();
+      }
+      return certs.toArray(new X509Certificate[certs.size()]);
     } catch(IOException e) {
       throw new RuntimeException(e);
     }
