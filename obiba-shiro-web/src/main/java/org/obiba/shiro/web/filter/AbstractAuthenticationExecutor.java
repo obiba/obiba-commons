@@ -60,12 +60,8 @@ public abstract class AbstractAuthenticationExecutor implements AuthenticationEx
     public Subject login(AuthenticationToken token, String sessionId) throws AuthenticationException {
         if (isBanEnabled() && token instanceof UsernamePasswordToken) {
             UsernamePasswordToken uToken = (UsernamePasswordToken) token;
-            if (banCache.getIfPresent(uToken.getUsername()) != null) {
-                log.warn("User '{}' is banned!", uToken.getUsername());
-                Date banDate = banCache.getIfPresent(uToken.getUsername());
-                int remainingBanTime = banTime - (int)(new Date().getTime() - banDate.getTime())/1000;
-                throw new UserBannedException("User is banned: " + uToken.getUsername(), uToken.getUsername(), remainingBanTime);
-            }
+            if (banCache.getIfPresent(uToken.getUsername()) != null)
+                throwUserBannedException(uToken);
         }
         Subject subject = sessionId == null
                 ? SecurityUtils.getSubject()
@@ -99,7 +95,7 @@ public abstract class AbstractAuthenticationExecutor implements AuthenticationEx
     /**
      * Configure the user ban check.
      *
-     * @param maxTry  Maximum count of failed logins
+     * @param maxTry    Maximum count of failed logins
      * @param trialTime Time period during which the maximum of tries were recorded. No time limit if not positive
      * @param banTime   Ban time, enabled if positive
      */
@@ -138,9 +134,9 @@ public abstract class AbstractAuthenticationExecutor implements AuthenticationEx
             loginFailures.put(uToken.getUsername(), failures);
             log.warn("Login failed for user '{}' [{}]", uToken.getUsername(), loginFailures.get(uToken.getUsername()).size());
             if (isToBeBanned(failures)) {
-                log.warn("Banning user '{}' for {}s", uToken.getUsername(), banTime);
                 loginFailures.remove(uToken.getUsername());
                 banCache.put(uToken.getUsername(), new Date());
+                throwUserBannedException(uToken);
             }
         }
     }
@@ -157,6 +153,17 @@ public abstract class AbstractAuthenticationExecutor implements AuthenticationEx
         Date firstFailure = failures.get(failures.size() - maxTry);
         Date lastFailure = failures.get(failures.size() - 1);
         return (lastFailure.getTime() - firstFailure.getTime()) <= (trialTime * 1000);
+    }
+
+    /**
+     * Inform about the ban situation.
+     * @param uToken
+     */
+    private void throwUserBannedException(UsernamePasswordToken uToken) {
+        Date banDate = banCache.getIfPresent(uToken.getUsername());
+        int remainingBanTime = banTime - (int) (new Date().getTime() - banDate.getTime()) / 1000;
+        log.warn("User '{}' is banned for a duration of {}s", uToken.getUsername(), remainingBanTime);
+        throw new UserBannedException("User is banned: " + uToken.getUsername(), uToken.getUsername(), remainingBanTime);
     }
 
 }
