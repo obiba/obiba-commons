@@ -177,6 +177,7 @@ public class JarUtil {
           || clazz.startsWith("org.xmlpull") // xmlpull includes classes of and depends on xpp3...
           || clazz.startsWith("javax.transaction") // jboss-transaction-api and ow2-jta
           || clazz.startsWith("javax.xml") //jsr173_api and stax-api
+          || clazz.startsWith("org.apache.shiro") // shiro-lang and shiro-core badly packaged
           ) {
         return;
       } else {
