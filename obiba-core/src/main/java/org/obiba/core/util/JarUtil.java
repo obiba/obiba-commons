@@ -178,6 +178,7 @@ public class JarUtil {
           || clazz.startsWith("javax.transaction") // jboss-transaction-api and ow2-jta
           || clazz.startsWith("javax.xml") //jsr173_api and stax-api
           || clazz.startsWith("org.apache.shiro") // shiro-lang and shiro-core badly packaged
+          || clazz.startsWith("org.aopalliance") // spring-aop vs. aopalliance
           ) {
         return;
       } else {
