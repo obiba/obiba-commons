@@ -28,6 +28,7 @@ import org.apache.shiro.authc.CredentialsException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.mgt.SessionsSecurityManager;
 import org.apache.shiro.session.Session;
+import org.apache.shiro.session.UnknownSessionException;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.ThreadContext;
 import org.obiba.shiro.authc.HttpAuthorizationToken;
@@ -189,7 +190,11 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     AuthenticationToken token = new X509CertificateAuthenticationToken(chain[0]);
     String sessionId = extractSessionId(request);
     Subject subject = new Subject.Builder(securityManager).sessionId(sessionId).buildSubject();
-    subject.login(token);
+    try {
+      subject.login(token);
+    } catch(AuthenticationException e) {
+      return null;
+    }
     return subject;
   }
 
@@ -202,7 +207,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     Subject subject = new Subject.Builder(securityManager).sessionId(authToken).buildSubject();
     try {
       subject.login(token);
-    } catch(AuthenticationException e) {
+    } catch(AuthenticationException | UnknownSessionException e) {
       return null;
     }
     return subject;
@@ -217,6 +222,16 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     String sessionId = extractSessionId(request);
     AuthenticationToken token = new HttpAuthorizationToken(headerCredentials, authorization);
     try {
+      return authenticateBasicHeader(token, sessionId);
+    } catch(UnknownSessionException e) {
+      // obiba/agate#302 if for any reason session cannot be retrieved, login with a new session
+      return authenticateBasicHeader(token, null);
+    }
+  }
+
+  @Nullable
+  private Subject authenticateBasicHeader(AuthenticationToken token, String sessionId) {
+    try {
       return getAuthenticationExecutor().login(token, sessionId);
     } catch(AuthenticationException e) {
       return null;
@@ -230,16 +245,25 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     if(isValid(sessionCookie)) {
       String sessionId = extractSessionId(request, sessionCookie);
       String requestId = requestCookie == null ? "" : requestCookie.getValue();
-      AuthenticationToken token = new HttpCookieAuthenticationToken(sessionId, request.getRequestURI(), requestId);
-      Subject subject = new Subject.Builder(securityManager).sessionId(sessionId).buildSubject();
       try {
-        subject.login(token);
-      } catch(AuthenticationException e) {
-        return null;
+        return authenticateCookie(request, sessionId, requestId);
+      } catch(UnknownSessionException e) {
+        return authenticateCookie(request, null, requestId);
       }
-      return subject;
     }
     return null;
+  }
+
+  @Nullable
+  private Subject authenticateCookie(HttpServletRequest request, String sessionId, String requestId) {
+    AuthenticationToken token = new HttpCookieAuthenticationToken(sessionId, request.getRequestURI(), requestId);
+    Subject subject = new Subject.Builder(securityManager).sessionId(sessionId).buildSubject();
+    try {
+      subject.login(token);
+    } catch(AuthenticationException e) {
+      return null;
+    }
+    return subject;
   }
 
   /**
