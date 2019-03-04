@@ -68,6 +68,19 @@ public abstract class AbstractAuthenticationExecutor implements AuthenticationEx
                 : new Subject.Builder(SecurityUtils.getSecurityManager()).sessionId(sessionId).buildSubject();
 
         if (!subject.isAuthenticated()) {
+
+            // subject is not authenticated but has a sessionId? delete the session
+            if (sessionId != null) {
+                try {
+                    subject.getSession(false).stop();
+                } catch (Exception e) {
+                    // ignore, caused by an invalid session
+                }
+
+                // work with a new subject
+                subject = SecurityUtils.getSubject();
+            }
+
             try {
                 subject.login(token);
                 ThreadContext.bind(subject);
