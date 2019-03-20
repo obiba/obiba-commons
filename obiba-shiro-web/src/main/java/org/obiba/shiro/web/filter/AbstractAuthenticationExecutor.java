@@ -10,6 +10,7 @@
 
 package org.obiba.shiro.web.filter;
 
+import com.google.common.base.Strings;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
@@ -63,22 +64,20 @@ public abstract class AbstractAuthenticationExecutor implements AuthenticationEx
             if (banCache.getIfPresent(uToken.getUsername()) != null)
                 throwUserBannedException(uToken);
         }
-        Subject subject = sessionId == null
-                ? SecurityUtils.getSubject()
-                : new Subject.Builder(SecurityUtils.getSecurityManager()).sessionId(sessionId).buildSubject();
+        Subject subject = createSubjectFromSessionId(sessionId);
 
         if (!subject.isAuthenticated()) {
 
             // subject is not authenticated but has a sessionId? delete the session
             if (sessionId != null) {
                 try {
-                    subject.getSession(false).stop();
+                    subject.logout();
                 } catch (Exception e) {
                     // ignore, caused by an invalid session
                 }
 
-                // work with a new subject
-                subject = SecurityUtils.getSubject();
+                // work with a new subject, same sessionId
+                subject = createSubjectFromSessionId(sessionId);
             }
 
             try {
@@ -130,6 +129,14 @@ public abstract class AbstractAuthenticationExecutor implements AuthenticationEx
      */
     private boolean isBanEnabled() {
         return banCache != null;
+    }
+
+    private Subject createSubjectFromSessionId(String sessionId) {
+        if (!Strings.isNullOrEmpty(sessionId)) {
+            return new Subject.Builder(SecurityUtils.getSecurityManager()).sessionId(sessionId).buildSubject();
+        } else {
+            return SecurityUtils.getSubject();
+        }
     }
 
     /**
