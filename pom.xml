@@ -32,7 +32,6 @@
     <commons-beanutils.version>1.9.2</commons-beanutils.version>
     <commons-dbcp.version>1.4</commons-dbcp.version>
     <commons-httpclient.version>3.1</commons-httpclient.version>
-    <crowd.version>2.9.0-OD-074</crowd.version>
     <dbunit.version>2.5.1</dbunit.version>
     <easymock.version>3.4</easymock.version>
     <findbugs.version>3.0.1</findbugs.version>
@@ -96,7 +95,6 @@
     <module>obiba-jersey-protobuf</module>
     <module>obiba-jersey-shiro</module>
     <module>obiba-shiro</module>
-    <module>obiba-shiro-crowd</module>
     <module>obiba-shiro-web</module>
     <module>obiba-web-model</module>
     <module>obiba-wicket</module>
@@ -363,18 +361,6 @@
         <artifactId>logback-classic</artifactId>
         <version>${logback.version}</version>
         <scope>test</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>com.atlassian.crowd</groupId>
-        <artifactId>crowd-integration-client</artifactId>
-        <version>${crowd.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
 
       <dependency>
@@ -824,17 +810,6 @@
       </releases>
       <snapshots>
         <enabled>true</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>atlassian</id>
-      <name>Atlassian Maven Public</name>
-      <url>https://maven.atlassian.com/content/repositories/atlassian-public/</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
       </snapshots>
     </repository>
   </repositories>
