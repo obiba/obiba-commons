@@ -9,11 +9,11 @@
  */
 package org.obiba.oidc;
 
+import com.nimbusds.oauth2.sdk.id.State;
+
 /**
  * Manage the states that are part of the the OpenID Connect dance with the ID provider.
  */
-import com.nimbusds.oauth2.sdk.id.State;
-
 public interface OIDCStateManager {
 
   /**
