@@ -14,6 +14,8 @@ import com.nimbusds.oauth2.sdk.AuthorizationCode;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
 import com.nimbusds.oauth2.sdk.token.RefreshToken;
 
+import java.util.Map;
+
 public class OIDCCredentials {
 
   private AuthorizationCode authorizationCode;
@@ -23,6 +25,8 @@ public class OIDCCredentials {
   private RefreshToken refreshToken;
 
   private JWT idToken;
+
+  private Map<String, Object> userInfo;
 
   public void setAuthorizationCode(AuthorizationCode authorizationCode) {
     this.authorizationCode = authorizationCode;
@@ -54,5 +58,17 @@ public class OIDCCredentials {
 
   public JWT getIdToken() {
     return idToken;
+  }
+
+  public void setUserInfo(Map<String, Object> claims) {
+    this.userInfo = claims;
+  }
+
+  public Map<String, Object> getUserInfo() {
+    return userInfo;
+  }
+
+  public Object getUserInfo(String key) {
+    return userInfo == null ? null : userInfo.get(key);
   }
 }

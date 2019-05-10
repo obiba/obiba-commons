@@ -10,7 +10,8 @@
 package org.obiba.oidc.web.filter;
 
 
-import com.nimbusds.jwt.JWT;
+import com.google.common.base.Strings;
+import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.oauth2.sdk.*;
 import com.nimbusds.oauth2.sdk.auth.ClientAuthentication;
 import com.nimbusds.oauth2.sdk.auth.ClientSecretBasic;
@@ -20,12 +21,11 @@ import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.State;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
+import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
 import com.nimbusds.openid.connect.sdk.*;
 import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
-import org.obiba.oidc.OIDCConfiguration;
-import org.obiba.oidc.OIDCConfigurationProvider;
-import org.obiba.oidc.OIDCCredentials;
-import org.obiba.oidc.utils.OIDCAuthenticationHelper;
+import org.obiba.oidc.*;
+import org.obiba.oidc.utils.OIDCHelper;
 import org.obiba.oidc.web.J2EContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,32 +51,82 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
 
   private String callbackURL = "http://localhost:8080/auth/callback/";
 
+  private String providerParameter;
+
+  private OIDCStateManager oidcStateManager;
+
+  /**
+   * Access to the provider configurations.
+   *
+   * @param oidcConfigurationProvider
+   */
   public void setOIDCConfigurationProvider(OIDCConfigurationProvider oidcConfigurationProvider) {
     this.oidcConfigurationProvider = oidcConfigurationProvider;
   }
 
+  /**
+   * Set the manager of the State.
+   *
+   * @param oidcStateManager
+   */
+  public void setOIDCStateManager(OIDCStateManager oidcStateManager) {
+    this.oidcStateManager = oidcStateManager;
+  }
+
+  /**
+   * Set where to redirect after callback has been processed.
+   *
+   * @param defaultRedirectURL
+   */
   public void setDefaultRedirectURL(String defaultRedirectURL) {
     this.defaultRedirectURL = defaultRedirectURL;
+  }
+
+  /**
+   * Set the provider parameter in the query string. If not specified, the provider name is the last segment in the request path.
+   *
+   * @param providerParameter
+   */
+  public void setProviderParameter(String providerParameter) {
+    this.providerParameter = providerParameter;
+  }
+
+  /**
+   * Set the client application callback URL.
+   *
+   * @param callbackURL
+   */
+  public void setCallbackURL(String callbackURL) {
+    this.callbackURL = callbackURL;
   }
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
     J2EContext context = new J2EContext(request, response);
 
-    String path = context.getPath();
-    String provider = context.getRequestParameter("provider");
-
-    // TODO retrieve config name from path
-    OIDCConfiguration config = oidcConfigurationProvider.getConfiguration("kc-test");
-
-    AuthenticationSuccessResponse authResponse = extractAuthenticationResponse(context);
-    if (authResponse != null && authResponse.getAuthorizationCode() != null) {
-      OIDCCredentials credentials = validate(context, config, authResponse);
-      onAuthenticationSuccess(credentials, response);
+    String provider = OIDCHelper.extractProviderName(context, providerParameter);
+    if (Strings.isNullOrEmpty(provider)) {
+      log.error("No ID provider could be identified.");
+    } else {
+      doOIDCDance(context, provider);
     }
 
     response.sendRedirect(defaultRedirectURL);
     filterChain.doFilter(request, response);
+  }
+
+  private void doOIDCDance(J2EContext context, String provider) {
+    try {
+      OIDCConfiguration config = oidcConfigurationProvider.getConfiguration(provider);
+      AuthenticationSuccessResponse authResponse = extractAuthenticationResponse(context);
+      if (authResponse != null && authResponse.getAuthorizationCode() != null) {
+        OIDCCredentials credentials = validate(context, config, authResponse);
+        extractUserInfo(context, config, credentials);
+        onAuthenticationSuccess(credentials, context.getResponse());
+      }
+    } catch (Exception e) {
+      log.error("OIDC callback request from '{}' failed.", provider, e);
+    }
   }
 
   protected void onAuthenticationError(String error) {
@@ -99,7 +149,7 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
     try {
       response = AuthenticationResponseParser.parse(new URI(computedCallbackUrl), parameters);
     } catch (final URISyntaxException | ParseException e) {
-      throw new RuntimeException(e);
+      throw new OIDCException(e);
     }
 
     if (response instanceof AuthenticationErrorResponse) {
@@ -111,52 +161,81 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
     AuthenticationSuccessResponse successResponse = (AuthenticationSuccessResponse) response;
     final State state = successResponse.getState();
     if (state == null) {
-      throw new RuntimeException("Missing state parameter");
+      throw new OIDCException("Missing state parameter");
+    } else if (oidcStateManager != null && !oidcStateManager.checkState(context.getRemoteAddr() + "_" + context.getRequest().getSession().getId(), state)) {
+      throw new OIDCException("Not valid or expired state: " + state + " for " + context.getRemoteAddr());
     }
-    // TODO check state
-    final AuthorizationCode code = successResponse.getAuthorizationCode();
-    final JWT idToken = successResponse.getIDToken();
-    final AccessToken accessToken = successResponse.getAccessToken();
 
     return successResponse;
   }
 
   protected OIDCCredentials validate(J2EContext context, OIDCConfiguration config, AuthenticationSuccessResponse authResponse) {
     AuthorizationCode code = authResponse.getAuthorizationCode();
-    final String computedCallbackUrl = context.getFullRequestURL();
     ClientAuthentication clientAuthentication = new ClientSecretBasic(new ClientID(config.getClientId()), new Secret(config.getSecret()));
 
     try {
       // Token request
-      final TokenRequest request = new TokenRequest(OIDCAuthenticationHelper.discoverProviderMetaData(config).getTokenEndpointURI(),
+      final TokenRequest request = new TokenRequest(OIDCHelper.discoverProviderMetaData(config).getTokenEndpointURI(),
           clientAuthentication, new AuthorizationCodeGrant(code, new URI(callbackURL + config.getName())));
-        HTTPRequest tokenHttpRequest = request.toHTTPRequest();
-        //tokenHttpRequest.setConnectTimeout(config.getConnectTimeout());
-        //tokenHttpRequest.setReadTimeout(config.getReadTimeout());
+      HTTPRequest tokenHttpRequest = request.toHTTPRequest();
+      tokenHttpRequest.setConnectTimeout(config.getConnectTimeout());
+      tokenHttpRequest.setReadTimeout(config.getReadTimeout());
 
-        final HTTPResponse httpResponse = tokenHttpRequest.send();
-        log.debug("Token response: status={}, content={}", httpResponse.getStatusCode(), httpResponse.getContent());
+      final HTTPResponse httpResponse = tokenHttpRequest.send();
+      log.debug("Token response: status={}, content={}", httpResponse.getStatusCode(), httpResponse.getContent());
 
-        final TokenResponse response = OIDCTokenResponseParser.parse(httpResponse);
-        if (response instanceof TokenErrorResponse) {
-          String error = ((TokenErrorResponse) response).getErrorObject().toJSONObject().toString();
-          onValidationError(error);
-          throw new RuntimeException("Bad token response, error=" + error);
-        }
+      final TokenResponse response = OIDCTokenResponseParser.parse(httpResponse);
+      if (response instanceof TokenErrorResponse) {
+        String error = ((TokenErrorResponse) response).getErrorObject().toJSONObject().toString();
+        onValidationError(error);
+        throw new OIDCException("Bad token response, error=" + error);
+      }
 
-        log.debug("Token response successful");
-        final OIDCTokenResponse tokenSuccessResponse = (OIDCTokenResponse) response;
+      log.debug("Token response successful");
+      final OIDCTokenResponse tokenSuccessResponse = (OIDCTokenResponse) response;
 
-        // save tokens in credentials
-        final OIDCTokens oidcTokens = tokenSuccessResponse.getOIDCTokens();
-        OIDCCredentials credentials = new OIDCCredentials();
-        credentials.setAuthorizationCode(authResponse.getAuthorizationCode());
-        credentials.setAccessToken(oidcTokens.getAccessToken());
-        credentials.setRefreshToken(oidcTokens.getRefreshToken());
-        credentials.setIdToken(oidcTokens.getIDToken());
-        return credentials;
+      // save tokens in credentials
+      final OIDCTokens oidcTokens = tokenSuccessResponse.getOIDCTokens();
+      OIDCCredentials credentials = new OIDCCredentials();
+      credentials.setAuthorizationCode(authResponse.getAuthorizationCode());
+      credentials.setAccessToken(oidcTokens.getAccessToken());
+      credentials.setRefreshToken(oidcTokens.getRefreshToken());
+      credentials.setIdToken(oidcTokens.getIDToken());
+      return credentials;
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new OIDCException(e);
+    }
+  }
+
+  protected void extractUserInfo(J2EContext context, OIDCConfiguration config, OIDCCredentials credentials) {
+    final AccessToken accessToken = credentials.getAccessToken();
+    try {
+      URI userInfoEndpointURI = OIDCHelper.discoverProviderMetaData(config).getUserInfoEndpointURI();
+      if (userInfoEndpointURI != null && accessToken != null) {
+        final UserInfoRequest userInfoRequest = new UserInfoRequest(userInfoEndpointURI, (BearerAccessToken) accessToken);
+        final HTTPRequest userInfoHttpRequest = userInfoRequest.toHTTPRequest();
+        userInfoHttpRequest.setConnectTimeout(config.getConnectTimeout());
+        userInfoHttpRequest.setReadTimeout(config.getReadTimeout());
+        final HTTPResponse httpResponse = userInfoHttpRequest.send();
+        log.debug("Token response: status={}, content={}", httpResponse.getStatusCode(),
+            httpResponse.getContent());
+
+        final UserInfoResponse userInfoResponse = UserInfoResponse.parse(httpResponse);
+        if (userInfoResponse instanceof UserInfoErrorResponse) {
+          log.error("Bad User Info response, error={}", ((UserInfoErrorResponse) userInfoResponse).getErrorObject().toJSONObject());
+        } else {
+          final UserInfoSuccessResponse userInfoSuccessResponse = (UserInfoSuccessResponse) userInfoResponse;
+          final JWTClaimsSet userInfoClaimsSet;
+          if (userInfoSuccessResponse.getUserInfo() != null) {
+            userInfoClaimsSet = userInfoSuccessResponse.getUserInfo().toJWTClaimsSet();
+          } else {
+            userInfoClaimsSet = userInfoSuccessResponse.getUserInfoJWT().getJWTClaimsSet();
+          }
+          credentials.setUserInfo(userInfoClaimsSet.getClaims());
+        }
+      }
+    } catch (Exception e) {
+      throw new OIDCException(e);
     }
   }
 

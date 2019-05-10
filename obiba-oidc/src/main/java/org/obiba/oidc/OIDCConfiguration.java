@@ -16,6 +16,8 @@ import java.util.Map;
 
 public class OIDCConfiguration {
 
+  private static final int DEFAULT_TIMEOUT = 500;
+
   private String name;
 
   // OpenID client identifier
@@ -32,6 +34,10 @@ public class OIDCConfiguration {
 
   // Map containing user defined parameters
   private Map<String, String> customParams = new HashMap<>();
+
+  private int connectTimeout = DEFAULT_TIMEOUT;
+
+  private int readTimeout = DEFAULT_TIMEOUT;
 
   public OIDCConfiguration() {
     this("oidc");
@@ -91,5 +97,21 @@ public class OIDCConfiguration {
 
   public void setCustomParams(Map<String, String> customParams) {
     this.customParams = customParams;
+  }
+
+  public int getConnectTimeout() {
+    return connectTimeout;
+  }
+
+  public void setConnectTimeout(int connectTimeout) {
+    this.connectTimeout = connectTimeout;
+  }
+
+  public int getReadTimeout() {
+    return readTimeout;
+  }
+
+  public void setReadTimeout(int readTimeout) {
+    this.readTimeout = readTimeout;
   }
 }

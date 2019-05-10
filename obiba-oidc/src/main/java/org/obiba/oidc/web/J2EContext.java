@@ -9,6 +9,8 @@
  */
 package org.obiba.oidc.web;
 
+import org.obiba.oidc.OIDCException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -94,7 +96,7 @@ public class J2EContext {
       try {
         this.response.getWriter().write(content);
       } catch (final IOException e) {
-        throw new RuntimeException(e);
+        throw new OIDCException(e);
       }
     }
   }
@@ -106,7 +108,7 @@ public class J2EContext {
       try {
         this.response.sendError(code);
       } catch (final IOException e) {
-        throw new RuntimeException(e);
+        throw new OIDCException(e);
       }
     }
   }
@@ -201,7 +203,7 @@ public class J2EContext {
           .lines()
           .reduce("", (accumulator, actual) -> accumulator.concat(actual));
     } catch (final IOException e) {
-      throw new RuntimeException(e);
+      throw new OIDCException(e);
     }
   }
 

@@ -3,6 +3,7 @@ package org.obiba.oidc.shiro.authc;
 import com.google.common.base.Strings;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.obiba.oidc.OIDCCredentials;
+import org.obiba.oidc.OIDCException;
 
 import java.text.ParseException;
 
@@ -19,7 +20,7 @@ public class OIDCAuthenticationToken implements AuthenticationToken {
     try {
       return credentials.getIdToken().getJWTClaimsSet().getSubject();
     } catch (ParseException e) {
-      throw new RuntimeException("ID token cannot provide subject name");
+      throw new OIDCException("ID token cannot provide subject name");
     }
   }
 

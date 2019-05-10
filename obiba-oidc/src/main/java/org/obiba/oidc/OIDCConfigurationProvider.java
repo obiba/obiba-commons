@@ -18,12 +18,14 @@ public interface OIDCConfigurationProvider {
 
   /**
    * Get the OIDC configurations living in the application.
+   *
    * @return
    */
   List<OIDCConfiguration> getConfigurations();
 
   /**
    * Get the OIDC configuration from name.
+   *
    * @return
    */
   OIDCConfiguration getConfiguration(String name);

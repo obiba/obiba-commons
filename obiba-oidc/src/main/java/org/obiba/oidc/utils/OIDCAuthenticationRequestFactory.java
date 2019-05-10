@@ -32,7 +32,7 @@ public class OIDCAuthenticationRequestFactory {
   }
 
   public AuthenticationRequest create(OIDCConfiguration configuration) throws URISyntaxException, IOException, ParseException {
-    OIDCProviderMetadata providerMetadata = OIDCAuthenticationHelper.discoverProviderMetaData(configuration);
+    OIDCProviderMetadata providerMetadata = OIDCHelper.discoverProviderMetaData(configuration);
 
     // Generate random state string for pairing the response to the request
     State state = new State();

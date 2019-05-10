@@ -9,6 +9,8 @@
  */
 package org.obiba.oidc.web;
 
+import org.obiba.oidc.OIDCException;
+
 public class Cookie {
 
   private String name;
@@ -23,7 +25,7 @@ public class Cookie {
 
   public Cookie(final String name, final String value) {
     if (name == null || name.length() == 0) {
-      throw new RuntimeException("cookie name and value cannot be empty");
+      throw new OIDCException("Cookie name and value cannot be empty");
     }
     this.name = name;
     this.value = value;
