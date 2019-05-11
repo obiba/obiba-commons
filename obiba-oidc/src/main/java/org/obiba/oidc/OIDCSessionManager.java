@@ -14,23 +14,37 @@ import com.nimbusds.oauth2.sdk.id.State;
 /**
  * Manage the states that are part of the the OpenID Connect dance with the ID provider.
  */
-public interface OIDCStateManager {
+public interface OIDCSessionManager {
 
   /**
-   * Save the state granted to a remote client.
+   * Save session.
    *
-   * @param client
-   * @param state
+   * @param session
    */
-  void saveState(String client, State state);
+  void saveSession(OIDCSession session);
 
   /**
    * Check the state is the same for the remote client.
    * 
-   * @param client
+   * @param client Session identifier
    * @param state
    * @return
    */
   boolean checkState(String client, State state);
 
+  /**
+   * Get the session for the client.
+   *
+   * @param client
+   * @return
+   */
+  OIDCSession getSession(String client);
+
+  /**
+   * Check there is a session for the client.
+   *
+   * @param client
+   * @return
+   */
+  boolean hasSession(String client);
 }

@@ -14,7 +14,8 @@ import com.google.common.base.Strings;
 import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
 import org.obiba.oidc.OIDCConfiguration;
 import org.obiba.oidc.OIDCConfigurationProvider;
-import org.obiba.oidc.OIDCStateManager;
+import org.obiba.oidc.OIDCSession;
+import org.obiba.oidc.OIDCSessionManager;
 import org.obiba.oidc.utils.OIDCAuthenticationRequestFactory;
 import org.obiba.oidc.utils.OIDCHelper;
 import org.obiba.oidc.web.J2EContext;
@@ -41,7 +42,7 @@ public class OIDCLoginFilter extends OncePerRequestFilter {
 
   private String providerParameter;
 
-  private OIDCStateManager oidcStateManager;
+  private OIDCSessionManager oidcSessionManager;
 
   /**
    * Get the ID provider configuration to now how to submit the login request.
@@ -53,12 +54,12 @@ public class OIDCLoginFilter extends OncePerRequestFilter {
   }
 
   /**
-   * Set the State manager.
+   * Set the session manager.
    *
-   * @param oidcStateManager
+   * @param oidcSessionManager
    */
-  public void setOIDCStateManager(OIDCStateManager oidcStateManager) {
-    this.oidcStateManager = oidcStateManager;
+  public void setOIDCSessionManager(OIDCSessionManager oidcSessionManager) {
+    this.oidcSessionManager = oidcSessionManager;
   }
 
   /**
@@ -92,8 +93,10 @@ public class OIDCLoginFilter extends OncePerRequestFilter {
         OIDCConfiguration config = oidcConfigurationProvider.getConfiguration(provider);
         OIDCAuthenticationRequestFactory factory = new OIDCAuthenticationRequestFactory(makeCallbackURL(provider));
         AuthenticationRequest authRequest = factory.create(config);
-        if (oidcStateManager != null)
-          oidcStateManager.saveState(context.getRemoteAddr() + "_" + context.getRequest().getSession().getId(), authRequest.getState());
+        if (oidcSessionManager != null) {
+          OIDCSession session = new OIDCSession(context.getClientId(), authRequest.getState(), authRequest.getNonce(), null);
+          oidcSessionManager.saveSession(session);
+        }
         response.sendRedirect(authRequest.toURI().toString());
       } catch (Exception e) {
         log.error("OIDC login request to '{}' failed.", provider, e);

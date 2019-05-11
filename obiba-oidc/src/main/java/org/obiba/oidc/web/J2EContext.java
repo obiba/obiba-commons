@@ -36,6 +36,10 @@ public class J2EContext {
     this.response = response;
   }
 
+  public String getClientId() {
+    return getRemoteAddr() + "_" + getRequest().getSession().getId();
+  }
+
   public String getRequestParameter(final String name) {
     return this.request.getParameter(name);
   }

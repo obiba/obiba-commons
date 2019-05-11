@@ -23,9 +23,11 @@ import com.nimbusds.oauth2.sdk.id.State;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
 import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
 import com.nimbusds.openid.connect.sdk.*;
+import com.nimbusds.openid.connect.sdk.claims.IDTokenClaimsSet;
 import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
 import org.obiba.oidc.*;
 import org.obiba.oidc.utils.OIDCHelper;
+import org.obiba.oidc.utils.OIDCTokenValidator;
 import org.obiba.oidc.web.J2EContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +55,7 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
 
   private String providerParameter;
 
-  private OIDCStateManager oidcStateManager;
+  private OIDCSessionManager oidcSessionManager;
 
   /**
    * Access to the provider configurations.
@@ -65,12 +67,12 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
   }
 
   /**
-   * Set the manager of the State.
+   * Set the manager of the session.
    *
-   * @param oidcStateManager
+   * @param oidcSessionManager
    */
-  public void setOIDCStateManager(OIDCStateManager oidcStateManager) {
-    this.oidcStateManager = oidcStateManager;
+  public void setOIDCSessionManager(OIDCSessionManager oidcSessionManager) {
+    this.oidcSessionManager = oidcSessionManager;
   }
 
   /**
@@ -115,10 +117,36 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
     filterChain.doFilter(request, response);
   }
 
+  /**
+   * Called on any error (session, connection, validation).
+   *
+   * @param error
+   */
+  protected void onAuthenticationError(String error) {
+    log.error(error);
+  }
+
+  /**
+   * Called when all validation steps have been successful.
+   *
+   * @param credentials
+   * @param response
+   */
+  protected void onAuthenticationSuccess(OIDCCredentials credentials, HttpServletResponse response) {
+
+  }
+
   private void doOIDCDance(J2EContext context, String provider) {
+    if (!oidcSessionManager.hasSession(context.getClientId())) {
+      String error = "Cannot find OIDC session. Is it expired?";
+      onAuthenticationError(error);
+      throw new OIDCException(error);
+    }
+
+
     try {
       OIDCConfiguration config = oidcConfigurationProvider.getConfiguration(provider);
-      AuthenticationSuccessResponse authResponse = extractAuthenticationResponse(context);
+      AuthenticationSuccessResponse authResponse = extractAuthenticationResponse(context, config);
       if (authResponse != null && authResponse.getAuthorizationCode() != null) {
         OIDCCredentials credentials = validate(context, config, authResponse);
         extractUserInfo(context, config, credentials);
@@ -129,19 +157,7 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
     }
   }
 
-  protected void onAuthenticationError(String error) {
-    log.error("Bad authentication response, error={}", error);
-  }
-
-  protected void onValidationError(String error) {
-    log.error("Bad token response, error={}", error);
-  }
-
-  protected void onAuthenticationSuccess(OIDCCredentials credentials, HttpServletResponse response) {
-
-  }
-
-  protected AuthenticationSuccessResponse extractAuthenticationResponse(J2EContext context) {
+  private AuthenticationSuccessResponse extractAuthenticationResponse(J2EContext context, OIDCConfiguration config) {
     Map<String, String> parameters = retrieveParameters(context);
     String computedCallbackUrl = context.getFullRequestURL();
 
@@ -154,7 +170,7 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
 
     if (response instanceof AuthenticationErrorResponse) {
       onAuthenticationError(((AuthenticationErrorResponse) response).getErrorObject().toJSONObject().toString());
-      return null;
+      throw new OIDCException("Authentication response error");
     }
 
     log.debug("Authentication response successful");
@@ -162,20 +178,20 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
     final State state = successResponse.getState();
     if (state == null) {
       throw new OIDCException("Missing state parameter");
-    } else if (oidcStateManager != null && !oidcStateManager.checkState(context.getRemoteAddr() + "_" + context.getRequest().getSession().getId(), state)) {
+    } else if (oidcSessionManager != null && !oidcSessionManager.checkState(context.getClientId(), state)) {
       throw new OIDCException("Not valid or expired state: " + state + " for " + context.getRemoteAddr());
     }
 
     return successResponse;
   }
 
-  protected OIDCCredentials validate(J2EContext context, OIDCConfiguration config, AuthenticationSuccessResponse authResponse) {
+  private OIDCCredentials validate(J2EContext context, OIDCConfiguration config, AuthenticationSuccessResponse authResponse) {
     AuthorizationCode code = authResponse.getAuthorizationCode();
     ClientAuthentication clientAuthentication = new ClientSecretBasic(new ClientID(config.getClientId()), new Secret(config.getSecret()));
 
     try {
       // Token request
-      final TokenRequest request = new TokenRequest(OIDCHelper.discoverProviderMetaData(config).getTokenEndpointURI(),
+      final TokenRequest request = new TokenRequest(config.findProviderMetaData().getTokenEndpointURI(),
           clientAuthentication, new AuthorizationCodeGrant(code, new URI(callbackURL + config.getName())));
       HTTPRequest tokenHttpRequest = request.toHTTPRequest();
       tokenHttpRequest.setConnectTimeout(config.getConnectTimeout());
@@ -187,15 +203,25 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
       final TokenResponse response = OIDCTokenResponseParser.parse(httpResponse);
       if (response instanceof TokenErrorResponse) {
         String error = ((TokenErrorResponse) response).getErrorObject().toJSONObject().toString();
-        onValidationError(error);
+        onAuthenticationError(error);
         throw new OIDCException("Bad token response, error=" + error);
       }
 
       log.debug("Token response successful");
       final OIDCTokenResponse tokenSuccessResponse = (OIDCTokenResponse) response;
+      final OIDCTokens oidcTokens = tokenSuccessResponse.getOIDCTokens();
+
+      if (config.isUseNonce()) {
+        OIDCTokenValidator validator = new OIDCTokenValidator(config);
+        OIDCSession session = oidcSessionManager.getSession(context.getClientId());
+        IDTokenClaimsSet claimsSet = validator.validate(oidcTokens.getIDToken(), session.getNonce());
+        if (claimsSet == null) {
+          onAuthenticationError("ID token cannot be validated");
+          throw new OIDCException("ID token cannot be validated");
+        }
+      }
 
       // save tokens in credentials
-      final OIDCTokens oidcTokens = tokenSuccessResponse.getOIDCTokens();
       OIDCCredentials credentials = new OIDCCredentials();
       credentials.setAuthorizationCode(authResponse.getAuthorizationCode());
       credentials.setAccessToken(oidcTokens.getAccessToken());
@@ -207,10 +233,10 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
     }
   }
 
-  protected void extractUserInfo(J2EContext context, OIDCConfiguration config, OIDCCredentials credentials) {
+  private void extractUserInfo(J2EContext context, OIDCConfiguration config, OIDCCredentials credentials) {
     final AccessToken accessToken = credentials.getAccessToken();
     try {
-      URI userInfoEndpointURI = OIDCHelper.discoverProviderMetaData(config).getUserInfoEndpointURI();
+      URI userInfoEndpointURI = config.findProviderMetaData().getUserInfoEndpointURI();
       if (userInfoEndpointURI != null && accessToken != null) {
         final UserInfoRequest userInfoRequest = new UserInfoRequest(userInfoEndpointURI, (BearerAccessToken) accessToken);
         final HTTPRequest userInfoHttpRequest = userInfoRequest.toHTTPRequest();
@@ -239,7 +265,7 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
     }
   }
 
-  protected Map<String, String> retrieveParameters(final J2EContext context) {
+  private Map<String, String> retrieveParameters(final J2EContext context) {
     final Map<String, String[]> requestParameters = context.getRequestParameters();
     Map<String, String> map = new HashMap<>();
     for (final Map.Entry<String, String[]> entry : requestParameters.entrySet()) {

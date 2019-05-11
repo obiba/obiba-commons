@@ -9,14 +9,21 @@
  */
 package org.obiba.oidc;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import com.nimbusds.oauth2.sdk.ParseException;
+import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
+import org.obiba.oidc.utils.OIDCHelper;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class OIDCConfiguration {
 
   private static final int DEFAULT_TIMEOUT = 500;
+
+  private static int DEFAULT_MAX_CLOCK_SKEW = 30;
 
   private String name;
 
@@ -32,6 +39,9 @@ public class OIDCConfiguration {
   // Scope
   private String scope = "openid";
 
+  // Nonce
+  private boolean useNonce;
+
   // Map containing user defined parameters
   private Map<String, String> customParams = new HashMap<>();
 
@@ -39,12 +49,30 @@ public class OIDCConfiguration {
 
   private int readTimeout = DEFAULT_TIMEOUT;
 
+  private String preferredJwsAlgorithm;
+
+  private int maxClockSkew = DEFAULT_MAX_CLOCK_SKEW;
+
+  private transient OIDCProviderMetadata oidcProviderMetadata;
+
   public OIDCConfiguration() {
     this("oidc");
   }
 
   public OIDCConfiguration(String name) {
     this.name = name;
+  }
+
+  public synchronized  OIDCProviderMetadata findProviderMetaData() {
+    if (oidcProviderMetadata == null) {
+      try {
+        // TODO make it expire?
+        oidcProviderMetadata = OIDCHelper.discoverProviderMetaData(this);
+      } catch (Exception e) {
+        throw new OIDCException("Cannot get OIDC provider metadata");
+      }
+    }
+    return oidcProviderMetadata;
   }
 
   public String getName() {
@@ -71,6 +99,10 @@ public class OIDCConfiguration {
     this.secret = secret;
   }
 
+  public boolean hasSecret() {
+    return !Strings.isNullOrEmpty(secret);
+  }
+
   public String getDiscoveryURI() {
     return discoveryURI;
   }
@@ -85,6 +117,14 @@ public class OIDCConfiguration {
 
   public void setScope(String scope) {
     this.scope = scope;
+  }
+
+  public void setUseNonce(boolean useNonce) {
+    this.useNonce = useNonce;
+  }
+
+  public boolean isUseNonce() {
+    return useNonce;
   }
 
   public Map<String, String> getCustomParams() {
@@ -114,4 +154,25 @@ public class OIDCConfiguration {
   public void setReadTimeout(int readTimeout) {
     this.readTimeout = readTimeout;
   }
+
+  public String getPreferredJwsAlgorithm() {
+    return preferredJwsAlgorithm;
+  }
+
+  public void setPreferredJwsAlgorithm(String preferredJwsAlgorithm) {
+    this.preferredJwsAlgorithm = preferredJwsAlgorithm;
+  }
+
+  public boolean hasPreferredJwsAlgorithm() {
+    return !Strings.isNullOrEmpty(preferredJwsAlgorithm);
+  }
+
+  public int getMaxClockSkew() {
+    return maxClockSkew;
+  }
+
+  public void setMaxClockSkew(int maxClockSkew) {
+    this.maxClockSkew = maxClockSkew;
+  }
+
 }

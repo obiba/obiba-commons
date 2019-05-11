@@ -32,12 +32,12 @@ public class OIDCAuthenticationRequestFactory {
   }
 
   public AuthenticationRequest create(OIDCConfiguration configuration) throws URISyntaxException, IOException, ParseException {
-    OIDCProviderMetadata providerMetadata = OIDCHelper.discoverProviderMetaData(configuration);
+    OIDCProviderMetadata providerMetadata = configuration.findProviderMetaData();
 
     // Generate random state string for pairing the response to the request
     State state = new State();
     // Generate nonce
-    Nonce nonce = new Nonce();
+    Nonce nonce = configuration.isUseNonce() ? new Nonce() : null;
     // Specify scope
     Scope scope = Scope.parse(configuration.getScope());
 

@@ -12,23 +12,24 @@ package org.obiba.oidc.utils;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.nimbusds.oauth2.sdk.id.State;
-import org.obiba.oidc.OIDCStateManager;
+import org.obiba.oidc.OIDCSession;
+import org.obiba.oidc.OIDCSessionManager;
 
 import java.util.concurrent.TimeUnit;
 
-public class DefaultOIDCStateManager implements OIDCStateManager {
+public class DefaultOIDCSessionManager implements OIDCSessionManager {
 
   private static final long DEFAULT_LIFESPAN = 60;
 
-  private Cache<String, State> cache;
+  private Cache<String, OIDCSession> cache;
 
   private long expireAfterWrite;
 
-  public DefaultOIDCStateManager() {
+  public DefaultOIDCSessionManager() {
     this(DEFAULT_LIFESPAN);
   }
 
-  public DefaultOIDCStateManager(long expireAfterWrite) {
+  public DefaultOIDCSessionManager(long expireAfterWrite) {
     setExpireAfterWrite(expireAfterWrite);
   }
 
@@ -42,10 +43,10 @@ public class DefaultOIDCStateManager implements OIDCStateManager {
   }
 
   @Override
-  public void saveState(String client, State state) {
+  public void saveSession(OIDCSession session) {
     synchronized (this) {
       init();
-      cache.put(client, state);
+      cache.put(session.getId(), session);
     }
   }
 
@@ -53,8 +54,26 @@ public class DefaultOIDCStateManager implements OIDCStateManager {
   public boolean checkState(String client, State state) {
     synchronized (this) {
       init();
-      State found = cache.getIfPresent(client);
-      return found != null && found.equals(state);
+      OIDCSession found = cache.getIfPresent(client);
+      if (found == null) return false;
+      if (found.hasState()) return found.getState().equals(state);
+      else return state == null;
+    }
+  }
+
+  @Override
+  public OIDCSession getSession(String client) {
+    synchronized (this) {
+      init();
+      return cache.getIfPresent(client);
+    }
+  }
+
+  @Override
+  public boolean hasSession(String client) {
+    synchronized (this) {
+      init();
+      return cache.getIfPresent(client) != null;
     }
   }
 
