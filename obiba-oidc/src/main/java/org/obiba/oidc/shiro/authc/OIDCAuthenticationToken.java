@@ -35,6 +35,9 @@ public class OIDCAuthenticationToken implements AuthenticationToken {
       if (Strings.isNullOrEmpty(uname)) {
         uname = credentials.getIdToken().getJWTClaimsSet().getStringClaim("username");
       }
+      if (Strings.isNullOrEmpty(uname)) {
+        uname = credentials.getIdToken().getJWTClaimsSet().getSubject();
+      }
       return uname;
     } catch (ParseException e) {
       return getPrincipal().toString();

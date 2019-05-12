@@ -113,36 +113,49 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
       doOIDCDance(context, provider);
     }
 
-    response.sendRedirect(defaultRedirectURL);
+    onRedirect(oidcSessionManager.getSession(context.getClientId()), context.getResponse());
     filterChain.doFilter(request, response);
   }
 
   /**
-   * Called on any error (session, connection, validation).
+   * Called on any error (session, connection, validation), before throwing a {@link OIDCException}.
    *
+   * @param session
    * @param error
    */
-  protected void onAuthenticationError(String error) {
+  protected void onAuthenticationError(OIDCSession session, String error, HttpServletResponse response) {
     log.error(error);
+    session.setCallbackError(error);
   }
 
   /**
    * Called when all validation steps have been successful.
    *
+   * @param session
    * @param credentials
+   */
+  protected void onAuthenticationSuccess(OIDCSession session, OIDCCredentials credentials, HttpServletResponse response) {
+
+  }
+
+  /**
+   * Called to perform redirect. Can be overridden to change behavior when there was an error or depending on the
+   * original request parameters.
+   *
+   * @param session
    * @param response
    */
-  protected void onAuthenticationSuccess(OIDCCredentials credentials, HttpServletResponse response) {
-
+  protected void onRedirect(OIDCSession session, HttpServletResponse response) throws IOException {
+    response.sendRedirect(defaultRedirectURL);
   }
 
   private void doOIDCDance(J2EContext context, String provider) {
     if (!oidcSessionManager.hasSession(context.getClientId())) {
       String error = "Cannot find OIDC session. Is it expired?";
-      onAuthenticationError(error);
-      throw new OIDCException(error);
+      OIDCSession session = oidcSessionManager.getSession(context.getClientId());
+      onAuthenticationError(session, error, context.getResponse());
+      throw new OIDCSessionException(error, session);
     }
-
 
     try {
       OIDCConfiguration config = oidcConfigurationProvider.getConfiguration(provider);
@@ -150,7 +163,7 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
       if (authResponse != null && authResponse.getAuthorizationCode() != null) {
         OIDCCredentials credentials = validate(context, config, authResponse);
         extractUserInfo(context, config, credentials);
-        onAuthenticationSuccess(credentials, context.getResponse());
+        onAuthenticationSuccess(oidcSessionManager.getSession(context.getClientId()), credentials, context.getResponse());
       }
     } catch (Exception e) {
       log.error("OIDC callback request from '{}' failed.", provider, e);
@@ -169,8 +182,10 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
     }
 
     if (response instanceof AuthenticationErrorResponse) {
-      onAuthenticationError(((AuthenticationErrorResponse) response).getErrorObject().toJSONObject().toString());
-      throw new OIDCException("Authentication response error");
+      String error = ((AuthenticationErrorResponse) response).getErrorObject().toJSONObject().toString();
+      OIDCSession session = oidcSessionManager.getSession(context.getClientId());
+      onAuthenticationError(session, error, context.getResponse());
+      throw new OIDCSessionException("Authentication response error: " + error, session);
     }
 
     log.debug("Authentication response successful");
@@ -203,8 +218,9 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
       final TokenResponse response = OIDCTokenResponseParser.parse(httpResponse);
       if (response instanceof TokenErrorResponse) {
         String error = ((TokenErrorResponse) response).getErrorObject().toJSONObject().toString();
-        onAuthenticationError(error);
-        throw new OIDCException("Bad token response, error=" + error);
+        OIDCSession session = oidcSessionManager.getSession(context.getClientId());
+        onAuthenticationError(session, error, context.getResponse());
+        throw new OIDCSessionException("Bad token response, error=" + error, session);
       }
 
       log.debug("Token response successful");
@@ -216,8 +232,8 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
         OIDCSession session = oidcSessionManager.getSession(context.getClientId());
         IDTokenClaimsSet claimsSet = validator.validate(oidcTokens.getIDToken(), session.getNonce());
         if (claimsSet == null) {
-          onAuthenticationError("ID token cannot be validated");
-          throw new OIDCException("ID token cannot be validated");
+          onAuthenticationError(session,"ID token cannot be validated", context.getResponse());
+          throw new OIDCSessionException("ID token cannot be validated", session);
         }
       }
 

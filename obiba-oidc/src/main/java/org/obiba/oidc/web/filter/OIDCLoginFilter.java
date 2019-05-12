@@ -94,7 +94,7 @@ public class OIDCLoginFilter extends OncePerRequestFilter {
         OIDCAuthenticationRequestFactory factory = new OIDCAuthenticationRequestFactory(makeCallbackURL(provider));
         AuthenticationRequest authRequest = factory.create(config);
         if (oidcSessionManager != null) {
-          OIDCSession session = new OIDCSession(context.getClientId(), authRequest.getState(), authRequest.getNonce(), null);
+          OIDCSession session = new OIDCSession(context, authRequest.getState(), authRequest.getNonce());
           oidcSessionManager.saveSession(session);
         }
         response.sendRedirect(authRequest.toURI().toString());
