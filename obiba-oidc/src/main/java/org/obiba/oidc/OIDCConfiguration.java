@@ -69,7 +69,7 @@ public class OIDCConfiguration {
         // TODO make it expire?
         oidcProviderMetadata = OIDCHelper.discoverProviderMetaData(this);
       } catch (Exception e) {
-        throw new OIDCException("Cannot get OIDC provider metadata");
+        throw new OIDCException("Cannot get OIDC provider metadata for " + name);
       }
     }
     return oidcProviderMetadata;

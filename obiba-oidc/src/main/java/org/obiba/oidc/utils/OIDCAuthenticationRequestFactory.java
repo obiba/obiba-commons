@@ -9,7 +9,6 @@
  */
 package org.obiba.oidc.utils;
 
-import com.nimbusds.oauth2.sdk.ParseException;
 import com.nimbusds.oauth2.sdk.ResponseType;
 import com.nimbusds.oauth2.sdk.Scope;
 import com.nimbusds.oauth2.sdk.id.ClientID;
@@ -18,8 +17,8 @@ import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
 import com.nimbusds.openid.connect.sdk.Nonce;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import org.obiba.oidc.OIDCConfiguration;
+import org.obiba.oidc.OIDCException;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -31,7 +30,7 @@ public class OIDCAuthenticationRequestFactory {
     this.callbackURI = callbackURI;
   }
 
-  public AuthenticationRequest create(OIDCConfiguration configuration) throws URISyntaxException, IOException, ParseException {
+  public AuthenticationRequest create(OIDCConfiguration configuration) {
     OIDCProviderMetadata providerMetadata = configuration.findProviderMetaData();
 
     // Generate random state string for pairing the response to the request
@@ -41,10 +40,15 @@ public class OIDCAuthenticationRequestFactory {
     // Specify scope
     Scope scope = Scope.parse(configuration.getScope());
 
-    AuthenticationRequest authenticationRequest = new AuthenticationRequest(
-        providerMetadata.getAuthorizationEndpointURI(),
-        new ResponseType(ResponseType.Value.CODE),
-        scope, new ClientID(configuration.getClientId()), new URI(callbackURI), state, nonce);
+    AuthenticationRequest authenticationRequest = null;
+    try {
+      authenticationRequest = new AuthenticationRequest(
+          providerMetadata.getAuthorizationEndpointURI(),
+          new ResponseType(ResponseType.Value.CODE),
+          scope, new ClientID(configuration.getClientId()), new URI(callbackURI), state, nonce);
+    } catch (URISyntaxException e) {
+      throw new OIDCException(e);
+    }
     return authenticationRequest;
   }
 

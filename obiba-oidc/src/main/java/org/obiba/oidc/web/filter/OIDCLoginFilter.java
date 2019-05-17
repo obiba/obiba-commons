@@ -12,10 +12,7 @@ package org.obiba.oidc.web.filter;
 
 import com.google.common.base.Strings;
 import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
-import org.obiba.oidc.OIDCConfiguration;
-import org.obiba.oidc.OIDCConfigurationProvider;
-import org.obiba.oidc.OIDCSession;
-import org.obiba.oidc.OIDCSessionManager;
+import org.obiba.oidc.*;
 import org.obiba.oidc.utils.OIDCAuthenticationRequestFactory;
 import org.obiba.oidc.utils.OIDCHelper;
 import org.obiba.oidc.web.J2EContext;
@@ -98,8 +95,9 @@ public class OIDCLoginFilter extends OncePerRequestFilter {
           oidcSessionManager.saveSession(session);
         }
         response.sendRedirect(authRequest.toURI().toString());
-      } catch (Exception e) {
+      } catch (OIDCException e) {
         log.error("OIDC login request to '{}' failed.", provider, e);
+        throw e;
       }
     }
 
