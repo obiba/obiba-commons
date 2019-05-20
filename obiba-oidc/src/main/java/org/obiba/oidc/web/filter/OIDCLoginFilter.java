@@ -88,6 +88,8 @@ public class OIDCLoginFilter extends OncePerRequestFilter {
     } else {
       try {
         OIDCConfiguration config = oidcConfigurationProvider.getConfiguration(provider);
+        if (config == null)
+          throw new OIDCException("No OIDC configuration could be found: " + provider);
         OIDCAuthenticationRequestFactory factory = new OIDCAuthenticationRequestFactory(makeCallbackURL(provider));
         AuthenticationRequest authRequest = factory.create(config);
         if (oidcSessionManager != null) {

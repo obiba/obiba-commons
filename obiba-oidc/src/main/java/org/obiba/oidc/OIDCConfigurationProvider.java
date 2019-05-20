@@ -9,7 +9,7 @@
  */
 package org.obiba.oidc;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Interface to query for OpenID Connect configurations.
@@ -21,7 +21,7 @@ public interface OIDCConfigurationProvider {
    *
    * @return
    */
-  List<OIDCConfiguration> getConfigurations();
+  Collection<OIDCConfiguration> getConfigurations();
 
   /**
    * Get the OIDC configuration from name.

@@ -159,6 +159,8 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
 
     try {
       OIDCConfiguration config = oidcConfigurationProvider.getConfiguration(provider);
+      if (config == null)
+        throw new OIDCException("No OIDC configuration could be found: " + provider);
       AuthenticationSuccessResponse authResponse = extractAuthenticationResponse(context, config);
       if (authResponse != null && authResponse.getAuthorizationCode() != null) {
         OIDCCredentials credentials = validate(context, config, authResponse);
