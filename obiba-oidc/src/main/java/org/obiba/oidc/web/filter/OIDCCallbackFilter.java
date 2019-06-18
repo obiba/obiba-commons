@@ -125,7 +125,8 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
    */
   protected void onAuthenticationError(OIDCSession session, String error, HttpServletResponse response) {
     log.error(error);
-    session.setCallbackError(error);
+    if (session != null)
+      session.setCallbackError(error);
   }
 
   /**
@@ -152,9 +153,8 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
   private void doOIDCDance(J2EContext context, String provider) {
     if (!oidcSessionManager.hasSession(context.getClientId())) {
       String error = "Cannot find OIDC session. Is it expired?";
-      OIDCSession session = oidcSessionManager.getSession(context.getClientId());
-      onAuthenticationError(session, error, context.getResponse());
-      throw new OIDCSessionException(error, session);
+      onAuthenticationError(null, error, context.getResponse());
+      throw new OIDCSessionException(error, null);
     }
 
     try {
