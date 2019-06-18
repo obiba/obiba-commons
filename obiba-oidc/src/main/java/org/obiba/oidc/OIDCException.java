@@ -9,4 +9,8 @@ public class OIDCException extends RuntimeException {
   public OIDCException(String message) {
     super(message);
   }
+
+  public OIDCException(String message, Exception cause) {
+    super(message, cause);
+  }
 }
