@@ -13,7 +13,6 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
-
 import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.obiba.oidc.OIDCConfiguration;
 import org.obiba.oidc.OIDCCredentials;
@@ -46,12 +45,11 @@ public class OIDCRealm extends AuthorizingRealm {
 
   @Override
   protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
-    OIDCCredentials credentials = (OIDCCredentials)token.getCredentials();
+    OIDCCredentials credentials = (OIDCCredentials) token.getCredentials();
     try {
       JWTClaimsSet claims = credentials.getIdToken().getJWTClaimsSet();
       String issuer = claims.getIssuer();
-      String discovery = configuration.getDiscoveryURI();
-      if (!discovery.startsWith(issuer)) return null;
+      if (!configuration.findProviderMetaData().getIssuer().toString().equals(issuer)) return null;
     } catch (ParseException e) {
       log.debug("Error while accessing the claims for OIDC realm {}", getName());
       return null;
