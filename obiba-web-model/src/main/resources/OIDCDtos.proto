@@ -1,0 +1,9 @@
+package org.obiba.auth;
+
+option java_package = "org.obiba.web.model";
+
+message OIDCAuthProviderSummaryDto {
+  required string name = 1;
+  required string providerUrl = 2;
+  optional string title = 3;
+}
