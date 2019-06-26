@@ -85,12 +85,30 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
   }
 
   /**
+   * Returns the default redirect URL
+   *
+   * @return defaultRedirectURL
+   */
+  protected String getDefaultRedirectURL() {
+    return defaultRedirectURL;
+  }
+
+  /**
    * Set the provider parameter in the query string. If not specified, the provider name is the last segment in the request path.
    *
    * @param providerParameter
    */
   public void setProviderParameter(String providerParameter) {
     this.providerParameter = providerParameter;
+  }
+
+  /**
+   * Returns the parameter in the query string.
+   *
+   * @return providerParameter
+   */
+  protected String getProviderParameter() {
+    return providerParameter;
   }
 
   /**
