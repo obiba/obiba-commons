@@ -78,6 +78,15 @@ public class OIDCLoginFilter extends OncePerRequestFilter {
     this.providerParameter = providerParameter;
   }
 
+  /**
+   * Returns the provider parameter.
+   *
+   * @return providerParameter
+   */
+  public String getProviderParameter() {
+    return providerParameter;
+  }
+
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
     J2EContext context = new J2EContext(request, response);
