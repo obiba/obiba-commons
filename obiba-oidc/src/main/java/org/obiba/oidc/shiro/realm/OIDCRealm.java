@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.ParseException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -66,12 +67,18 @@ public class OIDCRealm extends AuthorizingRealm {
 
   @Override
   protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-    String groupsParam = configuration.getCustomParam("groups");
-    Set<String> groups = Sets.newHashSet(getName());
-    if (!Strings.isNullOrEmpty(groupsParam)) {
-      Splitter.on(" ").omitEmptyStrings().trimResults().split(groupsParam).forEach(groups::add);
+    Collection<?> thisPrincipals = principals.fromRealm(getName());
+
+    if(thisPrincipals != null && !thisPrincipals.isEmpty()) {
+      String groupsParam = configuration.getCustomParam("groups");
+      Set<String> groups = Sets.newHashSet(getName());
+      if (!Strings.isNullOrEmpty(groupsParam)) {
+        Splitter.on(" ").omitEmptyStrings().trimResults().split(groupsParam).forEach(groups::add);
+      }
+      // TODO extract groups from claims
+      return new SimpleAuthorizationInfo(groups);
     }
-    return new SimpleAuthorizationInfo(groups);
+    return new SimpleAuthorizationInfo();
   }
 
 
