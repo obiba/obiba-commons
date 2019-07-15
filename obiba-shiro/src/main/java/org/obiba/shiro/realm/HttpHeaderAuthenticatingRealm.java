@@ -22,13 +22,9 @@ public class HttpHeaderAuthenticatingRealm extends AbstractHttpAuthenticatingRea
 
   public HttpHeaderAuthenticatingRealm() {
     setCredentialsMatcher(new AllowAllCredentialsMatcher());
+    setAuthenticationTokenClass(HttpHeaderAuthenticationToken.class);
   }
-
-  @Override
-  public boolean supports(AuthenticationToken token) {
-    return token instanceof HttpHeaderAuthenticationToken;
-  }
-
+  
   @Override
   protected String getSessionId(AuthenticationToken token) {
     return ((HttpHeaderAuthenticationToken) token).getSessionId();
