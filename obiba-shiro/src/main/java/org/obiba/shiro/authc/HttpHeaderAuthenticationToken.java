@@ -13,29 +13,32 @@ import javax.annotation.Nullable;
 
 import org.apache.shiro.authc.AuthenticationToken;
 
+/**
+ * Personal API access token that both identifies and authenticate the user.
+ */
 public class HttpHeaderAuthenticationToken implements AuthenticationToken {
 
   private static final long serialVersionUID = 4520790559763117320L;
 
-  private final String sessionId;
+  private final String token;
 
-  public HttpHeaderAuthenticationToken(String sessionId) {
-    this.sessionId = sessionId;
+  public HttpHeaderAuthenticationToken(String token) {
+    this.token = token;
   }
 
   @Override
   public Object getPrincipal() {
-    return getSessionId();
+    return getToken();
   }
 
   @Nullable
   @Override
   public Object getCredentials() {
-    return null;
+    return getToken();
   }
 
-  public String getSessionId() {
-    return sessionId;
+  public String getToken() {
+    return token;
   }
 
 }

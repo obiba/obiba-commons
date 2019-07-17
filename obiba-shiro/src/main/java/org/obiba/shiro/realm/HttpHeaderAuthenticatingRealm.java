@@ -27,7 +27,7 @@ public class HttpHeaderAuthenticatingRealm extends AbstractHttpAuthenticatingRea
   
   @Override
   protected String getSessionId(AuthenticationToken token) {
-    return ((HttpHeaderAuthenticationToken) token).getSessionId();
+    return ((HttpHeaderAuthenticationToken) token).getToken();
   }
 
   @Override
