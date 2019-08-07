@@ -874,7 +874,7 @@
     <connection>scm:git:https://github.com/obiba/obiba-commons.git</connection>
     <developerConnection>scm:git:https://github.com/obiba/obiba-commons.git</developerConnection>
     <url>https://github.com/obiba/obiba-commons</url>
-    <tag>HEAD</tag>
+    <tag>obiba-commons-1.13.x</tag>
   </scm>
 
   <issueManagement>
