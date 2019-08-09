@@ -55,6 +55,11 @@
       <groupId>net.minidev</groupId>
       <artifactId>json-smart</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+    </dependency>
     
     <dependency>
       <groupId>org.apache.shiro</groupId>

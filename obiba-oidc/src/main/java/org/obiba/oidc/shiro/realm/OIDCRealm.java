@@ -14,6 +14,7 @@ import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.SimplePrincipalCollection;
+import org.json.JSONArray;
 import org.obiba.oidc.OIDCConfiguration;
 import org.obiba.oidc.OIDCCredentials;
 import org.obiba.oidc.shiro.authc.OIDCAuthenticationToken;
@@ -21,9 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.ParseException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Realm based on OpenID connect token, after all authorization and identification stuff has happen.
@@ -55,7 +56,7 @@ public class OIDCRealm extends AuthorizingRealm {
       log.debug("Error while accessing the claims for OIDC realm {}", getName());
       return null;
     }
-    Object userInfo = credentials.getUserInfo();
+    Map<String, Object> userInfo = credentials.getUserInfo();
     List<Object> principals = Lists.newArrayList(((OIDCAuthenticationToken) token).getUsername());
     if (userInfo != null) {
       principals.add(userInfo);
@@ -73,13 +74,36 @@ public class OIDCRealm extends AuthorizingRealm {
       String groupsParam = configuration.getCustomParam("groups");
       Set<String> groups = Sets.newHashSet(getName());
       if (!Strings.isNullOrEmpty(groupsParam)) {
-        Splitter.on(" ").omitEmptyStrings().trimResults().split(groupsParam).forEach(groups::add);
+        extractGroups(groupsParam).forEach(groups::add);
       }
-      // TODO extract groups from claims
+      for (Object principal : thisPrincipals) {
+        if (principal instanceof Map) {
+          try {
+            // TODO improve by getting groups key from OIDC config
+            Object gps = ((Map<String, Object>) principal).get("groups");
+            if (gps != null) {
+              extractGroups(gps.toString()).forEach(groups::add);
+            }
+          } catch (Exception e) {
+            log.debug("Principal: {}", principal);
+            log.warn("Failed at retrieving userInfo from principal", e);
+          }
+        }
+      }
       return new SimpleAuthorizationInfo(groups);
     }
     return new SimpleAuthorizationInfo();
   }
 
+  private Iterable<String> extractGroups(String groupsParam) {
+    if (groupsParam.startsWith("[") && groupsParam.endsWith("]")) {
+      // expect a json array
+      return new JSONArray(groupsParam).toList().stream()
+          .filter(Objects::nonNull)
+          .map(Object::toString)
+          .collect(Collectors.toList());
+    }
+    return Splitter.on(" ").omitEmptyStrings().trimResults().split(groupsParam);
+  }
 
 }
