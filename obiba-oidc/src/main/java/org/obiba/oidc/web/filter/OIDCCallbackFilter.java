@@ -284,7 +284,7 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
 
         final UserInfoResponse userInfoResponse = UserInfoResponse.parse(httpResponse);
         if (userInfoResponse instanceof UserInfoErrorResponse) {
-          log.error("Bad User Info response, error={}", ((UserInfoErrorResponse) userInfoResponse).getErrorObject().toJSONObject());
+          log.error("Bad User Info response ({}), error={}", httpResponse.getStatusMessage(), ((UserInfoErrorResponse) userInfoResponse).getErrorObject().toJSONObject());
         } else {
           final UserInfoSuccessResponse userInfoSuccessResponse = (UserInfoSuccessResponse) userInfoResponse;
           final JWTClaimsSet userInfoClaimsSet;
