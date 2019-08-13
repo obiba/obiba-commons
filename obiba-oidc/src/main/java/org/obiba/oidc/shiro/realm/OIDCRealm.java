@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 
 import java.text.ParseException;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -32,6 +31,12 @@ import java.util.stream.Collectors;
 public class OIDCRealm extends AuthorizingRealm {
 
   private static final Logger log = LoggerFactory.getLogger(OIDCRealm.class);
+
+  public static final String GROUPS_PARAM = "groups";
+
+  public static final String GROUPS_CLAIM_PARAM = "groupsClaim";
+
+  private static final String DEFAULT_GROUPS_CLAIM = "groups";
 
   private final OIDCConfiguration configuration;
 
@@ -70,19 +75,21 @@ public class OIDCRealm extends AuthorizingRealm {
   protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
     Collection<?> thisPrincipals = principals.fromRealm(getName());
 
-    if(thisPrincipals != null && !thisPrincipals.isEmpty()) {
-      String groupsParam = configuration.getCustomParam("groups");
+    if (thisPrincipals != null && !thisPrincipals.isEmpty()) {
+      // groups to be automatically applied
+      String groupsParam = configuration.getCustomParam(GROUPS_PARAM);
       Set<String> groups = Sets.newHashSet(getName());
       if (!Strings.isNullOrEmpty(groupsParam)) {
         extractGroups(groupsParam).forEach(groups::add);
       }
+      // groups to be retrieved from user info claims
       for (Object principal : thisPrincipals) {
         if (principal instanceof Map) {
           try {
             // TODO improve by getting groups key from OIDC config
-            Object gps = ((Map<String, Object>) principal).get("groups");
+            Object gps = ((Map<String, Object>) principal).get(getGroupsClaim());
             if (gps != null) {
-              extractGroups(gps.toString()).forEach(groups::add);
+              extractGroups(gps).forEach(groups::add);
             }
           } catch (Exception e) {
             log.debug("Principal: {}", principal);
@@ -95,15 +102,27 @@ public class OIDCRealm extends AuthorizingRealm {
     return new SimpleAuthorizationInfo();
   }
 
-  private Iterable<String> extractGroups(String groupsParam) {
-    if (groupsParam.startsWith("[") && groupsParam.endsWith("]")) {
-      // expect a json array
-      return new JSONArray(groupsParam).toList().stream()
-          .filter(Objects::nonNull)
+  protected Iterable<String> extractGroups(Object groupsParam) {
+    if (groupsParam instanceof Collection) {
+      return ((Collection<Object>)groupsParam).stream()
           .map(Object::toString)
-          .collect(Collectors.toList());
+          .collect(Collectors.toSet());
+    } else {
+      String groupsParamStr = groupsParam.toString();
+      if (groupsParamStr.startsWith("[") && groupsParamStr.endsWith("]")) {
+        // expect a json array
+        return new JSONArray(groupsParamStr).toList().stream()
+            .filter(Objects::nonNull)
+            .map(Object::toString)
+            .collect(Collectors.toList());
+      }
+      return Splitter.on(" ").omitEmptyStrings().trimResults().split(groupsParamStr);
     }
-    return Splitter.on(" ").omitEmptyStrings().trimResults().split(groupsParam);
   }
 
+
+  protected String getGroupsClaim() {
+    String groupsClaim = configuration.getCustomParam(GROUPS_CLAIM_PARAM);
+    return Strings.isNullOrEmpty(groupsClaim) ? DEFAULT_GROUPS_CLAIM : groupsClaim;
+  }
 }
