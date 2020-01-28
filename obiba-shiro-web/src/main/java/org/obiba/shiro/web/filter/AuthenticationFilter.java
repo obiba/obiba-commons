@@ -10,6 +10,7 @@
 
 package org.obiba.shiro.web.filter;
 
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -38,6 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.security.cert.X509Certificate;
+import java.util.List;
 
 @Component
 public class AuthenticationFilter extends OncePerRequestFilter {
@@ -62,6 +64,8 @@ public class AuthenticationFilter extends OncePerRequestFilter {
   private String credentialsScheme;
 
   private String requestPrefix;
+
+  private List<String> requestPrefixes;
 
   @Autowired(required = false)
   private AuthenticationExecutor authenticationExecutor;
@@ -117,7 +121,10 @@ public class AuthenticationFilter extends OncePerRequestFilter {
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
 
-    if (!Strings.isNullOrEmpty(requestPrefix) && !request.getRequestURI().startsWith(requestPrefix)) {
+    if (requestPrefixes == null) {
+      requestPrefixes = Splitter.on(",").splitToList(requestPrefix);
+    }
+    if (!requestPrefixes.isEmpty() &&  requestPrefixes.stream().noneMatch(prefix -> request.getRequestURI().startsWith(prefix))) {
       filterChain.doFilter(request, response);
       return;
     }
