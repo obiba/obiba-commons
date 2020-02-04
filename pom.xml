@@ -60,7 +60,7 @@
     <protobuf.version>2.5.0</protobuf.version>
     <protobuf-java-format.version>1.2.1-obiba</protobuf-java-format.version>
     <servlet-api.version>3.1.0</servlet-api.version>
-    <shiro.version>1.4.0</shiro.version>
+    <shiro.version>1.5.0</shiro.version>
     <shiro-extras.version>1.1.0</shiro-extras.version>
     <slf4j.version>1.7.12</slf4j.version>
     <spring.version>4.2.9.RELEASE</spring.version>
