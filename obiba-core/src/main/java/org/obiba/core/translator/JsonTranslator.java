@@ -30,6 +30,7 @@ public class JsonTranslator implements Translator {
 
   @Override
   public String translate(String key) {
+    if(key == null || key.length() == 0) return "";
     try {
       return translationContext.read(key);
     } catch (JsonPathException e) {
