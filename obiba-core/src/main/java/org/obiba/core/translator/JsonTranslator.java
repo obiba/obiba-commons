@@ -34,6 +34,13 @@ public class JsonTranslator implements Translator {
     try {
       return translationContext.read(key);
     } catch (JsonPathException e) {
+      logger.error("Translation of {} is not valid path: {}", key, e.getMessage());
+      return key;
+    } catch (ClassCastException e) {
+      logger.error("Translation of {} is not a string: {}", key, e.getMessage());
+      return key;
+    } catch (Exception e) {
+      logger.error("Translation of {} gives unknown error: {}", key, e.getMessage(), e);
       return key;
     }
   }
