@@ -124,7 +124,8 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     if (requestPrefixes == null) {
       requestPrefixes = Splitter.on(",").splitToList(requestPrefix);
     }
-    if (!requestPrefixes.isEmpty() &&  requestPrefixes.stream().noneMatch(prefix -> request.getRequestURI().startsWith(prefix))) {
+    String requestUri = request.getRequestURI();
+    if (!"/".equals(requestUri) && !requestPrefixes.isEmpty() &&  requestPrefixes.stream().noneMatch(requestUri::startsWith)) {
       filterChain.doFilter(request, response);
       return;
     }
