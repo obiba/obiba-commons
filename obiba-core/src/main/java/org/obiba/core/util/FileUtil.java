@@ -10,29 +10,41 @@
 
 package org.obiba.core.util;
 
+import de.idyl.winzipaes.AesZipFileDecrypter;
+import de.idyl.winzipaes.impl.AESDecrypterBC;
+import de.idyl.winzipaes.impl.ExtZipEntry;
+
+import javax.annotation.Nonnull;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.*;
-
-import javax.annotation.Nonnull;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Enumeration;
+import java.util.zip.DataFormatException;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 @SuppressWarnings("UnusedDeclaration")
 public final class FileUtil {
 
   private static final FileSystem DEFAULT_FS = FileSystems.getDefault();
 
-  private FileUtil() {}
+  private FileUtil() {
+  }
 
   @Nonnull
   public static File getFileFromResource(String path) {
     try {
       URL resource = FileUtil.class.getClassLoader().getResource(path);
       URI uri = resource == null ? null : resource.toURI();
-      if(uri == null) throw new IllegalArgumentException("Cannot find file at " + path);
+      if (uri == null) throw new IllegalArgumentException("Cannot find file at " + path);
       return new File(uri);
-    } catch(URISyntaxException e) {
+    } catch (URISyntaxException e) {
       throw new IllegalArgumentException("Cannot find file at " + path);
     }
   }
@@ -46,19 +58,19 @@ public final class FileUtil {
    */
   public static void copyDirectory(File sourceDir, File destDir) throws IOException {
 
-    if(!destDir.exists()) {
-      if(!destDir.mkdir()) {
+    if (!destDir.exists()) {
+      if (!destDir.mkdir()) {
         throw new IOException("cannot create destination directory " + destDir.getAbsolutePath());
       }
     }
 
     File[] children = sourceDir.listFiles();
-    if(children == null) return;
+    if (children == null) return;
 
-    for(File sourceChild : children) {
+    for (File sourceChild : children) {
       String name = sourceChild.getName();
       File destChild = new File(destDir, name);
-      if(sourceChild.isDirectory()) {
+      if (sourceChild.isDirectory()) {
         copyDirectory(sourceChild, destChild);
       } else {
         copyFile(sourceChild, destChild);
@@ -73,7 +85,7 @@ public final class FileUtil {
    * {@code dest} using the same name as {@code source}.
    *
    * @param source the file to copy
-   * @param dest destination file or directory
+   * @param dest   destination file or directory
    * @return true if the destination file did not already exist and was created, false otherwise.
    * @throws IOException
    */
@@ -106,9 +118,9 @@ public final class FileUtil {
   @Deprecated
   public static void moveFile(File source, File dest) throws IOException {
     File destFile = dest.isDirectory() ? new File(dest, source.getName()) : dest;
-    if(!source.renameTo(destFile)) {
+    if (!source.renameTo(destFile)) {
       copyFile(source, destFile);
-      if(!source.delete()) {
+      if (!source.delete()) {
         throw new IOException("Cannot delete source file " + source.getAbsolutePath());
       }
     }
@@ -123,10 +135,10 @@ public final class FileUtil {
    */
   public static boolean delete(File resource) throws IOException {
 
-    if(resource.isDirectory()) {
+    if (resource.isDirectory()) {
       File[] childFiles = resource.listFiles();
-      if(childFiles != null) {
-        for(File child : childFiles) {
+      if (childFiles != null) {
+        for (File child : childFiles) {
           delete(child);
         }
       }
@@ -175,6 +187,72 @@ public final class FileUtil {
   }
 
   /**
+   * Unzip an archive file in a folder.
+   *
+   * @param source
+   * @param destination
+   * @return
+   * @throws IOException
+   */
+  public static File unzip(File source, File destination) throws IOException {
+    // create output directory if it doesn't exist
+    if (!destination.exists()) destination.mkdirs();
+    ZipFile zipFile = new ZipFile(source);
+    Enumeration<? extends ZipEntry> entries = zipFile.entries();
+    while(entries.hasMoreElements()){
+      ZipEntry entry = entries.nextElement();
+      File file = new File(destination, entry.getName());
+      if(entry.isDirectory()){
+        file.mkdirs();
+      } else {
+        InputStream in = zipFile.getInputStream(entry);
+        OutputStream out = new FileOutputStream(file);
+        StreamUtil.copy(in, out);
+        in.close();
+        out.close();
+      }
+    }
+    return destination;
+  }
+
+  /**
+   * Unzip a possibly encrypted archive file in a folder.
+   *
+   * @param source
+   * @param destination
+   * @param password    Archive content is encrypted if not null
+   * @return
+   * @throws IOException
+   */
+  public static File unzip(File source, File destination, String password) throws IOException {
+    if (password == null) return unzip(source, destination);
+    AesZipFileDecrypter ze = null;
+    try {
+      ze = new AesZipFileDecrypter(source, new AESDecrypterBC());
+      for (ExtZipEntry entry : ze.getEntryList()) {
+        String name = entry.getName();
+        File file = new File(destination, entry.getName());
+        if (entry.isDirectory()) {
+          file.mkdirs();
+        } else {
+          ze.extractEntry(entry, file, password);
+        }
+      }
+    } catch (DataFormatException | IOException e) {
+      //
+    } finally {
+      if (ze != null) {
+        try {
+          ze.close();
+        } catch (IOException e) {
+          // ignore
+        }
+      }
+    }
+    return destination;
+  }
+
+  /**
    * Get path from URI.
    *
    * @param uri
@@ -191,6 +269,7 @@ public final class FileUtil {
   /**
    * Converts a path string, or a sequence of strings that when joined form
    * a path string, to a {@code Path}.
+   *
    * @param first
    * @param more
    * @return
