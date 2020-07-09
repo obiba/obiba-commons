@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.WebUtils;
@@ -40,6 +41,7 @@ import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.security.cert.X509Certificate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class AuthenticationFilter extends OncePerRequestFilter {
@@ -55,6 +57,9 @@ public class AuthenticationFilter extends OncePerRequestFilter {
   @Autowired
   private SessionsSecurityManager securityManager;
 
+  @Autowired
+  private Environment environment;
+
   private String sessionIdCookieName;
 
   private String requestIdCookieName;
@@ -66,6 +71,8 @@ public class AuthenticationFilter extends OncePerRequestFilter {
   private String requestPrefix;
 
   private List<String> requestPrefixes;
+
+  private String contextPath;
 
   @Autowired(required = false)
   private AuthenticationExecutor authenticationExecutor;
@@ -117,15 +124,26 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     return authenticationExecutor;
   }
 
+  public void initContextPath() {
+    // spring boot 1
+    contextPath = environment.getProperty("server.context-path", "");
+    // spring boot 2
+    if (Strings.isNullOrEmpty(contextPath))
+      contextPath = environment.getProperty("server.servlet.context-path", "");
+  }
+
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
 
     if (requestPrefixes == null) {
       requestPrefixes = Splitter.on(",").splitToList(requestPrefix);
+      initContextPath();
+      if (!Strings.isNullOrEmpty(contextPath))
+        requestPrefixes = requestPrefixes.stream().map(s -> contextPath + s).collect(Collectors.toList());
     }
     String requestUri = request.getRequestURI();
-    if (!"/".equals(requestUri) && !requestPrefixes.isEmpty() &&  requestPrefixes.stream().noneMatch(requestUri::startsWith)) {
+    if (!(contextPath + "/").equals(requestUri) && !requestPrefixes.isEmpty() &&  requestPrefixes.stream().noneMatch(requestUri::startsWith)) {
       filterChain.doFilter(request, response);
       return;
     }
