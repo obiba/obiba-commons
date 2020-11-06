@@ -17,6 +17,7 @@ import java.security.cert.X509Certificate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 import javax.net.ssl.SSLContext;
@@ -234,6 +235,7 @@ public class ObibaRealm extends AuthorizingRealm {
     Collection<?> thisPrincipals = principals.fromRealm(getName());
 
     if(thisPrincipals != null && !thisPrincipals.isEmpty()) {
+      Set<String> groups = Sets.newHashSet(getName());
       try {
         Jwt<Header, Claims> webToken = getWebTokenFromPrincipals(thisPrincipals);
 
@@ -241,7 +243,8 @@ public class ObibaRealm extends AuthorizingRealm {
           TicketContextUser user = new ObjectMapper()
               .convertValue(webToken.getBody().get("context", Map.class).get("user"),
                   TicketContextUser.class);
-          return new SimpleAuthorizationInfo(Sets.newHashSet(user.getGroups()));
+          if (user.getGroups() != null)
+            groups.addAll(user.getGroups());
         } else { //backward compatibility. web token not found in principals.
           RestTemplate template = newRestTemplate();
           HttpHeaders headers = new HttpHeaders();
@@ -251,7 +254,8 @@ public class ObibaRealm extends AuthorizingRealm {
               .exchange(getSubjectUrl(getTicketFromSession()), HttpMethod.GET, entity, Subject.class);
 
           if(response.getStatusCode().equals(HttpStatus.OK) && response.getBody().groups != null) {
-            return new SimpleAuthorizationInfo(Sets.newHashSet(response.getBody().groups));
+            if (response.getBody().groups != null)
+              groups.addAll(response.getBody().groups);
           }
         }
       } catch(HttpClientErrorException e) {
@@ -259,6 +263,7 @@ public class ObibaRealm extends AuthorizingRealm {
       } catch(Exception e) {
         throw new AuthenticationException("Failed authorizing on " + baseUrl, e);
       }
+      return new SimpleAuthorizationInfo(groups);
     }
     return new SimpleAuthorizationInfo();
   }
