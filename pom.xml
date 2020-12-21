@@ -68,7 +68,7 @@
     <spring-data-mongodb.version>1.10.10.RELEASE</spring-data-mongodb.version>
     <validation-api.version>1.1.0.Final</validation-api.version>
     <wicket.version>1.4.21</wicket.version>
-    <xstream.version>1.4.8</xstream.version>
+    <xstream.version>1.4.15</xstream.version>
 
     <!-- maven plugins -->
     <bintray-maven-plugin.version>1.2.20180117184439</bintray-maven-plugin.version>
