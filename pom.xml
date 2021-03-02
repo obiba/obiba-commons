@@ -63,15 +63,14 @@
     <shiro.version>1.5.3</shiro.version>
     <shiro-extras.version>1.1.0</shiro-extras.version>
     <slf4j.version>1.7.12</slf4j.version>
-    <spring.version>4.2.9.RELEASE</spring.version>
+    <spring.version>4.3.30.RELEASE</spring.version>
     <spring-data-commons.version>1.13.16.RELEASE</spring-data-commons.version>
     <spring-data-mongodb.version>1.10.10.RELEASE</spring-data-mongodb.version>
     <validation-api.version>1.1.0.Final</validation-api.version>
     <wicket.version>1.4.21</wicket.version>
-    <xstream.version>1.4.8</xstream.version>
+    <xstream.version>1.4.15</xstream.version>
 
     <!-- maven plugins -->
-    <bintray-maven-plugin.version>1.2.20180117184439</bintray-maven-plugin.version>
     <maven-build-helper-plugin.version>1.8</maven-build-helper-plugin.version>
     <maven-buildnumber-plugin.version>1.2</maven-buildnumber-plugin.version>
     <maven-compiler-plugin.version>2.5.1</maven-compiler-plugin.version>
@@ -689,12 +688,6 @@
         </plugin>
 
         <plugin>
-          <groupId>com.carrotgarden.maven</groupId>
-          <artifactId>bintray-maven-plugin</artifactId>
-          <version>${bintray-maven-plugin.version}</version>
-        </plugin>
-
-        <plugin>
           <artifactId>maven-pmd-plugin</artifactId>
           <version>${maven-pmd-plugin.version}</version>
           <configuration>
@@ -838,7 +831,7 @@
     <repository>
       <id>obiba-releases</id>
       <name>Obiba Maven Releases Repository</name>
-      <url>https://dl.bintray.com/obiba/maven</url>
+      <url>https://obiba.jfrog.io/obiba/libs-release</url>
       <releases>
         <enabled>true</enabled>
       </releases>
@@ -861,12 +854,12 @@
 
   <distributionManagement>
     <repository>
-      <id>obiba-bintray</id>
-      <url>https://api.bintray.com/obiba/maven/</url>
+      <id>obiba-release-local</id>
+      <url>https://obiba.jfrog.io/obiba/libs-release-local</url>
     </repository>
     <snapshotRepository>
-      <id>obiba-artifactory</id>
-      <url>https://obiba.jfrog.io/obiba/libs-snapshot</url>
+      <id>obiba-snapshot-local</id>
+      <url>https://obiba.jfrog.io/obiba/libs-snapshot-local</url>
     </snapshotRepository>
   </distributionManagement>
 
@@ -894,45 +887,5 @@
       <archive>https://groups.google.com/forum/?fromgroups#!forum/obiba-users</archive>
     </mailingList>
   </mailingLists>
-
-  <profiles>
-    <profile>
-      <id>release</id>
-      <build>
-        <plugins>
-          <!-- Disable default deployer. -->
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-deploy-plugin</artifactId>
-            <configuration>
-              <skip>true</skip>
-            </configuration>
-          </plugin>
-
-          <!-- Enable alternative deployer. -->
-          <plugin>
-            <groupId>com.carrotgarden.maven</groupId>
-            <artifactId>bintray-maven-plugin</artifactId>
-            <configuration>
-              <skip>false</skip>
-              <subject>obiba</subject>
-              <repository>maven</repository>
-              <serverId>obiba-bintray</serverId>
-              <packageVcsUrl>https://github.com/obiba/obiba-commons</packageVcsUrl>
-              <performCleanup>false</performCleanup>
-            </configuration>
-            <executions>
-              <!-- Activate "bintray:deploy" during "deploy" -->
-              <execution>
-                <goals>
-                  <goal>deploy</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 
 </project>
