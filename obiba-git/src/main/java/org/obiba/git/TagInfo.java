@@ -34,7 +34,11 @@ public class TagInfo {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this).add("name", name).add("ref", ref).add("commitId", commitId).toString();
+    return "TagInfo{" +
+        "name='" + name + '\'' +
+        ", ref='" + ref + '\'' +
+        ", commitId='" + commitId + '\'' +
+        '}';
   }
 
   @SuppressWarnings("ParameterHidesMemberVariable")

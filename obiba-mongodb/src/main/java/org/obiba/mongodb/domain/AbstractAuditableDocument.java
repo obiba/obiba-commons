@@ -117,14 +117,16 @@ public abstract class AbstractAuditableDocument implements Auditable<String, Str
     return Objects.equals(id, ((AbstractAuditableDocument) obj).id);
   }
 
-  protected com.google.common.base.Objects.ToStringHelper toStringHelper() {
-    return com.google.common.base.Objects.toStringHelper(this).omitNullValues().add("id", id).add("version", version);
-  }
-
   @Override
-  public final String toString() {
-    return toStringHelper().toString();
+  public String toString() {
+    return "AbstractAuditableDocument{" +
+        "id='" + id + '\'' +
+        ", version=" + version +
+        ", createdBy='" + createdBy + '\'' +
+        ", createdDate=" + createdDate +
+        ", lastModifiedBy='" + lastModifiedBy + '\'' +
+        ", lastModifiedDate=" + lastModifiedDate +
+        '}';
   }
-
 }
 

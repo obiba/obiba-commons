@@ -88,10 +88,17 @@ public class CommitInfo {
 
   @Override
   public String toString() {
-    return com.google.common.base.Objects.toStringHelper(this).add("authorName", authorName)
-        .add("authorEmail", authorEmail).add("date", date).add("comment", comment).add("commitId", commitId)
-        .add("diffEntries", diffEntries).add("blob", blob).add("head", head).add("current", current).omitNullValues()
-        .toString();
+    return "CommitInfo{" +
+        "authorName='" + authorName + '\'' +
+        ", authorEmail='" + authorEmail + '\'' +
+        ", date=" + date +
+        ", comment='" + comment + '\'' +
+        ", commitId='" + commitId + '\'' +
+        ", diffEntries=" + diffEntries +
+        ", blob='" + blob + '\'' +
+        ", head=" + head +
+        ", current=" + current +
+        '}';
   }
 
   @Override
