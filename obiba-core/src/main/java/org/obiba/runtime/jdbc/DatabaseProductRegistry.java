@@ -34,7 +34,12 @@ public class DatabaseProductRegistry {
           "database-products.xml file not found. It should be packaged with the obiba-core jar.");
     }
     try {
-      databaseProducts.addAll((Collection<? extends DatabaseProduct>) new XStream().fromXML(is, "UTF-8"));
+      XStream xstream = new XStream();
+      XStream.setupDefaultSecurity(xstream);
+      xstream.allowTypesByWildcard(new String[]{
+          "org.obiba.**"
+      });
+      databaseProducts.addAll((Collection<? extends DatabaseProduct>) xstream.fromXML(is, "UTF-8"));
     } finally {
       StreamUtil.silentSafeClose(is);
     }
