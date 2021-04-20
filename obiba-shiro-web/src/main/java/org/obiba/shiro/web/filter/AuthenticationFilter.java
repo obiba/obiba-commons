@@ -189,6 +189,9 @@ public class AuthenticationFilter extends OncePerRequestFilter {
       subject = authenticateBasicHeader(request);
     }
     if (subject == null) {
+      subject = authenticateCredentialsSchemeHeader(request);
+    }
+    if (subject == null) {
       subject = authenticateCookie(request);
     }
     if (subject == null) {
@@ -241,6 +244,22 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
   @Nullable
   private Subject authenticateBasicHeader(HttpServletRequest request) {
+    String authorization = request.getHeader(AUTHORIZATION_HEADER);
+    if (authorization == null || authorization.isEmpty() || !authorization.startsWith("Basic "))
+      return null;
+
+    String sessionId = extractSessionId(request);
+    AuthenticationToken token = new HttpAuthorizationToken("Basic", authorization);
+    try {
+      return authenticateBasicHeader(token, sessionId);
+    } catch (UnknownSessionException e) {
+      // obiba/agate#302 if for any reason session cannot be retrieved, login with a new session
+      return authenticateBasicHeader(token, null);
+    }
+  }
+
+  @Nullable
+  private Subject authenticateCredentialsSchemeHeader(HttpServletRequest request) {
     String authorization = request.getHeader(AUTHORIZATION_HEADER);
     if (authorization == null || authorization.isEmpty() || !authorization.startsWith(credentialsScheme + " "))
       return null;
