@@ -195,23 +195,35 @@ public final class FileUtil {
    * @throws IOException
    */
   public static File unzip(File source, File destination) throws IOException {
-    // create output directory if it doesn't exist
-    if (!destination.exists()) destination.mkdirs();
-    ZipFile zipFile = new ZipFile(source);
-    Enumeration<? extends ZipEntry> entries = zipFile.entries();
-    while(entries.hasMoreElements()){
-      ZipEntry entry = entries.nextElement();
-      File file = new File(destination, entry.getName());
-      if(entry.isDirectory()){
-        file.mkdirs();
+    ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(source.getAbsolutePath()));
+    byte[] buffer = new byte[1024];
+
+    ZipEntry zipEntry = zipInputStream.getNextEntry();
+    while(zipEntry != null) {
+      File file = zipEntryAsFile(destination, zipEntry);
+
+      if (zipEntry.isDirectory()) {
+        if (!file.isDirectory() && !file.mkdirs()) {
+          throw new IOException("Can't create directory: " + file.getName());
+        }
       } else {
-        InputStream in = zipFile.getInputStream(entry);
-        OutputStream out = new FileOutputStream(file);
-        StreamUtil.copy(in, out);
-        in.close();
-        out.close();
+        File parentFile = file.getParentFile();
+
+        if (!parentFile.isDirectory() && !parentFile.mkdirs()) {
+          throw new IOException("Can't create directory: " + parentFile.getName());
+        }
+
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        int length;
+        while ((length = zipInputStream.read(buffer)) > 0) {
+          fileOutputStream.write(buffer, 0, length);
+        }
+        fileOutputStream.close();
       }
+
+      zipEntry = zipInputStream.getNextEntry();
     }
+
     return destination;
   }
 
@@ -230,11 +242,19 @@ public final class FileUtil {
     try {
       ze = new AesZipFileDecrypter(source, new AESDecrypterBC());
       for (ExtZipEntry entry : ze.getEntryList()) {
-        String name = entry.getName();
-        File file = new File(destination, entry.getName());
+        File file = zipEntryAsFile(destination, entry);
+
         if (entry.isDirectory()) {
-          file.mkdirs();
+          if (!file.isDirectory() && !file.mkdirs()) {
+            throw new IOException("Can't create directory: " + file.getName());
+          }
         } else {
+          File parentFile = file.getParentFile();
+
+          if (!parentFile.isDirectory() && !parentFile.mkdirs()) {
+            throw new IOException("Can't create directory: " + parentFile.getName());
+          }
+
           ze.extractEntry(entry, file, password);
         }
       }
@@ -276,5 +296,18 @@ public final class FileUtil {
    */
   public static Path getPath(String first, String... more) {
     return DEFAULT_FS.getPath(first, more);
+  }
+
+  private static File zipEntryAsFile(File destinationDirectory, ZipEntry zipEntry) throws IOException {
+    File destinationFile = new File(destinationDirectory, zipEntry.getName());
+
+    String destinationDirectoryCanonicalPath = destinationDirectory.getCanonicalPath();
+    String destinationFileCanonicalPath = destinationFile.getCanonicalPath();
+
+    if (!destinationFileCanonicalPath.startsWith(destinationDirectoryCanonicalPath + File.separator)) {
+      throw new IOException("Zip entry and destination mismatch for: " + zipEntry.getName());
+    }
+
+    return destinationFile;
   }
 }
