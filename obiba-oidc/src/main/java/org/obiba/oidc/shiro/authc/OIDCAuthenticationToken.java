@@ -1,6 +1,7 @@
 package org.obiba.oidc.shiro.authc;
 
 import com.google.common.base.Strings;
+import com.nimbusds.jwt.JWTClaimsSet;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.obiba.oidc.OIDCCredentials;
 import org.obiba.oidc.OIDCException;
@@ -30,17 +31,34 @@ public class OIDCAuthenticationToken implements AuthenticationToken {
   }
 
   public String getUsername() {
+    String uname = null;
     try {
-      String uname = credentials.getIdToken().getJWTClaimsSet().getStringClaim("preferred_username");
+      JWTClaimsSet claimsSet = credentials.getIdToken().getJWTClaimsSet();
+      uname = getStringClaim(claimsSet, "preferred_username");
       if (Strings.isNullOrEmpty(uname)) {
-        uname = credentials.getIdToken().getJWTClaimsSet().getStringClaim("username");
+        uname = getStringClaim(claimsSet, "username");
       }
       if (Strings.isNullOrEmpty(uname)) {
-        uname = credentials.getIdToken().getJWTClaimsSet().getSubject();
+        uname = getStringClaim(claimsSet, "name");
       }
-      return uname;
+      if (Strings.isNullOrEmpty(uname)) {
+        uname = claimsSet.getSubject();
+      }
     } catch (ParseException e) {
-      return getPrincipal().toString();
+      // empty
+    }
+    return Strings.isNullOrEmpty(uname) ? getPrincipal().toString() : uname;
+  }
+
+  //
+  // Private methods
+  //
+
+  private String getStringClaim(JWTClaimsSet claimsSet, String key) {
+    try {
+      return claimsSet.getStringClaim(key);
+    } catch (ParseException e) {
+      return null;
     }
   }
 }
