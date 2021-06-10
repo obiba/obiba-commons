@@ -124,7 +124,7 @@ public class FileUtilTest {
 
     listEntries(output);
     verifyEntries(output, 6, s -> s.startsWith("zip-test/"));
-    verifyEntry(output, "zip-test/file0.txt", "This is test file 0, avec des caractères accentués.");
+    verifyEntry(output, "zip-test" + File.separator + "file0.txt", "This is test file 0, avec des caractÃ¨res accentuÃ©s.");
   }
 
   @Test
@@ -136,7 +136,7 @@ public class FileUtilTest {
 
     listEntries(output);
     verifyEntries(output, 1);
-    verifyEntry(output, "file0.txt", "This is test file 0, avec des caractères accentués.");
+    verifyEntry(output, "file0.txt", "This is test file 0, avec des caractÃ¨res accentuÃ©s.");
   }
 
   @Test
@@ -148,7 +148,7 @@ public class FileUtilTest {
 
     listEntries(output);
     verifyEntries(output, 6);
-    verifyEntry(output, "zip-test/file0.txt", "This is test file 0, avec des caractères accentués.");
+    verifyEntry(output, "zip-test" + File.separator + "file0.txt", "This is test file 0, avec des caractÃ¨res accentuÃ©s.");
   }
 
   @Test
@@ -161,7 +161,7 @@ public class FileUtilTest {
 
     listEntries(output, "password");
     verifyEntries(output, 6, "password");
-    verifyEntry(output, "zip-test/file0.txt", "password", "This is test file 0, avec des caractères accentués.");
+    verifyEntry(output, "zip-test" + File.separator + "file0.txt", "password", "This is test file 0, avec des caractÃ¨res accentuÃ©s.");
   }
 
   private void listFiles(File file) throws IOException {
