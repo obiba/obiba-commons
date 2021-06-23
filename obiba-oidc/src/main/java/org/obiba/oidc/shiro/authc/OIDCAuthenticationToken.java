@@ -5,10 +5,14 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.obiba.oidc.OIDCCredentials;
 import org.obiba.oidc.OIDCException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.ParseException;
 
 public class OIDCAuthenticationToken implements AuthenticationToken {
+
+  private static final Logger log = LoggerFactory.getLogger(OIDCAuthenticationToken.class);
 
   private final OIDCCredentials credentials;
 
@@ -30,24 +34,26 @@ public class OIDCAuthenticationToken implements AuthenticationToken {
     return credentials;
   }
 
-  public String getUsername() {
-    String uname = null;
+  /**
+   * Try to get the username from the JWT custom claims.
+   *
+   * @return null if not found
+   */
+  public String findUsername() {
     try {
       JWTClaimsSet claimsSet = credentials.getIdToken().getJWTClaimsSet();
-      uname = getStringClaim(claimsSet, "preferred_username");
+      log.debug("Looking for username in JWT claims: {}", claimsSet);
+      String uname = claimsSet.getStringClaim("preferred_username");
       if (Strings.isNullOrEmpty(uname)) {
-        uname = getStringClaim(claimsSet, "username");
+        uname = claimsSet.getStringClaim("username");
       }
       if (Strings.isNullOrEmpty(uname)) {
-        uname = getStringClaim(claimsSet, "name");
+        uname = claimsSet.getStringClaim("email");
       }
-      if (Strings.isNullOrEmpty(uname)) {
-        uname = claimsSet.getSubject();
-      }
+      return uname;
     } catch (ParseException e) {
-      // empty
+      return null;
     }
-    return Strings.isNullOrEmpty(uname) ? getPrincipal().toString() : uname;
   }
 
   //

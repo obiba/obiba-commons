@@ -62,10 +62,29 @@ public class OIDCRealm extends AuthorizingRealm {
       return null;
     }
     Map<String, Object> userInfo = credentials.getUserInfo();
-    List<Object> principals = Lists.newArrayList(((OIDCAuthenticationToken) token).getUsername());
+    log.info("OIDC realm {}, received userInfo {}", getName(), userInfo);
+    String uname = ((OIDCAuthenticationToken) token).findUsername();
+    if (Strings.isNullOrEmpty(uname) && userInfo != null) {
+      // try different friendly user names
+      if (userInfo.containsKey("preferred_username")) {
+        uname = userInfo.get("preferred_username").toString();
+      } else if (userInfo.containsKey("username")) {
+        uname = userInfo.get("username").toString();
+      } else if (userInfo.containsKey("email")) {
+        // generally email are considered unique user identifiers
+        uname = userInfo.get("email").toString();
+      } else if (userInfo.containsKey("name")) {
+        // make a user name from name
+        uname = userInfo.get("name").toString().toLowerCase().replaceAll(" ", ".");
+      }
+    }
+    // fallback: use subject ID from the JWT
+    if (Strings.isNullOrEmpty(uname)) {
+      uname = token.getPrincipal().toString();
+    }
+    List<Object> principals = Lists.newArrayList(uname);
     if (userInfo != null) {
       principals.add(userInfo);
-      log.info("OIDC realm {}, received userInfo {}", getName(), userInfo);
     }
     final PrincipalCollection principalCollection = new SimplePrincipalCollection(principals, getName());
     return new SimpleAuthenticationInfo(principalCollection, token.getCredentials());
