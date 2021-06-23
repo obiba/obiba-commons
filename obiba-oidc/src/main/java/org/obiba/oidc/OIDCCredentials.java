@@ -62,7 +62,11 @@ public class OIDCCredentials {
   }
 
   public void setIdToken(JWT idToken) {
-    log.trace("ID token: {}", idToken);
+    try {
+      log.trace("ID token claims: {}", idToken.getJWTClaimsSet());
+    } catch (ParseException e) {
+      log.warn("ID token claims are not accessible");
+    }
     this.idToken = idToken;
   }
 
