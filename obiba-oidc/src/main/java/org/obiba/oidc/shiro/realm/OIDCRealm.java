@@ -61,27 +61,9 @@ public class OIDCRealm extends AuthorizingRealm {
       log.debug("Error while accessing the claims for OIDC realm {}", getName());
       return null;
     }
+    String uname = credentials.getUsername();
     Map<String, Object> userInfo = credentials.getUserInfo();
-    log.info("OIDC realm {}, received userInfo {}", getName(), userInfo);
-    String uname = ((OIDCAuthenticationToken) token).findUsername();
-    if (Strings.isNullOrEmpty(uname) && userInfo != null) {
-      // try different friendly user names
-      if (userInfo.containsKey("preferred_username")) {
-        uname = userInfo.get("preferred_username").toString();
-      } else if (userInfo.containsKey("username")) {
-        uname = userInfo.get("username").toString();
-      } else if (userInfo.containsKey("email")) {
-        // generally email are considered unique user identifiers
-        uname = userInfo.get("email").toString();
-      } else if (userInfo.containsKey("name")) {
-        // make a user name from name
-        uname = userInfo.get("name").toString().toLowerCase().replaceAll(" ", ".");
-      }
-    }
-    // fallback: use subject ID from the JWT
-    if (Strings.isNullOrEmpty(uname)) {
-      uname = token.getPrincipal().toString();
-    }
+    log.info("OIDC realm {}, user {} has UserInfo {}", getName(), uname, userInfo);
     List<Object> principals = Lists.newArrayList(uname);
     if (userInfo != null) {
       principals.add(userInfo);

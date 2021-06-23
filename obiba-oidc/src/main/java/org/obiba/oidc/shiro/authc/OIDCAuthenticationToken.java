@@ -1,6 +1,5 @@
 package org.obiba.oidc.shiro.authc;
 
-import com.google.common.base.Strings;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.obiba.oidc.OIDCCredentials;
@@ -32,28 +31,6 @@ public class OIDCAuthenticationToken implements AuthenticationToken {
   @Override
   public Object getCredentials() {
     return credentials;
-  }
-
-  /**
-   * Try to get the username from the JWT custom claims.
-   *
-   * @return null if not found
-   */
-  public String findUsername() {
-    try {
-      JWTClaimsSet claimsSet = credentials.getIdToken().getJWTClaimsSet();
-      log.debug("Looking for username in JWT claims: {}", claimsSet);
-      String uname = claimsSet.getStringClaim("preferred_username");
-      if (Strings.isNullOrEmpty(uname)) {
-        uname = claimsSet.getStringClaim("username");
-      }
-      if (Strings.isNullOrEmpty(uname)) {
-        uname = claimsSet.getStringClaim("email");
-      }
-      return uname;
-    } catch (ParseException e) {
-      return null;
-    }
   }
 
   //
