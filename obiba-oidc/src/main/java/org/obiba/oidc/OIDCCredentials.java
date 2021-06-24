@@ -87,22 +87,23 @@ public class OIDCCredentials {
     return userInfo == null ? null : userInfo.get(key);
   }
 
-  public String getUsername() {
-    String uname = findUsernameInIdToken();
+  public String getUsername(String usernameClaim) {
+    String uname = findUsernameInIdToken(usernameClaim);
     if (Strings.isNullOrEmpty(uname) && userInfo != null) {
       log.debug("Looking for username in userInfo {}", userInfo);
       // try different friendly user names
-      if (userInfo.containsKey("preferred_username")) {
+      if (!Strings.isNullOrEmpty(usernameClaim) && userInfo.containsKey(usernameClaim))
+        uname = userInfo.get(usernameClaim).toString();
+      if (Strings.isNullOrEmpty(uname) && userInfo.containsKey("preferred_username"))
         uname = userInfo.get("preferred_username").toString();
-      } else if (userInfo.containsKey("username")) {
+      if (Strings.isNullOrEmpty(uname) && userInfo.containsKey("username"))
         uname = userInfo.get("username").toString();
-      } else if (userInfo.containsKey("email")) {
-        // generally email are considered unique user identifiers
+      // generally email are considered unique user identifiers
+      if (Strings.isNullOrEmpty(uname) && userInfo.containsKey("email"))
         uname = userInfo.get("email").toString();
-      } else if (userInfo.containsKey("name")) {
-        // make a user name from name
+      // make a user name from name
+      if (Strings.isNullOrEmpty(uname) && userInfo.containsKey("name"))
         uname = userInfo.get("name").toString().toLowerCase().replaceAll(" ", ".");
-      }
     }
     // fallback: use subject ID from the JWT
     if (Strings.isNullOrEmpty(uname)) {
@@ -118,19 +119,22 @@ public class OIDCCredentials {
   /**
    * Try to get the username from the JWT custom claims.
    *
+   * @param usernameClaim
    * @return null if not found
    */
-  private String findUsernameInIdToken() {
+  private String findUsernameInIdToken(String usernameClaim) {
     try {
       JWTClaimsSet claimsSet = idToken.getJWTClaimsSet();
       log.debug("Looking for username in JWT claims: {}", claimsSet);
-      String uname = claimsSet.getStringClaim("preferred_username");
-      if (Strings.isNullOrEmpty(uname)) {
+      String uname = null;
+      if (!Strings.isNullOrEmpty(usernameClaim))
+        uname = claimsSet.getStringClaim(usernameClaim);
+      if (Strings.isNullOrEmpty(uname))
+        uname = claimsSet.getStringClaim("preferred_username");
+      if (Strings.isNullOrEmpty(uname))
         uname = claimsSet.getStringClaim("username");
-      }
-      if (Strings.isNullOrEmpty(uname)) {
+      if (Strings.isNullOrEmpty(uname))
         uname = claimsSet.getStringClaim("email");
-      }
       return uname;
     } catch (ParseException e) {
       return null;

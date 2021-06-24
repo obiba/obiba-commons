@@ -34,6 +34,11 @@ public class OIDCRealm extends AuthorizingRealm {
   private static final Logger log = LoggerFactory.getLogger(OIDCRealm.class);
 
   /**
+   * Custom claim for looking up username in the ID token or in the UserInfo object.
+   */
+  private static final String USERNAME_CLAIM = "usernameClaim";
+
+  /**
    * Group names to apply systematically.
    */
   public static final String GROUPS_PARAM = "groups";
@@ -71,7 +76,7 @@ public class OIDCRealm extends AuthorizingRealm {
       log.debug("Error while accessing the claims for OIDC realm {}", getName());
       return null;
     }
-    String uname = credentials.getUsername();
+    String uname = credentials.getUsername(configuration.getCustomParam(USERNAME_CLAIM));
     Map<String, Object> userInfo = credentials.getUserInfo();
     log.info("OIDC realm {}, user {} has UserInfo {}", getName(), uname, userInfo);
     List<Object> principals = Lists.newArrayList(uname);
