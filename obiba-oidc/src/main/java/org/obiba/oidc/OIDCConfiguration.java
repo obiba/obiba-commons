@@ -139,6 +139,10 @@ public class OIDCConfiguration {
     this.customParams = customParams;
   }
 
+  public void setCustomParam(String key, String value) {
+    getCustomParams().put(key, value);
+  }
+
   public int getConnectTimeout() {
     return connectTimeout;
   }

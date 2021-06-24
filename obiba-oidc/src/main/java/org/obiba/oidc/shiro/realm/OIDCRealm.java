@@ -14,7 +14,6 @@ import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.SimplePrincipalCollection;
-import org.json.JSONArray;
 import org.obiba.oidc.OIDCConfiguration;
 import org.obiba.oidc.OIDCCredentials;
 import org.obiba.oidc.shiro.authc.OIDCAuthenticationToken;
@@ -22,8 +21,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.ParseException;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Realm based on OpenID connect token, after all authorization and identification stuff has happen.
@@ -32,11 +33,20 @@ public class OIDCRealm extends AuthorizingRealm {
 
   private static final Logger log = LoggerFactory.getLogger(OIDCRealm.class);
 
+  /**
+   * Group names to apply systematically.
+   */
   public static final String GROUPS_PARAM = "groups";
 
-  public static final String GROUPS_CLAIM_PARAM = "groupsClaim";
+  /**
+   * JS function to apply to retrieve from the UserInfo the array of group names to apply.
+   */
+  public static final String GROUPS_JS_PARAM = "groupsJS";
 
-  private static final String DEFAULT_GROUPS_CLAIM = "groups";
+  /**
+   * Claim(s) to inspect for an array of group names to apply.
+   */
+  public static final String GROUPS_CLAIM_PARAM = "groupsClaim";
 
   private final OIDCConfiguration configuration;
 
@@ -86,16 +96,11 @@ public class OIDCRealm extends AuthorizingRealm {
       // groups to be retrieved from user info claims
       for (Object principal : thisPrincipals) {
         if (principal instanceof Map) {
-          try {
-            // TODO improve by getting groups key from OIDC config
-            Object gps = ((Map<String, Object>) principal).get(getGroupsClaim());
-            if (gps != null) {
-              extractGroups(gps).forEach(groups::add);
-            }
-          } catch (Exception e) {
-            log.debug("Principal: {}", principal);
-            log.warn("Failed at retrieving userInfo from principal", e);
-          }
+          newOIDCGroupsExtractor().extractGroups(configuration, (Map<String, Object>) principal)
+              .stream()
+              .map(String::trim)
+              .filter(g -> !g.isEmpty())
+              .forEach(groups::add);
         }
       }
       return new SimpleAuthorizationInfo(groups);
@@ -103,27 +108,24 @@ public class OIDCRealm extends AuthorizingRealm {
     return new SimpleAuthorizationInfo();
   }
 
-  protected Iterable<String> extractGroups(Object groupsParam) {
-    if (groupsParam instanceof Collection) {
-      return ((Collection<Object>)groupsParam).stream()
-          .map(Object::toString)
-          .collect(Collectors.toSet());
+  protected OIDCGroupsExtractor newOIDCGroupsExtractor() {
+    return new DefaultOIDCGroupsExtractor();
+  }
+
+  /**
+   * Extract group names from a comma or space separated string.
+   *
+   * @param groupsParam
+   * @return
+   */
+  protected Iterable<String> extractGroups(String groupsParam) {
+    if (Strings.isNullOrEmpty(groupsParam)) {
+      return Lists.newArrayList();
+    } else if (groupsParam.contains(",")) {
+      return Splitter.on(",").omitEmptyStrings().trimResults().split(groupsParam);
     } else {
-      String groupsParamStr = groupsParam.toString();
-      if (groupsParamStr.startsWith("[") && groupsParamStr.endsWith("]")) {
-        // expect a json array
-        return new JSONArray(groupsParamStr).toList().stream()
-            .filter(Objects::nonNull)
-            .map(Object::toString)
-            .collect(Collectors.toList());
-      }
-      return Splitter.on(" ").omitEmptyStrings().trimResults().split(groupsParamStr);
+      return Splitter.on(" ").omitEmptyStrings().trimResults().split(groupsParam);
     }
   }
 
-
-  protected String getGroupsClaim() {
-    String groupsClaim = configuration.getCustomParam(GROUPS_CLAIM_PARAM);
-    return Strings.isNullOrEmpty(groupsClaim) ? DEFAULT_GROUPS_CLAIM : groupsClaim;
-  }
 }
