@@ -1,7 +1,9 @@
 package org.obiba.oidc.shiro.realm;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.json.JSONArray;
 import org.obiba.oidc.OIDCConfiguration;
@@ -34,22 +36,26 @@ public class DefaultOIDCGroupsExtractor implements OIDCGroupsExtractor {
 
   public Set<String> extractGroups(OIDCConfiguration configuration, Map<String, Object> userInfo) {
     Set<String> groups = Sets.newHashSet();
-
-    // expect an array of group names from the claim
-    String groupsClaim = getGroupsClaim(configuration);
-    try {
-      Object gps = userInfo.get(groupsClaim);
-      if (gps != null) {
-        extractGroups(gps).forEach(groups::add);
-      }
-    } catch (Exception e) {
-      log.debug("UserInfo: {}", userInfo);
-      log.warn("Failed at retrieving groups from UserInfo's claim: {}", groupsClaim, e);
-    }
-
-    // process UserInfo with JS routine
     String groupsJS = configuration.getCustomParam(OIDCRealm.GROUPS_JS_PARAM);
-    if (!Strings.isNullOrEmpty(groupsJS)) {
+
+    // if groups JS script is not defined, use the groups claim
+    // (either explicitly set or the default one).
+    if (Strings.isNullOrEmpty(groupsJS)) {
+      // expect a group name or an array of group names from the claim
+      String groupsClaim = getGroupsClaim(configuration);
+      log.debug("Extracting groups from claim: {}", groupsClaim);
+      try {
+        Object gps = userInfo.get(groupsClaim);
+        if (gps != null) {
+          extractGroups(gps).forEach(groups::add);
+        }
+      } catch (Exception e) {
+        log.debug("UserInfo: {}", userInfo);
+        log.warn("Failed at retrieving groups from UserInfo's claim: {}", groupsClaim, e);
+      }
+    } else {
+      // process UserInfo with JS routine
+      log.debug("Extracting groups using JS script: {}", groupsJS);
       try {
         ScriptEngine engine = manager.getEngineByName("nashorn");
         if (engine == null) {
@@ -61,32 +67,12 @@ public class DefaultOIDCGroupsExtractor implements OIDCGroupsExtractor {
         Bindings bindings = engine.createBindings();
         bindings.put("userInfo", userInfo);
         Object res = engine.eval(groupsJS, bindings);
-        if (res != null) {
-          if (res instanceof Bindings) {
-            Bindings jsRes = ((Bindings) res);
-            jsRes.values().stream()
-                .filter(g -> g instanceof String)
-                .map(Object::toString)
-                .forEach(groups::add);
-          } else if (res instanceof Collection) {
-            ((Collection<Object>) res).stream()
-                .filter(g -> g instanceof String)
-                .map(Object::toString)
-                .forEach(groups::add);
-          } else if (res.getClass().isArray()) {
-            JSONArray gps = new JSONArray(res);
-            gps.toList().stream()
-                .filter(g -> g instanceof String)
-                .map(Object::toString)
-                .forEach(groups::add);
-          } else if (res instanceof String) {
-            groups.add(res.toString());
-          }
-        }
+        extractGroups(res).forEach(groups::add);
       } catch (Exception e) {
         log.warn("OIDC groups JS script evaluation failed: {}", groupsJS, e);
       }
     }
+    log.debug("Groups found: '{}'", Joiner.on("', '").join(groups));
     return groups;
   }
 
@@ -95,25 +81,39 @@ public class DefaultOIDCGroupsExtractor implements OIDCGroupsExtractor {
     return Strings.isNullOrEmpty(groupsClaim) ? DEFAULT_GROUPS_CLAIM : groupsClaim;
   }
 
-  protected Iterable<String> extractGroups(Object groupsParam) {
-    if (groupsParam instanceof Collection) {
-      return ((Collection<Object>) groupsParam).stream()
+  protected Iterable<String> extractGroups(Object groupsValue) {
+    if (groupsValue == null) return Lists.newArrayList();
+
+    if (groupsValue instanceof Bindings) {
+      Bindings jsRes = ((Bindings) groupsValue);
+      return jsRes.values().stream()
+          .filter(g -> g instanceof String)
+          .map(Object::toString)
+          .collect(Collectors.toSet());
+    } else if (groupsValue instanceof Collection) {
+      return ((Collection<Object>) groupsValue).stream()
           .filter(Objects::nonNull)
           .map(Object::toString)
           .collect(Collectors.toSet());
+    } else if (groupsValue.getClass().isArray()) {
+      JSONArray gps = new JSONArray(groupsValue);
+      return gps.toList().stream()
+          .filter(g -> g instanceof String)
+          .map(Object::toString)
+          .collect(Collectors.toSet());
     } else {
-      String groupsParamStr = groupsParam.toString();
-      if (groupsParamStr.startsWith("[") && groupsParamStr.endsWith("]")) {
+      String groupsValueStr = groupsValue.toString();
+      if (groupsValueStr.startsWith("[") && groupsValueStr.endsWith("]")) {
         // expect a json array
-        return new JSONArray(groupsParamStr).toList().stream()
+        return new JSONArray(groupsValueStr).toList().stream()
             .filter(Objects::nonNull)
             .map(Object::toString)
             .collect(Collectors.toList());
       }
-      if (groupsParamStr.contains(",")) {
-        return Splitter.on(",").omitEmptyStrings().trimResults().split(groupsParamStr);
+      if (groupsValueStr.contains(",")) {
+        return Splitter.on(",").omitEmptyStrings().trimResults().split(groupsValueStr);
       } else {
-        return Splitter.on(" ").omitEmptyStrings().trimResults().split(groupsParamStr);
+        return Splitter.on(" ").omitEmptyStrings().trimResults().split(groupsValueStr);
       }
     }
   }
