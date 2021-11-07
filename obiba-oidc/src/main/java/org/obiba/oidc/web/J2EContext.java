@@ -37,7 +37,7 @@ public class J2EContext {
   }
 
   public String getClientId() {
-    return getRemoteAddr() + "_" + getRequest().getSession().getId();
+    return getRequest().getSession().getId();
   }
 
   public String getRequestParameter(final String name) {
