@@ -6,7 +6,7 @@ If you are using OBiBa software, please cite our work in your code, websites, pu
 
 # Obiba Commons [![Build Status](http://ci.obiba.org/view/OBiBa%20Commons/job/Obiba%20Commons/badge/icon)](http://ci.obiba.org/view/OBiBa%20Commons/job/Obiba%20Commons/)
 
-Reusable code for persistence (hibernate), security, spring and wicket.
+Reusable code for persistence (hibernate), security, spring and more.
 
 
 ## Download

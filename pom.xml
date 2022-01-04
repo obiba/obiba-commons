@@ -18,7 +18,7 @@
   <groupId>org.obiba.commons</groupId>
   <artifactId>obiba-commons</artifactId>
   <packaging>pom</packaging>
-  <version>1.17-SNAPSHOT</version>
+  <version>2.0-SNAPSHOT</version>
 
   <properties>
     <maven.compiler.target>1.8</maven.compiler.target>
@@ -67,7 +67,6 @@
     <spring-data-commons.version>1.13.16.RELEASE</spring-data-commons.version>
     <spring-data-mongodb.version>1.10.10.RELEASE</spring-data-mongodb.version>
     <validation-api.version>1.1.0.Final</validation-api.version>
-    <wicket.version>1.4.21</wicket.version>
     <xstream.version>1.4.18</xstream.version>
 
     <!-- maven plugins -->
@@ -101,7 +100,6 @@
     <module>obiba-shiro</module>
     <module>obiba-shiro-web</module>
     <module>obiba-web-model</module>
-    <module>obiba-wicket</module>
     <module>obiba-mongodb</module>
     <module>obiba-password-hasher</module>
   </modules>
@@ -463,30 +461,6 @@
         <groupId>joda-time</groupId>
         <artifactId>joda-time</artifactId>
         <version>${joda-time.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.wicket</groupId>
-        <artifactId>wicket</artifactId>
-        <version>${wicket.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.wicket</groupId>
-        <artifactId>wicket-spring</artifactId>
-        <version>${wicket.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.wicket</groupId>
-        <artifactId>wicket-extensions</artifactId>
-        <version>${wicket.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.wicket</groupId>
-        <artifactId>wicket-auth-roles</artifactId>
-        <version>${wicket.version}</version>
       </dependency>
 
       <dependency>
