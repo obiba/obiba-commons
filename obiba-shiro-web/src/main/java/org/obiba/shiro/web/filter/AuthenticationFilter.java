@@ -143,7 +143,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         requestPrefixes = requestPrefixes.stream().map(s -> contextPath + s).collect(Collectors.toList());
     }
     String requestUri = request.getRequestURI();
-    if (!(contextPath + "/").equals(requestUri) && !requestPrefixes.isEmpty() &&  requestPrefixes.stream().noneMatch(requestUri::startsWith)) {
+    if (!(contextPath + "/").equals(requestUri) && !requestPrefixes.isEmpty() && requestPrefixes.stream().noneMatch(requestUri::startsWith)) {
       filterChain.doFilter(request, response);
       return;
     }
@@ -164,6 +164,10 @@ public class AuthenticationFilter extends OncePerRequestFilter {
       else
         log.warn("Unexpected authentication error: {}", e.getMessage());
       response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+    } catch (NoSuchOtpException e) {
+      log.error("OTP Exception ", e);
+      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+      response.setHeader("WWW-Authenticate", e.getOtpStrategy());
     } catch (Exception e) {
       log.error("Exception ", e);
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -235,10 +239,10 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     String sessionId = extractSessionId(request);
     AuthenticationToken token = new HttpHeaderAuthenticationToken(authToken);
     try {
-      return authenticateBasicHeader(token, sessionId);
+      return authenticateBasicHeader(request, token, sessionId);
     } catch (UnknownSessionException e) {
       // obiba/agate#302 if for any reason session cannot be retrieved, login with a new session
-      return authenticateBasicHeader(token, null);
+      return authenticateBasicHeader(request, token, null);
     }
   }
 
@@ -251,10 +255,10 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     String sessionId = extractSessionId(request);
     AuthenticationToken token = new HttpAuthorizationToken("Basic", authorization);
     try {
-      return authenticateBasicHeader(token, sessionId);
+      return authenticateBasicHeader(request, token, sessionId);
     } catch (UnknownSessionException e) {
       // obiba/agate#302 if for any reason session cannot be retrieved, login with a new session
-      return authenticateBasicHeader(token, null);
+      return authenticateBasicHeader(request, token, null);
     }
   }
 
@@ -267,17 +271,17 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     String sessionId = extractSessionId(request);
     AuthenticationToken token = new HttpAuthorizationToken(credentialsScheme, authorization);
     try {
-      return authenticateBasicHeader(token, sessionId);
+      return authenticateBasicHeader(request, token, sessionId);
     } catch (UnknownSessionException e) {
       // obiba/agate#302 if for any reason session cannot be retrieved, login with a new session
-      return authenticateBasicHeader(token, null);
+      return authenticateBasicHeader(request, token, null);
     }
   }
 
   @Nullable
-  private Subject authenticateBasicHeader(AuthenticationToken token, String sessionId) {
+  private Subject authenticateBasicHeader(HttpServletRequest request, AuthenticationToken token, String sessionId) {
     try {
-      return getAuthenticationExecutor().login(token, sessionId);
+      return getAuthenticationExecutor().login(request, token, sessionId);
     } catch (AuthenticationException e) {
       return null;
     }
@@ -324,7 +328,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
       String ticketId = ticketCookie.getValue();
       AuthenticationToken token = new TicketAuthenticationToken(ticketId, request.getRequestURI(), OBIBA_COOKIE_ID);
       try {
-        return getAuthenticationExecutor().login(token);
+        return getAuthenticationExecutor().login(request, token);
       } catch (AuthenticationException e) {
         return null;
       }
@@ -350,7 +354,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     String ticketId = schemeAndToken[1];
     AuthenticationToken token = new TicketAuthenticationToken(ticketId, request.getRequestURI(), OBIBA_COOKIE_ID);
     try {
-      return getAuthenticationExecutor().login(token);
+      return getAuthenticationExecutor().login(request, token);
     } catch (AuthenticationException e) {
       return null;
     }

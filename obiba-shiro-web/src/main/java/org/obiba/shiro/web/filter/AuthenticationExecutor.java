@@ -11,6 +11,7 @@
 package org.obiba.shiro.web.filter;
 
 import javax.annotation.Nullable;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -23,21 +24,39 @@ public interface AuthenticationExecutor {
 
   /**
    * Performs the shiro login.
+   *
    * @param token
    * @return
    * @throws AuthenticationException
    */
   @Nullable
-  Subject login(AuthenticationToken token) throws AuthenticationException;
+  default Subject login(AuthenticationToken token) throws AuthenticationException {
+    return login(null, token, null);
+  }
+
+  /**
+   * Performs the shiro login in an HTTP context.
+   *
+   * @param request
+   * @param token
+   * @return
+   * @throws AuthenticationException
+   */
+  @Nullable
+  default Subject login(HttpServletRequest request, AuthenticationToken token) throws AuthenticationException {
+    return login(request, token, null);
+  }
 
   /**
    * Reuse a session and login.
+   *
+   * @param request
    * @param token
    * @param sessionId
    * @return
    * @throws AuthenticationException
    */
   @Nullable
-  Subject login(AuthenticationToken token, String sessionId) throws AuthenticationException;
+  Subject login(HttpServletRequest request, AuthenticationToken token, String sessionId) throws AuthenticationException;
 
 }
