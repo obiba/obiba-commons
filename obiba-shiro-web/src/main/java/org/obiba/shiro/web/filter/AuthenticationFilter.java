@@ -165,9 +165,9 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         log.warn("Unexpected authentication error: {}", e.getMessage());
       response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     } catch (NoSuchOtpException e) {
-      log.error("OTP Exception ", e);
+      log.warn("OTP Exception ", e);
       response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-      response.setHeader("WWW-Authenticate", e.getOtpStrategy());
+      response.setHeader("WWW-Authenticate", e.getOtpHeader());
     } catch (Exception e) {
       log.error("Exception ", e);
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

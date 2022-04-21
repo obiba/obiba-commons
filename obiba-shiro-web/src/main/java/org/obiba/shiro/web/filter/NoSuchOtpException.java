@@ -7,11 +7,22 @@ public class NoSuchOtpException extends RuntimeException {
 
   private final String otpStrategy;
 
+  private final String otpHeader;
+
   public NoSuchOtpException(String otpStrategy) {
+    this(otpStrategy, "");
+  }
+
+  public NoSuchOtpException(String otpStrategy, String headerPrefix) {
     this.otpStrategy = otpStrategy;
+    this.otpHeader = headerPrefix + otpStrategy;
   }
 
   public String getOtpStrategy() {
     return otpStrategy;
+  }
+
+  public String getOtpHeader() {
+    return otpHeader;
   }
 }
