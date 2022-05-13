@@ -155,7 +155,7 @@ public abstract class AbstractAuthenticationExecutor implements AuthenticationEx
    */
   private synchronized void onLoginFailure(AuthenticationToken token, AuthenticationException authException) {
     if (!isBanEnabled()) return;
-    if (token instanceof UsernamePasswordToken) {
+    if (token instanceof UsernamePasswordToken && !(authException instanceof NoSuchOtpException)) {
       UsernamePasswordToken uToken = (UsernamePasswordToken) token;
 
       List<Date> failures = loginFailures.getOrDefault(uToken.getUsername(), Lists.newArrayList());
