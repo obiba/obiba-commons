@@ -10,4 +10,5 @@ message SubjectDto {
   required string username = 1;
   repeated string groups = 2;
   repeated AttributeDto attributes = 3;
+  optional bool otpEnabled = 4 [default = false];
 }
