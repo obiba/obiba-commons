@@ -21,6 +21,7 @@ import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.ThreadContext;
+import org.obiba.shiro.NoSuchOtpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,7 +90,7 @@ public abstract class AbstractAuthenticationExecutor implements AuthenticationEx
         }
         ensureProfile(subject);
       } catch (AuthenticationException e) {
-        onLoginFailure(token);
+        onLoginFailure(token, e);
         throw e;
       }
     }
@@ -152,7 +153,7 @@ public abstract class AbstractAuthenticationExecutor implements AuthenticationEx
    *
    * @param token
    */
-  private synchronized void onLoginFailure(AuthenticationToken token) {
+  private synchronized void onLoginFailure(AuthenticationToken token, AuthenticationException authException) {
     if (!isBanEnabled()) return;
     if (token instanceof UsernamePasswordToken) {
       UsernamePasswordToken uToken = (UsernamePasswordToken) token;

@@ -19,20 +19,24 @@ import org.apache.shiro.codec.Base64;
 /**
  *
  */
-public class HttpAuthorizationToken extends UsernamePasswordToken implements AuthenticationToken {
+public class HttpAuthorizationToken extends UsernamePasswordOtpToken implements AuthenticationToken {
 
   private static final long serialVersionUID = 4520790559763117320L;
 
   public HttpAuthorizationToken(String scheme, String authorization) {
-    this(scheme, authorization, null);
+    this(scheme, authorization, null, null);
   }
 
-  public HttpAuthorizationToken(String scheme, String authorization, @Nullable String host) {
-    this(new DecodedCredentials(scheme, authorization), host);
+  public HttpAuthorizationToken(String scheme, String authorization, String otp) {
+    this(scheme, authorization, null, otp);
   }
 
-  private HttpAuthorizationToken(DecodedCredentials decoded, @Nullable String host) {
-    super(decoded.getUsername(), decoded.getPassword(), host);
+  private HttpAuthorizationToken(String scheme, String authorization, @Nullable String host, String otp) {
+    this(new DecodedCredentials(scheme, authorization), host, otp);
+  }
+
+  private HttpAuthorizationToken(DecodedCredentials decoded, @Nullable String host, String otp) {
+    super(decoded.getUsername(), decoded.getPassword(), host, otp);
   }
 
   private static class DecodedCredentials {

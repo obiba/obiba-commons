@@ -21,6 +21,7 @@ import org.apache.shiro.session.Session;
 import org.apache.shiro.session.UnknownSessionException;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.ThreadContext;
+import org.obiba.shiro.NoSuchOtpException;
 import org.obiba.shiro.authc.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +48,8 @@ import java.util.stream.Collectors;
 public class AuthenticationFilter extends OncePerRequestFilter {
 
   private static final Logger log = LoggerFactory.getLogger(AuthenticationFilter.class);
+
+  public static final String TOTP_HEADER = "X-Obiba-TOTP";
 
   public static final String AUTHORIZATION_HEADER = "Authorization";
 
@@ -158,16 +161,16 @@ public class AuthenticationFilter extends OncePerRequestFilter {
       filterChain.doFilter(request, response);
     } catch (CredentialsException e) {
       response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+    } catch (NoSuchOtpException e) {
+      log.warn("OTP Exception ", e);
+      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+      response.setHeader("WWW-Authenticate", e.getOtpHeader());
     } catch (AuthenticationException e) {
       if (log.isDebugEnabled())
         log.warn("Unexpected authentication error", e);
       else
         log.warn("Unexpected authentication error: {}", e.getMessage());
       response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-    } catch (NoSuchOtpException e) {
-      log.warn("OTP Exception ", e);
-      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-      response.setHeader("WWW-Authenticate", e.getOtpHeader());
     } catch (Exception e) {
       log.error("Exception ", e);
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -253,7 +256,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
       return null;
 
     String sessionId = extractSessionId(request);
-    AuthenticationToken token = new HttpAuthorizationToken("Basic", authorization);
+    AuthenticationToken token = new HttpAuthorizationToken("Basic", authorization, extractOtp(request));
     try {
       return authenticateBasicHeader(request, token, sessionId);
     } catch (UnknownSessionException e) {
@@ -269,7 +272,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
       return null;
 
     String sessionId = extractSessionId(request);
-    AuthenticationToken token = new HttpAuthorizationToken(credentialsScheme, authorization);
+    AuthenticationToken token = new HttpAuthorizationToken(credentialsScheme, authorization, extractOtp(request));
     try {
       return authenticateBasicHeader(request, token, sessionId);
     } catch (UnknownSessionException e) {
@@ -282,6 +285,8 @@ public class AuthenticationFilter extends OncePerRequestFilter {
   private Subject authenticateBasicHeader(HttpServletRequest request, AuthenticationToken token, String sessionId) {
     try {
       return getAuthenticationExecutor().login(request, token, sessionId);
+    } catch (NoSuchOtpException e) {
+      throw e;
     } catch (AuthenticationException e) {
       return null;
     }
@@ -366,6 +371,11 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
   private String extractSessionId(HttpServletRequest request) {
     return extractSessionId(request, null);
+  }
+
+  private String extractOtp(HttpServletRequest request) {
+    String otp = request.getHeader(TOTP_HEADER);
+    return otp == null || otp.isEmpty() ? null : otp;
   }
 
   private String extractSessionId(HttpServletRequest request, @Nullable Cookie sessionCookie) {

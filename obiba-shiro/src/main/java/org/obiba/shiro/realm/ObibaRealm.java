@@ -42,7 +42,9 @@ import org.apache.shiro.codec.Base64;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.SimplePrincipalCollection;
+import org.obiba.shiro.NoSuchOtpException;
 import org.obiba.shiro.authc.TicketAuthenticationToken;
+import org.obiba.shiro.authc.UsernamePasswordOtpToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -138,6 +140,11 @@ public class ObibaRealm extends AuthorizingRealm {
       RestTemplate template = newRestTemplate();
       HttpHeaders headers = new HttpHeaders();
       headers.set(APPLICATION_AUTH_HEADER, getApplicationAuth());
+      if (token instanceof UsernamePasswordOtpToken) {
+        UsernamePasswordOtpToken otpToken = (UsernamePasswordOtpToken) token;
+        if (otpToken.hasOtp())
+          headers.set("X-Obiba-TOTP", otpToken.getOtp());
+      }
       headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
       String form = "username=" + encode(username, "UTF-8") + "&password=" + encode(new String(token.getPassword()), "UTF-8");
       HttpEntity<String> entity = new HttpEntity<String>(form, headers);
@@ -158,6 +165,14 @@ public class ObibaRealm extends AuthorizingRealm {
     } catch(HttpClientErrorException e) {
       if (HttpStatus.FORBIDDEN.equals(e.getStatusCode())) {
         log.debug("Invalid credentials. Response status code [{}], response body [{}], credentials used [{}]", e.getStatusCode(), e.getResponseBodyAsString(), token);
+        return null;
+      } else if (HttpStatus.UNAUTHORIZED.equals(e.getStatusCode())) {
+        log.debug("Invalid OTP. Response status code [{}], response body [{}], credentials used [{}]", e.getStatusCode(), e.getResponseBodyAsString(), token);
+        List<String> wwwAuths = e.getResponseHeaders().get("WWW-Authenticate");
+        if (wwwAuths != null && !wwwAuths.isEmpty()) {
+          log.info("Expecting header: {}", wwwAuths.get(0));
+          throw new NoSuchOtpException(wwwAuths.get(0));
+        }
         return null;
       }
       if (log.isDebugEnabled())
