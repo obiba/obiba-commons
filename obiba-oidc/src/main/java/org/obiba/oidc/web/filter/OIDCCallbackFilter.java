@@ -226,8 +226,9 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
 
     try {
       // Token request
+      String cbURL = config.hasCallbackURL() ? config.getCallbackURL() : callbackURL;
       final TokenRequest request = new TokenRequest(config.findProviderMetaData().getTokenEndpointURI(),
-          clientAuthentication, new AuthorizationCodeGrant(code, new URI(callbackURL + config.getName())));
+          clientAuthentication, new AuthorizationCodeGrant(code, new URI(cbURL + config.getName())));
       HTTPRequest tokenHttpRequest = request.toHTTPRequest();
       tokenHttpRequest.setConnectTimeout(config.getConnectTimeout());
       tokenHttpRequest.setReadTimeout(config.getReadTimeout());

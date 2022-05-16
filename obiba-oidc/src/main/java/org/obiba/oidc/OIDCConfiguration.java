@@ -53,6 +53,8 @@ public class OIDCConfiguration {
 
   private int maxClockSkew = DEFAULT_MAX_CLOCK_SKEW;
 
+  private String callbackURL;
+
   private transient OIDCProviderMetadata oidcProviderMetadata;
 
   public OIDCConfiguration() {
@@ -81,6 +83,18 @@ public class OIDCConfiguration {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public String getCallbackURL() {
+    return callbackURL;
+  }
+
+  public void setCallbackURL(String callbackURL) {
+    this.callbackURL = callbackURL;
+  }
+
+  public boolean hasCallbackURL() {
+    return !Strings.isNullOrEmpty(callbackURL);
   }
 
   public String getClientId() {
