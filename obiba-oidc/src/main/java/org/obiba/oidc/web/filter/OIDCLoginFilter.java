@@ -120,6 +120,10 @@ public class OIDCLoginFilter extends OncePerRequestFilter {
   }
 
   protected String makeCallbackURL(String provider) {
+    return makeCallbackURL(provider, callbackURL);
+  }
+
+  protected String makeCallbackURL(String provider, String callbackURL) {
     if (Strings.isNullOrEmpty(providerParameter)) {
       return callbackURL + (callbackURL.endsWith("/") ? "" : "/") + provider;
     } else {
