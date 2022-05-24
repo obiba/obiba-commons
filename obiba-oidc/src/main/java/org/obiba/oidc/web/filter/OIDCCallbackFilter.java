@@ -131,7 +131,7 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
       doOIDCDance(context, provider);
     }
 
-    onRedirect(oidcSessionManager.getSession(context.getClientId()), context.getResponse());
+    onRedirect(oidcSessionManager.getSession(context.getClientId()), context, provider);
     filterChain.doFilter(request, response);
   }
 
@@ -162,10 +162,11 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
    * original request parameters.
    *
    * @param session
-   * @param response
+   * @param context
+   * @param provider
    */
-  protected void onRedirect(OIDCSession session, HttpServletResponse response) throws IOException {
-    response.sendRedirect(defaultRedirectURL);
+  protected void onRedirect(OIDCSession session, J2EContext context, String provider) throws IOException {
+    context.getResponse().sendRedirect(defaultRedirectURL);
   }
 
   private void doOIDCDance(J2EContext context, String provider) {
@@ -180,7 +181,7 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
       if (config == null)
         throw new OIDCException("No OIDC configuration could be found: " + provider);
       AuthenticationSuccessResponse authResponse = extractAuthenticationResponse(context, config);
-      if (authResponse != null && authResponse.getAuthorizationCode() != null) {
+      if (authResponse.getAuthorizationCode() != null) {
         OIDCCredentials credentials = validate(context, config, authResponse);
         extractUserInfo(context, config, credentials);
         onAuthenticationSuccess(oidcSessionManager.getSession(context.getClientId()), credentials, context.getResponse());
