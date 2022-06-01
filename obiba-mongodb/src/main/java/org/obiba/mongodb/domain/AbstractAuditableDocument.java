@@ -13,15 +13,13 @@ package org.obiba.mongodb.domain;
 import java.util.Objects;
 
 import org.joda.time.DateTime;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.annotation.Version;
+import org.springframework.data.annotation.*;
 import org.springframework.data.domain.Auditable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.data.domain.Persistable;
 
-public abstract class AbstractAuditableDocument implements Auditable<String, String>, Timestamped {
+public abstract class AbstractAuditableDocument implements Persistable<String>, Timestamped {
 
   private static final long serialVersionUID = -5039056351334888684L;
 
@@ -31,11 +29,13 @@ public abstract class AbstractAuditableDocument implements Auditable<String, Str
   @Version
   private Long version;
 
+  @CreatedBy
   private String createdBy;
 
   @CreatedDate
   private DateTime createdDate = DateTime.now();
 
+  @LastModifiedBy
   private String lastModifiedBy;
 
   @LastModifiedDate
@@ -64,12 +64,10 @@ public abstract class AbstractAuditableDocument implements Auditable<String, Str
     return id == null;
   }
 
-  @Override
   public String getCreatedBy() {
     return createdBy;
   }
 
-  @Override
   public void setCreatedBy(String createdBy) {
     this.createdBy = createdBy;
   }
@@ -84,12 +82,10 @@ public abstract class AbstractAuditableDocument implements Auditable<String, Str
     this.createdDate = createdDate;
   }
 
-  @Override
   public String getLastModifiedBy() {
     return lastModifiedBy;
   }
 
-  @Override
   public void setLastModifiedBy(String lastModifiedBy) {
     this.lastModifiedBy = lastModifiedBy;
   }
