@@ -1,29 +1,26 @@
+# Obiba Commons [[![Build Status](https://app.travis-ci.com/obiba/obiba-commons.svg?branch=master)](https://app.travis-ci.com/github/obiba/obiba-commons)
+
+Reusable code for persistence (hibernate), security, spring and more.
+
 # OBiBa acknowledgments
 
 If you are using OBiBa software, please cite our work in your code, websites, publications or reports.
 
 "The work presented herein was made possible using the OBiBa suite (www.obiba.org), a  software suite developed by Maelstrom Research (www.maelstrom-research.org)"
 
-# Obiba Commons [![Build Status](http://ci.obiba.org/view/OBiBa%20Commons/job/Obiba%20Commons/badge/icon)](http://ci.obiba.org/view/OBiBa%20Commons/job/Obiba%20Commons/)
+## Maven Download
 
-Reusable code for persistence (hibernate), security, spring and more.
+See [Obiba Maven repository](https://obiba.jfrog.io/obiba/libs-release)
 
-
-## Download
-
-See Obiba Maven 2.x repository: [http://www.obiba.org/maven2](http://www.obiba.org/maven2)
-
-And Obiba Snaphot Maven 2.x repository: [http://www.obiba.org/maven2-snapshots](http://www.obiba.org/maven2-snapshots)
-
+And [Obiba Snaphot Maven repository](https://obiba.jfrog.io/obiba/libs-snapshot)
 
 ## Bug tracker
 
-Have a bug? Please create an issue on [OBiBa JIRA](http://jira.obiba.org/jira/browse/COM).
-
+Have a bug? Please create an issue on [OBiBa Github Issues](https://github.com/obiba/obiba-commons/issues).
 
 ## Continuous integration
 
-See [OBiBa Jenkins](http://ci.obiba.org/view/OBiBa%20Commons).
+See [OBiBa Travis CI](https://app.travis-ci.com/github/obiba/obiba-commons).
 
 
 ## Mailing list
