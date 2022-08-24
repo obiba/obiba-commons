@@ -28,12 +28,14 @@
   </bean>
 
   <!-- Use a friendlier NamingStrategy -->
-  <bean id="namingStrategy" class="org.hibernate.cfg.ImprovedNamingStrategy"/>
+  <bean id="implicitNamingStrategy" class="org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyHbmImpl"/>
+  <bean id="physicalNamingStrategy" class="org.obiba.core.service.impl.hibernate.PhysicalNamingStrategyImpl"/>
 
   <!-- The Hibernate SessionFactory -->
-  <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+  <bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
     <property name="dataSource" ref="dataSource"/>
-    <property name="namingStrategy" ref="namingStrategy"/>
+    <property name="implicitNamingStrategy" ref="implicitNamingStrategy"/>
+    <property name="physicalNamingStrategy" ref="physicalNamingStrategy"/>
     <property name="annotatedClasses">
       <list>
         <value>org.obiba.core.service.impl.hibernate.testModel.AnEntity</value>
@@ -44,7 +46,7 @@
   </bean>
 
   <!-- Hook the SessionFactory to a platform TransactionManager -->
-  <bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+  <bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean>
 

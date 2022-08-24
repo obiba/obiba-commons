@@ -23,17 +23,15 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "hibernateEntity-context.xml" })
-@TransactionConfiguration(transactionManager = "transactionManager")
+@ContextConfiguration(locations = {"hibernateEntity-context.xml"})
+@Transactional
 @TestExecutionListeners(
     value = { DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
         TransactionalTestExecutionListener.class })
-@Transactional
 public class HibernateEntityTest {
 
   private SessionFactory sessionFactory;
