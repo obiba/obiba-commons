@@ -36,7 +36,7 @@
     <easymock.version>3.4</easymock.version>
     <findbugs.version>3.0.1</findbugs.version>
     <guava.version>30.1-jre</guava.version>
-    <hibernate.version>5.6.8.Final</hibernate.version>
+    <hibernate.version>5.6.10.Final</hibernate.version>
     <hsqldb.version>2.3.3</hsqldb.version>
     <httpclient.version>4.5.13</httpclient.version>
     <io-jsonwebtoken.version>0.6.0</io-jsonwebtoken.version>
@@ -63,8 +63,8 @@
     <shiro.version>1.5.3</shiro.version>
     <shiro-extras.version>1.1.0</shiro-extras.version>
     <slf4j.version>1.7.12</slf4j.version>
-    <spring.version>5.3.20</spring.version>
-    <spring-data-mongodb.version>3.4.0</spring-data-mongodb.version>
+    <spring.version>5.3.22</spring.version>
+    <spring-data-mongodb.version>3.4.2</spring-data-mongodb.version>
     <validation-api.version>1.1.0.Final</validation-api.version>
     <xstream.version>1.4.19</xstream.version>
 
