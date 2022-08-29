@@ -122,12 +122,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.liquibase</groupId>
-      <artifactId>liquibase-core</artifactId>
-      <optional>true</optional>
-    </dependency>
-
-    <dependency>
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
     </dependency>
