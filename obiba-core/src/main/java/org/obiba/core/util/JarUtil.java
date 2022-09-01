@@ -139,7 +139,7 @@ public class JarUtil {
             if (entry.endsWith(".class")) {
               // for jar format, the separator is defined as /
               String clazz = entry.replace('/', '.').substring(0, entry.length() - 6);
-              if (!"module-info".equals(clazz)) {
+              if (!clazz.contains("module-info")) {
                 checkClass(clazzes, clazz, path);
               }
             }
