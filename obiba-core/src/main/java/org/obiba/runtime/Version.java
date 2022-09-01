@@ -31,14 +31,18 @@ final public class Version implements Comparable<Version>, Serializable {
 
   private static final long serialVersionUID = -7474928316454405471L;
 
-  private final int major;
+  private int major;
 
-  private final int minor;
+  private int minor;
 
-  private final int micro;
+  private int micro;
 
   @Nonnull
-  private final String qualifier;
+  private String qualifier;
+
+  public Version() {
+    this(0, 0, 0, null);
+  }
 
   public Version(int major, int minor) {
     this(major, minor, 0, null);
@@ -78,6 +82,39 @@ final public class Version implements Comparable<Version>, Serializable {
     }
   }
 
+  public void setMajor(int major) {
+    this.major = major;
+  }
+
+  public int getMajor() {
+    return major;
+  }
+
+  public void setMinor(int minor) {
+    this.minor = minor;
+  }
+
+  public int getMinor() {
+    return minor;
+  }
+
+  public void setMicro(int micro) {
+    this.micro = micro;
+  }
+
+  public int getMicro() {
+    return micro;
+  }
+
+  public void setQualifier(String qualifier) {
+    this.qualifier = qualifier == null ? "" : qualifier;
+  }
+
+  @Nonnull
+  public String getQualifier() {
+    return qualifier;
+  }
+
   @Override
   public int compareTo(Version rhs) {
     if(major != rhs.major) return major - rhs.major;
@@ -112,23 +149,6 @@ final public class Version implements Comparable<Version>, Serializable {
     hash = PRIME * hash + micro;
     hash = PRIME * hash + qualifier.hashCode();
     return hash;
-  }
-
-  public int getMajor() {
-    return major;
-  }
-
-  public int getMinor() {
-    return minor;
-  }
-
-  public int getMicro() {
-    return micro;
-  }
-
-  @Nonnull
-  public String getQualifier() {
-    return qualifier;
   }
 
   private IllegalArgumentException invalidVersionString(String version, String reason) {
