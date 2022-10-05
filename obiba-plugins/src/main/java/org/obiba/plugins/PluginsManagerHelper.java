@@ -136,6 +136,9 @@ public class PluginsManagerHelper {
       log.info("Plugin extract: {}", name);
       // Do we need to create a directory ?
       File file = new File(destination, name);
+      if(!file.toPath().normalize().startsWith(destination.toPath().normalize())) {
+        throw new IOException("Bad zip entry");
+      }
       if (name.endsWith("/")) {
         file.mkdirs();
         continue;
