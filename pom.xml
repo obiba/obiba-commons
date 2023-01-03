@@ -65,7 +65,7 @@
     <spring.version>5.3.22</spring.version>
     <spring-data-mongodb.version>3.4.2</spring-data-mongodb.version>
     <validation-api.version>1.1.0.Final</validation-api.version>
-    <xstream.version>1.4.19</xstream.version>
+    <xstream.version>1.4.20</xstream.version>
 
     <!-- maven plugins -->
     <maven-build-helper-plugin.version>1.8</maven-build-helper-plugin.version>
