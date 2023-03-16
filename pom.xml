@@ -74,7 +74,7 @@
     <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
     <maven.enforcer.plugin>1.2</maven.enforcer.plugin>
     <maven-findbugs-plugin.version>3.0.4</maven-findbugs-plugin.version>
-    <maven-javadoc-plugin.version>2.9</maven-javadoc-plugin.version>
+    <maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
     <maven-pmd-plugin.version>3.1</maven-pmd-plugin.version>
     <maven-release-plugin.version>2.5.2</maven-release-plugin.version>
     <maven-source-plugin.version>2.2</maven-source-plugin.version>
