@@ -10,26 +10,23 @@
 
 package org.obiba.runtime.upgrade.support.jdbc;
 
-import java.io.IOException;
-import java.sql.SQLException;
-
-import javax.annotation.PostConstruct;
-import javax.sql.DataSource;
-
 import org.obiba.runtime.Version;
 import org.obiba.runtime.jdbc.DatabaseProduct;
 import org.obiba.runtime.jdbc.DatabaseProductRegistry;
 import org.obiba.runtime.upgrade.AbstractUpgradeStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
-import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.sql.DataSource;
+import java.io.IOException;
+import java.sql.SQLException;
+
 @Transactional
-public class SqlScriptUpgradeStep extends AbstractUpgradeStep {
+public class SqlScriptUpgradeStep extends AbstractUpgradeStep implements InitializingBean {
 
   private static final Logger log = LoggerFactory.getLogger(SqlScriptUpgradeStep.class);
 
@@ -62,7 +59,11 @@ public class SqlScriptUpgradeStep extends AbstractUpgradeStep {
     this.scriptPath = scriptPath;
   }
 
-  @PostConstruct
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    initialize();
+  }
+
   public void initialize() throws IOException {
     log.debug("Identifying database.");
     DatabaseProduct product = getDatabaseProduct(dataSource);
