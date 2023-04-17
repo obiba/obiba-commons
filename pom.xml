@@ -42,7 +42,7 @@
     <io-jsonwebtoken.version>0.6.0</io-jsonwebtoken.version>
     <jackson.version>2.13.3</jackson.version>
     <json-path.version>2.0.0</json-path.version>
-    <json.version>20160810</json.version>
+    <json.version>20230227</json.version>
     <javassist.version>3.12.1.GA</javassist.version>
     <jersey.version>2.36</jersey.version>
     <jetty.version>9.4.48.v20220622</jetty.version>
