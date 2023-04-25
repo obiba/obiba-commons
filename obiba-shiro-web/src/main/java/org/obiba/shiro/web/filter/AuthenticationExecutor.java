@@ -59,4 +59,12 @@ public interface AuthenticationExecutor {
   @Nullable
   Subject login(HttpServletRequest request, AuthenticationToken token, String sessionId) throws AuthenticationException;
 
+  /**
+   * Provides the context path if any is defined. Not necessary when using a Spring boot app.
+   *
+   * @return
+   */
+  default String getContextPath() {
+    return "";
+  }
 }

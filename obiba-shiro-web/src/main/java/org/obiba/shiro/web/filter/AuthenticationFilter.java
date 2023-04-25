@@ -128,11 +128,17 @@ public class AuthenticationFilter extends OncePerRequestFilter {
   }
 
   public void initContextPath() {
+    contextPath = authenticationExecutor.getContextPath();
     // spring boot 1
-    contextPath = environment.getProperty("server.context-path", "");
+    if (Strings.isNullOrEmpty(contextPath))
+      contextPath = environment.getProperty("server.context-path", "");
     // spring boot 2
     if (Strings.isNullOrEmpty(contextPath))
       contextPath = environment.getProperty("server.servlet.context-path", "");
+
+    // sanity check
+    if ("/".equals(contextPath))
+      contextPath = "";
   }
 
   @Override
