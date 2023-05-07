@@ -45,10 +45,10 @@
     <json.version>20230227</json.version>
     <javassist.version>3.12.1.GA</javassist.version>
     <jersey.version>2.36</jersey.version>
-    <jetty.version>9.4.48.v20220622</jetty.version>
+    <jetty.version>9.4.51.v20230217</jetty.version>
     <jgit.version>3.6.2.201501210735-r</jgit.version>
     <joda-time.version>2.8.2</joda-time.version>
-    <json-smart.version>2.4.9</json-smart.version>
+    <json-smart.version>2.4.10</json-smart.version>
     <jsr305.version>3.0.0</jsr305.version>
     <junit.version>4.13.1</junit.version>
     <lang-tag.version>1.4.4</lang-tag.version>
@@ -59,7 +59,7 @@
     <protobuf.version>2.5.0</protobuf.version>
     <protobuf-java-format.version>1.2.1-obiba</protobuf-java-format.version>
     <servlet-api.version>3.1.0</servlet-api.version>
-    <shiro.version>1.10.0</shiro.version>
+    <shiro.version>1.11.0</shiro.version>
     <shiro-extras.version>1.1.0</shiro-extras.version>
     <slf4j.version>1.7.12</slf4j.version>
     <spring.version>5.3.22</spring.version>
