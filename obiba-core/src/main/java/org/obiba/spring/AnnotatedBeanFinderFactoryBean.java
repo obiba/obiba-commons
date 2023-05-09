@@ -31,12 +31,12 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.util.StringUtils;
 
 /**
- * <p>This class is for automatic searching annotated classes (i.e. Hibernate entity classes with <code>Entity</code>
+ * This class is for automatic searching annotated classes (i.e. Hibernate entity classes with <code>Entity</code>
  * annotation). It is mostly for use with Hibernate's <code>SessionFactory</code> in the Spring application context,
  * but can be used to find classes that match any annotations. This code is based on William Mo's
  * <code>EntityBeanFinderFactoryBean</code>.
- * </p>
- * <p>Example bean definition:
+ * 
+ * Example bean definition:
  * <pre>
  * &lt;bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean"&gt;
  *   &lt;property name="dataSource"&gt;
@@ -78,14 +78,14 @@ import org.springframework.util.StringUtils;
  *   &lt;/property&gt;
  * &lt;/bean&gt;
  * </pre>
- * </p>
- * <p>This class is for automatic searching annotated entity classes (i.e. classes with <code>Entity</code> annotation)
- * for Hibernate's <code>SessionFactory</code> in the Spring application context.</p>
+ * 
+ * This class is for automatic searching annotated entity classes (i.e. classes with <code>Entity</code> annotation)
+ * for Hibernate's <code>SessionFactory</code> in the Spring application context.
  *
  * @author William Mo
  * @author Oren E. Livne
  * @version added supported for other Hibernate annotations, Jan 29, 2008
- * @see http://forum.springframework.org/showthread.php?t=46630
+ * @see "http://forum.springframework.org/showthread.php?t=46630"
  */
 @SuppressWarnings("UnusedDeclaration")
 public class AnnotatedBeanFinderFactoryBean implements ResourceLoaderAware, FactoryBean<Object> {

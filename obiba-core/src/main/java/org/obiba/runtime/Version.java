@@ -20,7 +20,7 @@ import javax.annotation.Nullable;
 /**
  * Represents a version number and allows comparing to other version numbers.
  * <p>
- * Format is <code>major'.'minor('.'micro)?(('.'|'-'|'_')qualifier)?</code> <br/>
+ * Format is <code>major'.'minor('.'micro)?(('.'|'-'|'_')qualifier)?</code>
  * where major, minor and micro are composed of digits and qualifier is an arbitrary string.
  * </p>
  * @author plaflamm

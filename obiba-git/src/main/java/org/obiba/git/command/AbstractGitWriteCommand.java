@@ -29,7 +29,6 @@ import com.google.common.base.Strings;
 /**
  * Base class for all  GIT commands. All subclasses are immutable and must be created by their respective builders
  *
- * @param <T> type of builder
  */
 public abstract class AbstractGitWriteCommand extends AbstractGitCommand<Iterable<PushResult>>
     implements GitWriteCommand {

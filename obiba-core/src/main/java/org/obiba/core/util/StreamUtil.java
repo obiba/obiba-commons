@@ -101,7 +101,7 @@ public final class StreamUtil {
    * @param in
    * @return
    * @throws IOException
-   * @Deprecated use {@link #readLines(InputStream, String)}
+   * @deprecated use {@link #readLines(InputStream, String)}
    * @since 1.0.4
    */
   @Deprecated
@@ -123,7 +123,7 @@ public final class StreamUtil {
   }
 
   /**
-   * @param input
+   * @param in
    * @return
    * @throws IOException
    * @since 1.0.4

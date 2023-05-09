@@ -164,7 +164,7 @@ public class AssociationExample implements Criterion {
    * by default
    *
    * @param entity
-   * @return a new instance of <tt>Example</tt>
+   * @return a new instance of "Example"
    */
   public static AssociationExample create(Object entity) {
     if(entity == null) throw new NullPointerException("null AssociationExample");

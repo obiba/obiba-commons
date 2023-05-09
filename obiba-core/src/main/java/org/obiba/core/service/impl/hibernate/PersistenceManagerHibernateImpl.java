@@ -29,7 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Hibernate implementation of {@link PersistenceManager}.
  *
- * @param <T>
  */
 @Transactional
 public class PersistenceManagerHibernateImpl extends DefaultPersistenceManagerImpl {
