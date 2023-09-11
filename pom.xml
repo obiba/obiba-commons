@@ -53,7 +53,7 @@
     <junit.version>4.13.1</junit.version>
     <lang-tag.version>1.4.4</lang-tag.version>
     <logback.version>1.2.9</logback.version>
-    <mail.version>1.5.0-b01</mail.version>
+    <mail.version>1.6.2</mail.version>
     <nimbus-jose-jwt.version>7.9</nimbus-jose-jwt.version>
     <oauth-oidc-sdk.version>5.45</oauth-oidc-sdk.version>
     <protobuf.version>2.5.0</protobuf.version>
@@ -215,8 +215,8 @@
       </dependency>
 
       <dependency>
-        <groupId>javax.mail</groupId>
-        <artifactId>mail</artifactId>
+        <groupId>com.sun.mail</groupId>
+        <artifactId>javax.mail</artifactId>
         <version>${mail.version}</version>
       </dependency>
 
