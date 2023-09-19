@@ -10,12 +10,12 @@
 
 package org.obiba.shiro.web.filter;
 
-import javax.annotation.Nullable;
-import javax.servlet.http.HttpServletRequest;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.subject.Subject;
+import org.springframework.lang.Nullable;
 
 /**
  * Implement this interface so that the AuthenticationFilter handles the single sign-on ticket.

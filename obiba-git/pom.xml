@@ -50,6 +50,12 @@
       <artifactId>shiro-core</artifactId>
       <optional>true</optional>
     </dependency>
+      <dependency>
+          <groupId>org.jetbrains</groupId>
+          <artifactId>annotations</artifactId>
+          <version>13.0</version>
+          <scope>compile</scope>
+      </dependency>
 
   </dependencies>
 

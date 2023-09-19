@@ -36,13 +36,17 @@
     </dependency>
 
     <dependency>
-      <groupId>com.googlecode.protobuf-java-format</groupId>
-      <artifactId>protobuf-java-format</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.xml.bind</groupId>
+      <artifactId>jaxb-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jaxb</groupId>
+      <artifactId>jaxb-runtime</artifactId>
+      <scope>runtime</scope>
     </dependency>
 
   </dependencies>

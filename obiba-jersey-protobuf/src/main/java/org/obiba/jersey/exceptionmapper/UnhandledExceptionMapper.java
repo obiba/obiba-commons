@@ -31,7 +31,7 @@ public class UnhandledExceptionMapper extends AbstractErrorDtoExceptionMapper<Ex
   }
 
   @Override
-  protected GeneratedMessage.ExtendableMessage<?> getErrorDto(Exception exception) {
+  protected ErrorDtos.ClientErrorDto getErrorDto(Exception exception) {
 
     logger.warn("Exception catched by UnhandledExceptionMapper", exception);
 

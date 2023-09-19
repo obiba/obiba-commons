@@ -19,15 +19,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.Nullable;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.BasicHttpClientConnectionManager;
+import org.apache.hc.client5.http.socket.ConnectionSocketFactory;
+import org.apache.hc.client5.http.socket.PlainConnectionSocketFactory;
+import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
+import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
+import org.apache.hc.core5.http.config.Registry;
+import org.apache.hc.core5.http.config.RegistryBuilder;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AccountException;
 import org.apache.shiro.authc.AuthenticationException;
@@ -54,6 +59,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.lang.Nullable;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
@@ -381,10 +387,17 @@ public class ObibaRealm extends AuthorizingRealm {
     }
   }
 
-  private HttpClient createHttpClient() {
-    HttpClientBuilder builder = HttpClientBuilder.create();
+  private CloseableHttpClient createHttpClient() {
+    HttpClientBuilder builder = HttpClients.custom();
     try {
-      builder.setSSLSocketFactory(getSocketFactory());
+      SSLConnectionSocketFactory sslsf = getSocketFactory();
+      Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory> create()
+          .register("https", sslsf)
+          .register("http", new PlainConnectionSocketFactory())
+          .build();
+      BasicHttpClientConnectionManager connectionManager =
+          new BasicHttpClientConnectionManager(socketFactoryRegistry);
+      builder.setConnectionManager(connectionManager);
     } catch(NoSuchAlgorithmException | KeyManagementException e) {
       throw new RuntimeException(e);
     }

@@ -21,24 +21,23 @@
   <version>3.1-SNAPSHOT</version>
 
   <properties>
-    <maven.compiler.target>11</maven.compiler.target>
-    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <maven.compiler.source>17</maven.compiler.source>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <assertj-core.version>1.7.1</assertj-core.version>
-    <bouncycastle.version>1.46</bouncycastle.version>
+    <bouncycastle.version>1.76</bouncycastle.version>
     <cglib.version>3.1</cglib.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
-    <commons-dbcp.version>1.4</commons-dbcp.version>
+    <commons-dbcp.version>2.10.0</commons-dbcp.version>
     <commons-httpclient.version>3.1</commons-httpclient.version>
     <dbunit.version>2.5.1</dbunit.version>
     <easymock.version>3.4</easymock.version>
     <findbugs.version>3.0.1</findbugs.version>
-    <guava.version>30.1-jre</guava.version>
-    <hibernate.version>5.6.10.Final</hibernate.version>
+    <guava.version>32.1.2-jre</guava.version>
     <hsqldb.version>2.3.3</hsqldb.version>
-    <httpclient.version>4.5.13</httpclient.version>
+    <httpclient.version>5.2.1</httpclient.version>
     <io-jsonwebtoken.version>0.6.0</io-jsonwebtoken.version>
     <jackson.version>2.14.2</jackson.version>
     <json-path.version>2.0.0</json-path.version>
@@ -46,35 +45,35 @@
     <javassist.version>3.12.1.GA</javassist.version>
     <jersey.version>2.36</jersey.version>
     <jetty.version>9.4.51.v20230217</jetty.version>
-    <jgit.version>3.6.2.201501210735-r</jgit.version>
+    <jgit.version>6.7.0.202309050840-r</jgit.version>
     <joda-time.version>2.8.2</joda-time.version>
     <json-smart.version>2.4.10</json-smart.version>
     <jsr305.version>3.0.0</jsr305.version>
     <junit.version>4.13.1</junit.version>
     <lang-tag.version>1.4.4</lang-tag.version>
     <logback.version>1.2.9</logback.version>
-    <mail.version>1.6.2</mail.version>
+    <mail.version>2.0.1</mail.version>
+    <nashorn.version>15.4</nashorn.version>
     <nimbus-jose-jwt.version>7.9</nimbus-jose-jwt.version>
     <oauth-oidc-sdk.version>5.45</oauth-oidc-sdk.version>
-    <protobuf.version>2.5.0</protobuf.version>
-    <protobuf-java-format.version>1.2.1-obiba</protobuf-java-format.version>
-    <servlet-api.version>3.1.0</servlet-api.version>
+    <protobuf.version>3.24.3</protobuf.version>
+    <servlet-api.version>6.0.0</servlet-api.version>
     <shiro.version>1.11.0</shiro.version>
     <shiro-extras.version>1.1.0</shiro-extras.version>
     <slf4j.version>1.7.12</slf4j.version>
-    <spring.version>5.3.22</spring.version>
+    <spring.version>6.0.12</spring.version>
     <spring-data-mongodb.version>3.4.2</spring-data-mongodb.version>
-    <validation-api.version>1.1.0.Final</validation-api.version>
+    <validation-api.version>3.0.2</validation-api.version>
     <xstream.version>1.4.20</xstream.version>
 
     <!-- maven plugins -->
     <maven-build-helper-plugin.version>1.8</maven-build-helper-plugin.version>
     <maven-buildnumber-plugin.version>1.2</maven-buildnumber-plugin.version>
-    <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
+    <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
     <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
     <maven.enforcer.plugin>1.2</maven.enforcer.plugin>
     <maven-findbugs-plugin.version>3.0.4</maven-findbugs-plugin.version>
-    <maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
+    <maven-javadoc-plugin.version>3.6.0</maven-javadoc-plugin.version>
     <maven-pmd-plugin.version>3.1</maven-pmd-plugin.version>
     <maven-release-plugin.version>2.5.2</maven-release-plugin.version>
     <maven-source-plugin.version>2.2</maven-source-plugin.version>
@@ -186,29 +185,6 @@
       </dependency>
 
       <dependency>
-        <groupId>org.hibernate</groupId>
-        <artifactId>hibernate-core</artifactId>
-        <version>${hibernate.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.hibernate</groupId>
-        <artifactId>hibernate-ehcache</artifactId>
-        <version>${hibernate.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-
-      <dependency>
         <groupId>javassist</groupId>
         <artifactId>javassist</artifactId>
         <version>${javassist.version}</version>
@@ -216,16 +192,33 @@
 
       <dependency>
         <groupId>com.sun.mail</groupId>
-        <artifactId>javax.mail</artifactId>
+        <artifactId>jakarta.mail</artifactId>
         <version>${mail.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.xml.bind</groupId>
+        <artifactId>jaxb-api</artifactId>
+        <version>2.3.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.glassfish.jaxb</groupId>
+        <artifactId>jaxb-runtime</artifactId>
+        <version>2.3.1</version>
+        <scope>runtime</scope>
       </dependency>
 
       <!-- Use commons-dbcp as the DataSource implementation -->
       <dependency>
-        <groupId>commons-dbcp</groupId>
-        <artifactId>commons-dbcp</artifactId>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-dbcp2</artifactId>
         <version>${commons-dbcp.version}</version>
         <scope>test</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>
@@ -294,8 +287,8 @@
       </dependency>
 
       <dependency>
-        <groupId>org.apache.httpcomponents</groupId>
-        <artifactId>httpclient</artifactId>
+        <groupId>org.apache.httpcomponents.client5</groupId>
+        <artifactId>httpclient5</artifactId>
         <version>${httpclient.version}</version>
         <exclusions>
           <exclusion>
@@ -478,11 +471,10 @@
         <artifactId>protobuf-java</artifactId>
         <version>${protobuf.version}</version>
       </dependency>
-
       <dependency>
-        <groupId>com.googlecode.protobuf-java-format</groupId>
-        <artifactId>protobuf-java-format</artifactId>
-        <version>${protobuf-java-format.version}</version>
+        <groupId>com.google.protobuf</groupId>
+        <artifactId>protobuf-java-util</artifactId>
+        <version>${protobuf.version}</version>
       </dependency>
 
       <dependency>
@@ -492,8 +484,14 @@
       </dependency>
 
       <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>javax.servlet-api</artifactId>
+        <groupId>org.openjdk.nashorn</groupId>
+        <artifactId>nashorn-core</artifactId>
+        <version>${nashorn.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>jakarta.servlet</groupId>
+        <artifactId>jakarta.servlet-api</artifactId>
         <version>${servlet-api.version}</version>
         <scope>provided</scope>
       </dependency>
@@ -505,8 +503,8 @@
       </dependency>
 
       <dependency>
-        <groupId>javax.validation</groupId>
-        <artifactId>validation-api</artifactId>
+        <groupId>jakarta.validation</groupId>
+        <artifactId>jakarta.validation-api</artifactId>
         <version>${validation-api.version}</version>
       </dependency>
 
@@ -541,7 +539,7 @@
 
       <dependency>
         <groupId>org.bouncycastle</groupId>
-        <artifactId>bcprov-ext-jdk16</artifactId>
+        <artifactId>bcprov-ext-jdk18on</artifactId>
         <version>${bouncycastle.version}</version>
       </dependency>
 
@@ -601,8 +599,8 @@
     </dependency>
 
     <dependency>
-      <groupId>javax.validation</groupId>
-      <artifactId>validation-api</artifactId>
+      <groupId>jakarta.validation</groupId>
+      <artifactId>jakarta.validation-api</artifactId>
     </dependency>
 
   </dependencies>
@@ -629,13 +627,11 @@
             <target>${maven.compiler.target}</target>
             <encoding>${project.build.sourceEncoding}</encoding>
             <showWarnings>true</showWarnings>
+            <compilerArgs>
+              <arg>--add-modules</arg>
+              <arg>java.sql</arg>
+            </compilerArgs>
           </configuration>
-        </plugin>
-
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-javadoc-plugin</artifactId>
-          <version>${maven-javadoc-plugin.version}</version>
         </plugin>
 
         <plugin>
@@ -731,25 +727,25 @@
         </executions>
       </plugin>
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>${maven-javadoc-plugin.version}</version>
-        <configuration>
-          <source>8</source>
-        </configuration>
-        <executions>
-          <execution>
-            <id>attach-javadocs</id>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-            <configuration>
-              <additionalparam>-Xdoclint:none</additionalparam>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
+<!--      <plugin>-->
+<!--        <groupId>org.apache.maven.plugins</groupId>-->
+<!--        <artifactId>maven-javadoc-plugin</artifactId>-->
+<!--        <version>${maven-javadoc-plugin.version}</version>-->
+<!--        <configuration>-->
+<!--          <source>8</source>-->
+<!--        </configuration>-->
+<!--        <executions>-->
+<!--          <execution>-->
+<!--            <id>attach-javadocs</id>-->
+<!--            <goals>-->
+<!--              <goal>jar</goal>-->
+<!--            </goals>-->
+<!--            <configuration>-->
+<!--              <additionalparam>-Xdoclint:none</additionalparam>-->
+<!--            </configuration>-->
+<!--          </execution>-->
+<!--        </executions>-->
+<!--      </plugin>-->
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

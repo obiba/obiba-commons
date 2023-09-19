@@ -12,14 +12,14 @@ package org.obiba.git.command;
 
 import java.io.File;
 
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.transport.PushResult;
 import org.obiba.git.GitException;
+import org.springframework.lang.Nullable;
 
 @SuppressWarnings("ClassTooDeepInInheritanceTree")
 public class TagCommand extends AbstractGitWriteCommand {

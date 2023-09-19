@@ -9,9 +9,8 @@
  */
 package org.obiba.shiro.authc;
 
-import javax.annotation.Nullable;
-
 import org.apache.shiro.authc.AuthenticationToken;
+import org.springframework.lang.Nullable;
 
 /**
  * Personal API access token that both identifies and authenticate the user.

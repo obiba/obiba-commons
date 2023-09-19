@@ -13,6 +13,7 @@ package org.obiba.jersey.exceptionmapper;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
+import org.obiba.web.model.ErrorDtos;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,12 +28,12 @@ public abstract class AbstractErrorDtoExceptionMapper<TException extends Throwab
 
   protected abstract Response.Status getStatus();
 
-  protected abstract GeneratedMessage.ExtendableMessage<?> getErrorDto(TException exception);
+  protected abstract ErrorDtos.ClientErrorDto getErrorDto(TException exception);
 
   @Override
   public Response toResponse(TException exception) {
     log.debug("{}", exception.getClass().getSimpleName(), exception);
-    GeneratedMessage.ExtendableMessage<?> errorDto = getErrorDto(exception);
+    ErrorDtos.ClientErrorDto errorDto = getErrorDto(exception);
     log.debug("ErrorDto: {}", errorDto);
     //TODO support also application/x-protobuf
     return Response.status(getStatus()).type(APPLICATION_JSON).entity(errorDto).build();

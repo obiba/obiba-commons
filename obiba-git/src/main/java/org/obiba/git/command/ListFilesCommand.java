@@ -16,8 +16,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.ObjectId;
@@ -30,6 +29,7 @@ import org.obiba.git.GitUtils;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
+import org.springframework.lang.Nullable;
 
 public class ListFilesCommand extends AbstractGitCommand<Set<String>> {
 

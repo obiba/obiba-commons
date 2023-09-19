@@ -16,8 +16,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.ObjectId;
@@ -29,6 +28,7 @@ import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.obiba.git.GitException;
 import org.obiba.git.NoSuchGitRepositoryException;
+import org.springframework.lang.Nullable;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 

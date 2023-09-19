@@ -13,8 +13,7 @@ package org.obiba.git.command;
 import java.io.File;
 import java.io.IOException;
 
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.DiffEntry;
@@ -32,6 +31,7 @@ import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.obiba.git.GitException;
 
 import com.google.common.base.Strings;
+import org.springframework.lang.Nullable;
 
 /**
  * Opal GIT command used to extract the diff between two commits. By default, the diff is between the given commit and
@@ -64,7 +64,7 @@ public class DiffCommand extends AbstractGitCommand<Iterable<DiffEntry>> {
     } catch(IOException e) {
       throw new GitException(e);
     } finally {
-      reader.release();
+      reader.close();
     }
   }
 

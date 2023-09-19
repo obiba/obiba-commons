@@ -10,6 +10,8 @@
 
 package org.obiba.core.util;
 
+import org.springframework.lang.Nullable;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
@@ -20,9 +22,6 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 @SuppressWarnings("UnusedDeclaration")
 public final class StreamUtil {
@@ -118,12 +117,12 @@ public final class StreamUtil {
    * @throws IOException
    * @since 1.0.4
    */
-  public static List<String> readLines(InputStream in, @Nonnull String encoding) throws IOException {
+  public static List<String> readLines(InputStream in, String encoding) throws IOException {
     return readLines(new InputStreamReader(in, encoding));
   }
 
   /**
-   * @param input
+   * @param in
    * @return
    * @throws IOException
    * @since 1.0.4

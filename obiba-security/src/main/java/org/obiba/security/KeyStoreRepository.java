@@ -24,8 +24,8 @@ import java.security.UnrecoverableKeyException;
 
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.UnsupportedCallbackException;
-import javax.validation.constraints.NotNull;
 
+import jakarta.validation.constraints.NotNull;
 import org.obiba.crypt.CacheablePasswordCallback;
 import org.obiba.crypt.CachingCallbackHandler;
 import org.obiba.crypt.KeyProviderSecurityException;

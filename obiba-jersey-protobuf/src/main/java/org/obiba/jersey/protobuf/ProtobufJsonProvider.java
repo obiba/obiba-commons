@@ -9,11 +9,7 @@
  */
 package org.obiba.jersey.protobuf;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
@@ -33,7 +29,7 @@ import com.google.common.base.Charsets;
 import com.google.protobuf.ExtensionRegistry;
 import com.google.protobuf.Message;
 import com.google.protobuf.Message.Builder;
-import com.googlecode.protobuf.format.JsonFormat;
+import com.google.protobuf.util.JsonFormat;
 
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 
@@ -61,12 +57,10 @@ public class ProtobufJsonProvider extends AbstractProtobufProvider
     ExtensionRegistry extensionRegistry = extensions().forMessage(messageType);
     Builder builder = builders().forMessage(messageType);
 
-    Readable input = new InputStreamReader(entityStream, Charsets.UTF_8);
-    if(isWrapped(type, genericType)) {
-      // JsonFormat does not provide a mergeCollection method
-      return JsonIoUtil.mergeCollection(input, extensionRegistry, builder);
-    }
-    JsonFormat.merge(input, extensionRegistry, builder);
+    Reader input = new InputStreamReader(entityStream, Charsets.UTF_8);
+    // FIXME is there a pbf support for arrays?
+    // FIXME how do we pass the extensionRegistry?
+    JsonFormat.parser().merge(input, builder);
     return builder.build();
   }
 
@@ -96,8 +90,8 @@ public class ProtobufJsonProvider extends AbstractProtobufProvider
         }
         JsonIoUtil.printCollection((Iterable<Message>) obj, output);
       } else {
-        log.trace("Print single message: {}", JsonFormat.printToString((Message) obj));
-        JsonFormat.print((Message) obj, output);
+        log.trace("Print single message: {}", JsonFormat.printer().print((Message) obj));
+        JsonFormat.printer().appendTo((Message) obj, output);
       }
       output.flush();
     }

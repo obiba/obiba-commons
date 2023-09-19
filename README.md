@@ -1,6 +1,6 @@
 # Obiba Commons [[![Build Status](https://app.travis-ci.com/obiba/obiba-commons.svg?branch=master)](https://app.travis-ci.com/github/obiba/obiba-commons)
 
-Reusable code for persistence (hibernate), security, spring and more.
+Reusable code for persistence, security, spring and more.
 
 # OBiBa acknowledgments
 

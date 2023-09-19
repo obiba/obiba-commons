@@ -12,8 +12,7 @@ package org.obiba.git.command;
 
 import java.io.File;
 
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -22,14 +21,13 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.transport.PushResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
 
 import com.google.common.base.Strings;
 
 /**
  * Base class for all  GIT commands. All subclasses are immutable and must be created by their respective builders
- *
- * @param <T> type of builder
  */
 public abstract class AbstractGitWriteCommand extends AbstractGitCommand<Iterable<PushResult>>
     implements GitWriteCommand {

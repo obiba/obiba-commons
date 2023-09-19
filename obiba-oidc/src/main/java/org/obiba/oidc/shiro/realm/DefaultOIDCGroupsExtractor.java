@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.script.Bindings;
 import javax.script.ScriptEngine;
+import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 import java.util.Collection;
 import java.util.Map;
@@ -60,7 +61,7 @@ public class DefaultOIDCGroupsExtractor implements OIDCGroupsExtractor {
         ScriptEngine engine = manager.getEngineByName("nashorn");
         if (engine == null) {
           log.error("ScriptEngine is null!!!");
-          log.info("EngineFactories.size={}", manager.getEngineFactories().size());
+          log.error("EngineFactories=[{}]", manager.getEngineFactories().stream().map(ScriptEngineFactory::getEngineName).collect(Collectors.joining()));
           manager.getEngineFactories().forEach(f -> log.info("EngineFactory: {} '{}'", f.getClass().getSimpleName(), f.getEngineName()));
           return groups;
         }

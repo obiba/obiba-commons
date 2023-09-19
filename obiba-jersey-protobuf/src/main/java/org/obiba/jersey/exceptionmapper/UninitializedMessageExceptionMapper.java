@@ -29,7 +29,7 @@ public class UninitializedMessageExceptionMapper
   }
 
   @Override
-  protected GeneratedMessage.ExtendableMessage<?> getErrorDto(UninitializedMessageException exception) {
+  protected ErrorDtos.ClientErrorDto getErrorDto(UninitializedMessageException exception) {
     return ErrorDtos.ClientErrorDto.newBuilder() //
         .setCode(getStatus().getStatusCode()) //
         .setMessageTemplate("error.uninitializedMessage") //
