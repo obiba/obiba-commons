@@ -7,4 +7,7 @@ module obiba.git {
   requires spring.core;
   requires obiba.core;
   requires slf4j.api;
+
+  exports org.obiba.git;
+  exports org.obiba.git.command;
 }

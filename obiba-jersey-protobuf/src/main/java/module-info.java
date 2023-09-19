@@ -6,4 +6,7 @@ module obiba.jersey.protobuf {
   requires protobuf.java.util;
   requires obiba.web.model;
   requires slf4j.api;
+
+  exports org.obiba.jersey.protobuf;
+  exports org.obiba.jersey.exceptionmapper;
 }

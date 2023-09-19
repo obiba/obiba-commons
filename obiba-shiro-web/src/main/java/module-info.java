@@ -9,4 +9,6 @@ module obiba.shiro.web {
   requires spring.web;
   requires obiba.shiro;
   requires slf4j.api;
+
+  exports org.obiba.shiro.web.filter;
 }

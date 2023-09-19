@@ -14,4 +14,6 @@ module obiba.shiro {
 
   exports org.obiba.shiro;
   exports org.obiba.shiro.authc;
+  exports org.obiba.shiro.crypto;
+  exports org.obiba.shiro.realm;
 }

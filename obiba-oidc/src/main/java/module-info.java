@@ -10,4 +10,11 @@ module obiba.oidc {
   requires shiro.core;
   requires spring.web;
   requires slf4j.api;
+
+  exports org.obiba.oidc;
+  exports org.obiba.oidc.shiro.authc;
+  exports org.obiba.oidc.shiro.realm;
+  exports org.obiba.oidc.utils;
+  exports org.obiba.oidc.web;
+  exports org.obiba.oidc.web.filter;
 }
