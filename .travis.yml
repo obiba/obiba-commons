@@ -1,5 +1,5 @@
 language: java
-dist: xenial
+dist: focal
 sudo: required
 jdk:
   - openjdk17
