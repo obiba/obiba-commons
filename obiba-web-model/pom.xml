@@ -68,7 +68,7 @@
             <id>generate-sources</id>
             <phase>generate-sources</phase>
             <configuration>
-              <target>
+              <tasks>
                 <!-- Determine which protoc binary we can use -->
                 <condition property="os.protoc" value="${protobuf.version}-linux-x86_64">
                   <or>
@@ -119,7 +119,7 @@
                 </exec>
 
                 <delete file="${basedir}/src/main/resources/wrapper.proto" />
-              </target>
+              </tasks>
             </configuration>
             <goals>
               <goal>run</goal>
