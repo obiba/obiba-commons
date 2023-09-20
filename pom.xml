@@ -58,7 +58,7 @@
     <oauth-oidc-sdk.version>5.45</oauth-oidc-sdk.version>
     <protobuf.version>3.24.3</protobuf.version>
     <servlet-api.version>6.0.0</servlet-api.version>
-    <shiro.version>1.11.0</shiro.version>
+    <shiro.version>1.12.0</shiro.version>
     <shiro-extras.version>1.1.0</shiro-extras.version>
     <slf4j.version>1.7.12</slf4j.version>
     <spring.version>6.0.12</spring.version>
