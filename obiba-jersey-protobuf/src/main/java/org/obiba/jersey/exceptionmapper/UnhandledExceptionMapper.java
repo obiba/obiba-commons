@@ -9,8 +9,8 @@
  */
 package org.obiba.jersey.exceptionmapper;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.Provider;
 
 import org.obiba.web.model.ErrorDtos;
 
@@ -18,7 +18,7 @@ import com.google.protobuf.GeneratedMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+import static jakarta.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
 @Provider
 public class UnhandledExceptionMapper extends AbstractErrorDtoExceptionMapper<Exception> {

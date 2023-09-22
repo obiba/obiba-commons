@@ -53,6 +53,7 @@
     <lang-tag.version>1.4.4</lang-tag.version>
     <logback.version>1.2.9</logback.version>
     <mail.version>2.0.1</mail.version>
+    <jakarta.ws.rs.version>3.1.0</jakarta.ws.rs.version>
     <nashorn.version>15.4</nashorn.version>
     <nimbus-jose-jwt.version>7.9</nimbus-jose-jwt.version>
     <oauth-oidc-sdk.version>5.45</oauth-oidc-sdk.version>
@@ -190,6 +191,11 @@
         <version>${javassist.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>jakarta.ws.rs</groupId>
+        <artifactId>jakarta.ws.rs-api</artifactId>
+        <version>${jakarta.ws.rs.version}</version>
+      </dependency>
       <dependency>
         <groupId>com.sun.mail</groupId>
         <artifactId>jakarta.mail</artifactId>

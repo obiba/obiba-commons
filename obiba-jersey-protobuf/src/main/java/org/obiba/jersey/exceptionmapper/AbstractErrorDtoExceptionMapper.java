@@ -10,8 +10,8 @@
 
 package org.obiba.jersey.exceptionmapper;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.ExceptionMapper;
 
 import org.obiba.web.model.ErrorDtos;
 import org.slf4j.Logger;
@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.protobuf.GeneratedMessage;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 public abstract class AbstractErrorDtoExceptionMapper<TException extends Throwable>
     implements ExceptionMapper<TException> {
