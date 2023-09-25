@@ -55,8 +55,8 @@
     <mail.version>2.0.1</mail.version>
     <jakarta.ws.rs.version>3.1.0.RC1-jbossorg-1</jakarta.ws.rs.version>
     <nashorn.version>15.4</nashorn.version>
-    <nimbus-jose-jwt.version>7.9</nimbus-jose-jwt.version>
-    <oauth-oidc-sdk.version>5.45</oauth-oidc-sdk.version>
+    <nimbus-jose-jwt.version>9.35</nimbus-jose-jwt.version>
+    <oauth-oidc-sdk.version>11.0</oauth-oidc-sdk.version>
     <protobuf.version>3.24.3</protobuf.version>
     <servlet-api.version>6.0.0.RC1-jbossorg-1</servlet-api.version>
     <shiro.version>1.12.0</shiro.version>

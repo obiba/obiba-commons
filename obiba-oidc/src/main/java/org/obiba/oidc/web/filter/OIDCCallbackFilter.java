@@ -40,7 +40,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class OIDCCallbackFilter extends OncePerRequestFilter {
@@ -192,7 +194,7 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
   }
 
   private AuthenticationSuccessResponse extractAuthenticationResponse(J2EContext context, OIDCConfiguration config) {
-    Map<String, String> parameters = retrieveParameters(context);
+    Map<String, List<String>> parameters = retrieveParameters(context);
     String computedCallbackUrl = context.getFullRequestURL();
 
     AuthenticationResponse response;
@@ -303,11 +305,11 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
     }
   }
 
-  private Map<String, String> retrieveParameters(final J2EContext context) {
+  private Map<String, List<String>> retrieveParameters(final J2EContext context) {
     final Map<String, String[]> requestParameters = context.getRequestParameters();
-    Map<String, String> map = new HashMap<>();
+    Map<String, List<String>> map = new HashMap<>();
     for (final Map.Entry<String, String[]> entry : requestParameters.entrySet()) {
-      map.put(entry.getKey(), entry.getValue()[0]);
+      map.put(entry.getKey(), Arrays.asList(entry.getValue()[0]));
     }
     return map;
   }
