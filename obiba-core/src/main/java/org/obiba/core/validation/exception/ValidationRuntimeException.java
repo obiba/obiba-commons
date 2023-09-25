@@ -16,7 +16,6 @@ import java.util.List;
 
 import org.springframework.lang.Nullable;
 import org.springframework.validation.BindException;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
 
@@ -121,8 +120,8 @@ public class ValidationRuntimeException extends RuntimeException {
   private Errors getTargetErrors(@Nullable Object target) {
     Object nonNullTarget = target == null ? NULL_TARGET : target;
     for(Errors error : errors) {
-      if(error instanceof BindException) {
-        if(nonNullTarget.equals(((BindingResult) error).getTarget())) return error;
+      if(error instanceof BindException exception) {
+        if(nonNullTarget.equals(exception.getTarget())) return error;
       }
     }
     return new BindException(nonNullTarget, nonNullTarget.getClass().getName());

@@ -123,8 +123,8 @@ public class ObjectValidationInspector {
   public void inspectObject(List<Errors> errors, Object arg) {
     for(Validator validator : getValidators()) {
       if(validator.supports(arg.getClass())) {
-        if(entityQueryService != null && validator instanceof AbstractPersistenceAwareClassValidator) {
-          ((AbstractPersistenceAwareClassValidator) validator).setEntityQueryService(entityQueryService);
+        if(entityQueryService != null && validator instanceof AbstractPersistenceAwareClassValidator classValidator) {
+          classValidator.setEntityQueryService(entityQueryService);
         }
         log.debug("Validator supported: {}", arg.getClass());
         validateAndAddErrors(arg, validator, errors);

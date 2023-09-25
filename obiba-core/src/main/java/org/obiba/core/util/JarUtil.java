@@ -48,8 +48,8 @@ public class JarUtil {
     if (log.isDebugEnabled()) {
       log.debug("java.class.path: {}", System.getProperty("java.class.path"));
       log.debug("sun.boot.class.path: {}", System.getProperty("sun.boot.class.path"));
-      if (loader instanceof URLClassLoader) {
-        log.debug("classloader urls: {}", Arrays.toString(((URLClassLoader) loader).getURLs()));
+      if (loader instanceof URLClassLoader classLoader) {
+        log.debug("classloader urls: {}", Arrays.toString(classLoader.getURLs()));
       }
     }
     checkJars(parseClassPath());

@@ -34,8 +34,8 @@ public class X509TrustManagerImpl implements X509TrustManager {
     TrustManagerFactory tmFact = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
     tmFact.init((KeyStore) null); // default trust managers
     for (TrustManager tm : tmFact.getTrustManagers()) {
-      if (tm instanceof X509TrustManager) {
-        defaultTrustManager = (X509TrustManager)tm;
+      if (tm instanceof X509TrustManager manager) {
+        defaultTrustManager = manager;
       }
     }
   }

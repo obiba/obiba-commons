@@ -16,7 +16,6 @@ import jakarta.ws.rs.ext.Provider;
 import org.obiba.web.model.ErrorDtos;
 
 import com.google.common.collect.Lists;
-import com.google.protobuf.GeneratedMessage;
 import com.google.protobuf.UninitializedMessageException;
 
 @Provider

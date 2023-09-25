@@ -74,8 +74,7 @@ final public class SortingClause {
 
   @Override
   public boolean equals(Object obj) {
-    if(obj instanceof SortingClause) {
-      SortingClause rhs = (SortingClause) obj;
+    if(obj instanceof SortingClause rhs) {
       return field.equals(rhs.field) && ascending == rhs.ascending;
     }
     return super.equals(obj);

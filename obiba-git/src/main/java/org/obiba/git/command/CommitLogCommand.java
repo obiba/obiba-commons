@@ -61,7 +61,7 @@ public class CommitLogCommand extends AbstractGitCommand<CommitInfo> {
     } catch(IOException e) {
       throw new GitException(e);
     }
-    throw new GitException(String.format("Path '%s' was not found in commit '%s'", path, commitId));
+    throw new GitException("Path '%s' was not found in commit '%s'".formatted(path, commitId));
   }
 
   public static class Builder {

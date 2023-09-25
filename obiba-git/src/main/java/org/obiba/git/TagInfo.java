@@ -10,8 +10,6 @@
 
 package org.obiba.git;
 
-import com.google.common.base.Objects;
-
 public class TagInfo {
 
   private String name;

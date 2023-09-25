@@ -56,8 +56,7 @@ public abstract class AbstractAuthenticationExecutor implements AuthenticationEx
 
   @Override
   public Subject login(HttpServletRequest request, AuthenticationToken token, String sessionId) throws AuthenticationException {
-    if (isBanEnabled() && token instanceof UsernamePasswordToken) {
-      UsernamePasswordToken uToken = (UsernamePasswordToken) token;
+    if (isBanEnabled() && token instanceof UsernamePasswordToken uToken) {
       if (banCache.getIfPresent(uToken.getUsername()) != null)
         throwUserBannedException(uToken);
     }
@@ -83,8 +82,7 @@ public abstract class AbstractAuthenticationExecutor implements AuthenticationEx
         subject.login(token);
         ThreadContext.bind(subject);
         // successful login, so reset the failures list
-        if (isBanEnabled() && token instanceof UsernamePasswordToken) {
-          UsernamePasswordToken uToken = (UsernamePasswordToken) token;
+        if (isBanEnabled() && token instanceof UsernamePasswordToken uToken) {
           loginFailures.remove(uToken.getUsername());
         }
         ensureProfile(subject);
@@ -154,8 +152,7 @@ public abstract class AbstractAuthenticationExecutor implements AuthenticationEx
    */
   private synchronized void onLoginFailure(AuthenticationToken token, AuthenticationException authException) {
     if (!isBanEnabled()) return;
-    if (token instanceof UsernamePasswordToken && !(authException instanceof NoSuchOtpException)) {
-      UsernamePasswordToken uToken = (UsernamePasswordToken) token;
+    if (token instanceof UsernamePasswordToken uToken && !(authException instanceof NoSuchOtpException)) {
 
       List<Date> failures = loginFailures.getOrDefault(uToken.getUsername(), Lists.newArrayList());
       failures.add(new Date());

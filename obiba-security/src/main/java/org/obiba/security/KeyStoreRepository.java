@@ -139,8 +139,8 @@ public class KeyStoreRepository {
   }
 
   private static void clearPasswordCache(CallbackHandler callbackHandler, String passwordKey) {
-    if(callbackHandler instanceof CachingCallbackHandler) {
-      ((CachingCallbackHandler) callbackHandler).clearPasswordCache(passwordKey);
+    if(callbackHandler instanceof CachingCallbackHandler handler) {
+      handler.clearPasswordCache(passwordKey);
     }
   }
 

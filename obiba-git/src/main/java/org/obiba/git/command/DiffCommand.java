@@ -100,7 +100,7 @@ public class DiffCommand extends AbstractGitCommand<Iterable<DiffEntry>> {
     private void init() throws IOException {
       RevCommit currentCommit = getCommitById(commitId);
       if(currentCommit == null) {
-        throw new GitException(String.format("There are no commit with id '%s'", commitId));
+        throw new GitException("There are no commit with id '%s'".formatted(commitId));
       }
 
       currentCommitParser = new CanonicalTreeParser();

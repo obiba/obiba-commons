@@ -202,8 +202,8 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
       throw new OIDCException(e);
     }
 
-    if (response instanceof AuthenticationErrorResponse) {
-      String error = ((AuthenticationErrorResponse) response).getErrorObject().toJSONObject().toString();
+    if (response instanceof AuthenticationErrorResponse errorResponse) {
+      String error = errorResponse.getErrorObject().toJSONObject().toString();
       OIDCSession session = oidcSessionManager.getSession(context.getClientId());
       onAuthenticationError(session, error, context.getResponse());
       throw new OIDCSessionException("Authentication response error: " + error, session);
@@ -238,8 +238,8 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
       log.debug("Token response: status={}, content={}", httpResponse.getStatusCode(), httpResponse.getContent());
 
       final TokenResponse response = OIDCTokenResponseParser.parse(httpResponse);
-      if (response instanceof TokenErrorResponse) {
-        String error = ((TokenErrorResponse) response).getErrorObject().toJSONObject().toString();
+      if (response instanceof TokenErrorResponse errorResponse) {
+        String error = errorResponse.getErrorObject().toJSONObject().toString();
         OIDCSession session = oidcSessionManager.getSession(context.getClientId());
         onAuthenticationError(session, error, context.getResponse());
         throw new OIDCSessionException("Bad token response, error=" + error, session);
@@ -285,8 +285,8 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
             httpResponse.getContent());
 
         final UserInfoResponse userInfoResponse = UserInfoResponse.parse(httpResponse);
-        if (userInfoResponse instanceof UserInfoErrorResponse) {
-          log.error("Bad User Info response ({}), error={}", httpResponse.getStatusMessage(), ((UserInfoErrorResponse) userInfoResponse).getErrorObject().toJSONObject());
+        if (userInfoResponse instanceof UserInfoErrorResponse response) {
+          log.error("Bad User Info response ({}), error={}", httpResponse.getStatusMessage(), response.getErrorObject().toJSONObject());
         } else {
           final UserInfoSuccessResponse userInfoSuccessResponse = (UserInfoSuccessResponse) userInfoResponse;
           final JWTClaimsSet userInfoClaimsSet;

@@ -14,7 +14,6 @@ import jakarta.ws.rs.ext.Provider;
 
 import org.obiba.web.model.ErrorDtos;
 
-import com.google.protobuf.GeneratedMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -12,7 +12,6 @@ package org.obiba.runtime;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.obiba.runtime.Version;
 
 public class VersionTest {
 

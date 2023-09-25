@@ -138,8 +138,8 @@ public class KeyStoreManager {
     } catch(KeyPairNotFoundException ex) {
       throw ex;
     } catch(UnrecoverableKeyException ex) {
-      if(callbackHandler instanceof CachingCallbackHandler) {
-        ((CachingCallbackHandler) callbackHandler).clearPasswordCache(name);
+      if(callbackHandler instanceof CachingCallbackHandler handler) {
+        handler.clearPasswordCache(name);
       }
       throw new KeyProviderSecurityException("Wrong key password");
     } catch(Exception ex) {
@@ -169,8 +169,8 @@ public class KeyStoreManager {
     Map<String, Certificate> map = Maps.newHashMap();
     for(String alias : listAliases()) {
       Entry keyEntry = getEntry(alias);
-      if(keyEntry instanceof TrustedCertificateEntry) {
-        map.put(alias, ((TrustedCertificateEntry) keyEntry).getTrustedCertificate());
+      if(keyEntry instanceof TrustedCertificateEntry entry) {
+        map.put(alias, entry.getTrustedCertificate());
       }
     }
     return map;
@@ -203,7 +203,7 @@ public class KeyStoreManager {
       throw new KeyPairNotFoundException("KeyPair not found for specified alias (" + alias + ")");
     }
 
-    if(key instanceof PrivateKey) {
+    if(key instanceof PrivateKey privateKey) {
       // Get certificate of public key
       Certificate cert = store.getCertificate(alias);
 
@@ -211,7 +211,7 @@ public class KeyStoreManager {
       PublicKey publicKey = cert.getPublicKey();
 
       // Return a key pair
-      return new KeyPair(publicKey, (PrivateKey) key);
+      return new KeyPair(publicKey, privateKey);
     }
     throw new KeyPairNotFoundException("KeyPair not found for specified alias (" + alias + ")");
   }
@@ -375,8 +375,8 @@ public class KeyStoreManager {
   protected KeyPair getKeyPair(InputStream privateKey) {
     try(PemReader pemReader = getPemReader(privateKey)) {
       Object object = getPemObject(pemReader);
-      if(object instanceof KeyPair) {
-        return (KeyPair) object;
+      if(object instanceof KeyPair pair) {
+        return pair;
       }
       throw new RuntimeException("Unexpected type [" + object + "]. Expected KeyPair.");
     } catch(IOException e) {
@@ -394,11 +394,11 @@ public class KeyStoreManager {
 
   @SuppressWarnings("ChainOfInstanceofChecks")
   private Key toPrivateKey(Object pemObject) {
-    if(pemObject instanceof KeyPair) {
-      return ((KeyPair) pemObject).getPrivate();
+    if(pemObject instanceof KeyPair pair) {
+      return pair.getPrivate();
     }
-    if(pemObject instanceof Key) {
-      return (Key) pemObject;
+    if(pemObject instanceof Key key) {
+      return key;
     }
     throw new RuntimeException("Unexpected type [" + pemObject + "]. Expected KeyPair or Key.");
   }
@@ -406,8 +406,8 @@ public class KeyStoreManager {
   private X509Certificate getCertificate(InputStream certificate) {
     try(PemReader pemReader = getPemReader(certificate)) {
       Object object = getPemObject(pemReader);
-      if(object instanceof X509Certificate) {
-        return (X509Certificate) object;
+      if(object instanceof X509Certificate x509Certificate) {
+        return x509Certificate;
       }
       throw new RuntimeException("Unexpected type [" + object + "]. Expected X509Certificate.");
     } catch(IOException e) {
@@ -420,8 +420,8 @@ public class KeyStoreManager {
     try(PemReader pemReader = getPemReader(certificates)) {
       Object object = getPemObject(pemReader);
       while (object != null) {
-        if (object instanceof X509Certificate) {
-          certs.add((X509Certificate) object);
+        if (object instanceof X509Certificate certificate) {
+          certs.add(certificate);
         } else {
           throw new RuntimeException("Unexpected type [" + object + "]. Expected X509Certificate.");
         }
@@ -514,8 +514,8 @@ public class KeyStoreManager {
     }
 
     private static void clearPasswordCache(CallbackHandler callbackHandler, String alias) {
-      if(callbackHandler instanceof CachingCallbackHandler) {
-        ((CachingCallbackHandler) callbackHandler).clearPasswordCache(alias);
+      if(callbackHandler instanceof CachingCallbackHandler handler) {
+        handler.clearPasswordCache(alias);
       }
     }
 

@@ -85,14 +85,14 @@ public class DefaultOIDCGroupsExtractor implements OIDCGroupsExtractor {
   protected Iterable<String> extractGroups(Object groupsValue) {
     if (groupsValue == null) return Lists.newArrayList();
 
-    if (groupsValue instanceof Bindings) {
-      Bindings jsRes = ((Bindings) groupsValue);
+    if (groupsValue instanceof Bindings bindings) {
+      Bindings jsRes = bindings;
       return jsRes.values().stream()
           .filter(g -> g instanceof String)
           .map(Object::toString)
           .collect(Collectors.toSet());
-    } else if (groupsValue instanceof Collection) {
-      return ((Collection<Object>) groupsValue).stream()
+    } else if (groupsValue instanceof Collection collection) {
+      return ((Collection<Object>) collection).stream()
           .filter(Objects::nonNull)
           .map(Object::toString)
           .collect(Collectors.toSet());

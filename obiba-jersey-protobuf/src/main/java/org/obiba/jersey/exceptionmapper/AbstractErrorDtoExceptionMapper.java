@@ -17,8 +17,6 @@ import org.obiba.web.model.ErrorDtos;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.protobuf.GeneratedMessage;
-
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 public abstract class AbstractErrorDtoExceptionMapper<TException extends Throwable>

@@ -13,7 +13,7 @@ package org.obiba.jersey.shiro.authz.annotation;
 import java.io.IOException;
 import java.lang.reflect.Method;
 
-import javax.annotation.Priority;
+import jakarta.annotation.Priority;
 import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.container.ContainerRequestContext;

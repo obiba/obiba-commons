@@ -146,8 +146,7 @@ public class ObibaRealm extends AuthorizingRealm {
       RestTemplate template = newRestTemplate();
       HttpHeaders headers = new HttpHeaders();
       headers.set(APPLICATION_AUTH_HEADER, getApplicationAuth());
-      if (token instanceof UsernamePasswordOtpToken) {
-        UsernamePasswordOtpToken otpToken = (UsernamePasswordOtpToken) token;
+      if (token instanceof UsernamePasswordOtpToken otpToken) {
         if (otpToken.hasOtp())
           headers.set("X-Obiba-TOTP", otpToken.getOtp());
       }
@@ -184,19 +183,19 @@ public class ObibaRealm extends AuthorizingRealm {
       if (log.isDebugEnabled())
         log.error("Connection failure with identification server", e);
       else
-        log.error(String.format("Connection failure with identification server: [%s]", e.getMessage()));
+        log.error("Connection failure with identification server: [%s]".formatted(e.getMessage()));
       return null;
     } catch(ResourceAccessException e) {
       if (log.isDebugEnabled())
         log.error("Connection failure with identification server", e);
       else
-        log.error(String.format("Connection failure with identification server: [%s]", e.getMessage()));
+        log.error("Connection failure with identification server: [%s]".formatted(e.getMessage()));
       return null;
     } catch(Exception e) {
       if (log.isDebugEnabled())
         log.error("Authentication failure", e);
       else
-        log.error(String.format("Authentication failure: [%s]", e.getMessage()));
+        log.error("Authentication failure: [%s]".formatted(e.getMessage()));
       throw new AuthenticationException("Failed authenticating on " + baseUrl, e);
     }
   }
@@ -229,7 +228,7 @@ public class ObibaRealm extends AuthorizingRealm {
       log.info("Invalid ticket. Response status code [{}], response body [{}], ticket used [{}]", response.getStatusCode(), response.getBody(), token);
       return null;
     } catch(HttpClientErrorException|ResourceAccessException e) {
-      log.error(String.format("Impossible to contact identification server: [%s]", e.getMessage()), e);
+      log.error("Impossible to contact identification server: [%s]".formatted(e.getMessage()), e);
       return null;
     } catch(Exception e) {
       throw new AuthenticationException("Failed authenticating on " + baseUrl, e);
@@ -294,7 +293,7 @@ public class ObibaRealm extends AuthorizingRealm {
       try {
         String[] webTokenParts = ((String) principal).split("\\.");
         if(webTokenParts.length > 1) {
-          String webToken = String.format("%s.%s.", webTokenParts[0], webTokenParts[1]); //do not validate signature
+          String webToken = "%s.%s.".formatted(webTokenParts[0], webTokenParts[1]); //do not validate signature
           return Jwts.parser().parse(webToken);
         }
       } catch(MalformedJwtException e) {
