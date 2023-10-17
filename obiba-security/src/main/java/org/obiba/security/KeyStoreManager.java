@@ -370,7 +370,7 @@ public class KeyStoreManager {
 
   private String chooseSignatureAlgorithm(String keyAlgorithm) {
     // TODO add more algorithms here.
-    return "DSA".equals(keyAlgorithm) ? "SHA1withDSA" : "SHA1WithRSA";
+    return "DSA".equals(keyAlgorithm) ? "SHA256withDSA" : "SHA256WithRSA";
   }
 
   protected KeyPair getKeyPair(InputStream privateKey) {
