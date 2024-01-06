@@ -38,13 +38,12 @@ import java.util.*;
 
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.UnsupportedCallbackException;
-import javax.validation.constraints.NotNull;
 
 import com.google.common.collect.*;
+import jakarta.validation.constraints.NotNull;
 import org.bouncycastle.asn1.x509.X509Name;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.openssl.PEMReader;
-import org.bouncycastle.openssl.PasswordFinder;
+import org.bouncycastle.util.io.pem.PemReader;
 import org.bouncycastle.x509.X509V3CertificateGenerator;
 import org.obiba.crypt.CacheablePasswordCallback;
 import org.obiba.crypt.CachingCallbackHandler;
@@ -139,8 +138,8 @@ public class KeyStoreManager {
     } catch(KeyPairNotFoundException ex) {
       throw ex;
     } catch(UnrecoverableKeyException ex) {
-      if(callbackHandler instanceof CachingCallbackHandler) {
-        ((CachingCallbackHandler) callbackHandler).clearPasswordCache(name);
+      if(callbackHandler instanceof CachingCallbackHandler handler) {
+        handler.clearPasswordCache(name);
       }
       throw new KeyProviderSecurityException("Wrong key password");
     } catch(Exception ex) {
@@ -170,8 +169,8 @@ public class KeyStoreManager {
     Map<String, Certificate> map = Maps.newHashMap();
     for(String alias : listAliases()) {
       Entry keyEntry = getEntry(alias);
-      if(keyEntry instanceof TrustedCertificateEntry) {
-        map.put(alias, ((TrustedCertificateEntry) keyEntry).getTrustedCertificate());
+      if(keyEntry instanceof TrustedCertificateEntry entry) {
+        map.put(alias, entry.getTrustedCertificate());
       }
     }
     return map;
@@ -204,7 +203,7 @@ public class KeyStoreManager {
       throw new KeyPairNotFoundException("KeyPair not found for specified alias (" + alias + ")");
     }
 
-    if(key instanceof PrivateKey) {
+    if(key instanceof PrivateKey privateKey) {
       // Get certificate of public key
       Certificate cert = store.getCertificate(alias);
 
@@ -212,7 +211,7 @@ public class KeyStoreManager {
       PublicKey publicKey = cert.getPublicKey();
 
       // Return a key pair
-      return new KeyPair(publicKey, (PrivateKey) key);
+      return new KeyPair(publicKey, privateKey);
     }
     throw new KeyPairNotFoundException("KeyPair not found for specified alias (" + alias + ")");
   }
@@ -374,10 +373,10 @@ public class KeyStoreManager {
   }
 
   protected KeyPair getKeyPair(InputStream privateKey) {
-    try(PEMReader pemReader = getPEMReader(privateKey)) {
+    try(PemReader pemReader = getPemReader(privateKey)) {
       Object object = getPemObject(pemReader);
-      if(object instanceof KeyPair) {
-        return (KeyPair) object;
+      if(object instanceof KeyPair pair) {
+        return pair;
       }
       throw new RuntimeException("Unexpected type [" + object + "]. Expected KeyPair.");
     } catch(IOException e) {
@@ -386,7 +385,7 @@ public class KeyStoreManager {
   }
 
   protected Key getPrivateKey(InputStream privateKey) {
-    try(PEMReader pemReader = getPEMReader(privateKey)) {
+    try(PemReader pemReader = getPemReader(privateKey)) {
       return toPrivateKey(getPemObject(pemReader));
     } catch(IOException e) {
       throw new RuntimeException(e);
@@ -395,20 +394,20 @@ public class KeyStoreManager {
 
   @SuppressWarnings("ChainOfInstanceofChecks")
   private Key toPrivateKey(Object pemObject) {
-    if(pemObject instanceof KeyPair) {
-      return ((KeyPair) pemObject).getPrivate();
+    if(pemObject instanceof KeyPair pair) {
+      return pair.getPrivate();
     }
-    if(pemObject instanceof Key) {
-      return (Key) pemObject;
+    if(pemObject instanceof Key key) {
+      return key;
     }
     throw new RuntimeException("Unexpected type [" + pemObject + "]. Expected KeyPair or Key.");
   }
 
   private X509Certificate getCertificate(InputStream certificate) {
-    try(PEMReader pemReader = getPEMReader(certificate)) {
+    try(PemReader pemReader = getPemReader(certificate)) {
       Object object = getPemObject(pemReader);
-      if(object instanceof X509Certificate) {
-        return (X509Certificate) object;
+      if(object instanceof X509Certificate x509Certificate) {
+        return x509Certificate;
       }
       throw new RuntimeException("Unexpected type [" + object + "]. Expected X509Certificate.");
     } catch(IOException e) {
@@ -418,16 +417,16 @@ public class KeyStoreManager {
 
   private X509Certificate[] getCertificates(InputStream certificates) {
     List<X509Certificate> certs = Lists.newArrayList();
-    try(PEMReader pemReader = getPEMReader(certificates)) {
+    try(PemReader pemReader = getPemReader(certificates)) {
       Object object = getPemObject(pemReader);
       while (object != null) {
-        if (object instanceof X509Certificate) {
-          certs.add((X509Certificate) object);
+        if (object instanceof X509Certificate certificate) {
+          certs.add(certificate);
         } else {
           throw new RuntimeException("Unexpected type [" + object + "]. Expected X509Certificate.");
         }
         // read next certificate
-        object = pemReader.readObject();
+        object = pemReader.readPemObject();
       }
       return certs.toArray(new X509Certificate[certs.size()]);
     } catch(IOException e) {
@@ -436,18 +435,14 @@ public class KeyStoreManager {
   }
 
   @NotNull
-  private PEMReader getPEMReader(InputStream certificate) {
-    return new PEMReader(new InputStreamReader(certificate), new PasswordFinder() {
-      @Override
-      public char[] getPassword() {
-        return System.console().readPassword("%s:  ", "Password for imported certificate");
-      }
-    });
+  private PemReader getPemReader(InputStream certificate) {
+    // FIXME what if PEM is encrypted with a password?
+    return new PemReader(new InputStreamReader(certificate));
   }
 
   @NotNull
-  private Object getPemObject(PEMReader pemReader) throws IOException {
-    Object object = pemReader.readObject();
+  private Object getPemObject(PemReader pemReader) throws IOException {
+    Object object = pemReader.readPemObject();
     if(object == null) throw new RuntimeException("No PEM information.");
     return object;
   }
@@ -519,8 +514,8 @@ public class KeyStoreManager {
     }
 
     private static void clearPasswordCache(CallbackHandler callbackHandler, String alias) {
-      if(callbackHandler instanceof CachingCallbackHandler) {
-        ((CachingCallbackHandler) callbackHandler).clearPasswordCache(alias);
+      if(callbackHandler instanceof CachingCallbackHandler handler) {
+        handler.clearPasswordCache(alias);
       }
     }
 

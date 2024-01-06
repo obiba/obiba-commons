@@ -16,9 +16,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.obiba.core.util.ComparableComparator;
 import org.obiba.runtime.Version;
 import org.obiba.runtime.upgrade.InstallStep;
@@ -29,6 +26,7 @@ import org.obiba.runtime.upgrade.VersionModifier;
 import org.obiba.runtime.upgrade.VersionProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
 
 import static java.util.stream.Collectors.toList;
 
@@ -47,32 +45,27 @@ public class DefaultUpgradeManager implements UpgradeManager {
   /**
    * Used to obtain and modify the current version.
    */
-  @Nonnull
   private VersionModifier currentVersionProvider;
 
   /**
    * Used to obtain the current runtime version.
    */
-  @Nonnull
   private VersionProvider runtimeVersionProvider;
 
   /**
    * Strategy that determines if the manager should go through the list of install steps instead of the list of upgrade
    * steps.
    */
-  @Nonnull
   private NewInstallationDetectionStrategy newInstallationDetectionStrategy;
 
   /**
    * A list of all required installation steps.
    */
-  @Nonnull
   private final Collection<InstallStep> installSteps = new ArrayList<>();
 
   /**
    * A list of all available upgrade steps.
    */
-  @Nonnull
   private final Collection<UpgradeStep> upgradeSteps = new ArrayList<>();
 
   /**
@@ -84,7 +77,6 @@ public class DefaultUpgradeManager implements UpgradeManager {
   /**
    * The comparator implementation to use for comparing two versions.
    */
-  @Nonnull
   private Comparator<Version> versionComparator = new ComparableComparator<>();
 
   //
@@ -180,20 +172,20 @@ public class DefaultUpgradeManager implements UpgradeManager {
   // Methods
   //
 
-  public void setCurrentVersionProvider(@Nonnull VersionModifier currentVersionProvider) {
+  public void setCurrentVersionProvider(VersionModifier currentVersionProvider) {
     //noinspection ConstantConditions
     if(currentVersionProvider == null) throw new IllegalArgumentException("currentVersionProvider cannot be null");
     this.currentVersionProvider = currentVersionProvider;
   }
 
-  public void setRuntimeVersionProvider(@Nonnull VersionProvider runtimeVersionProvider) {
+  public void setRuntimeVersionProvider(VersionProvider runtimeVersionProvider) {
     //noinspection ConstantConditions
     if(runtimeVersionProvider == null) throw new IllegalArgumentException("runtimeVersionProvider cannot be null");
     this.runtimeVersionProvider = runtimeVersionProvider;
   }
 
   public void setNewInstallationDetectionStrategy(
-      @Nonnull NewInstallationDetectionStrategy newInstallationDetectionStrategy) {
+      NewInstallationDetectionStrategy newInstallationDetectionStrategy) {
     //noinspection ConstantConditions
     if(newInstallationDetectionStrategy == null) {
       throw new IllegalArgumentException("newInstallationDetectionStrategy cannot be null");
@@ -215,7 +207,7 @@ public class DefaultUpgradeManager implements UpgradeManager {
     }
   }
 
-  public void setVersionComparator(@Nonnull Comparator<Version> versionComparator) {
+  public void setVersionComparator(Comparator<Version> versionComparator) {
     //noinspection ConstantConditions
     if(versionComparator == null) throw new IllegalArgumentException("versionComparator cannot be null");
     this.versionComparator = versionComparator;
@@ -280,7 +272,6 @@ public class DefaultUpgradeManager implements UpgradeManager {
    *
    * @return a new list containing all the applicable steps.
    */
-  @Nonnull
   protected List<UpgradeStep> getApplicableSteps() {
 
     Version currentVersion = getCurrentVersion();

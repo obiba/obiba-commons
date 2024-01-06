@@ -10,14 +10,14 @@
 
 package org.obiba.git;
 
+import org.springframework.lang.Nullable;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.TimeZone;
-
-import javax.annotation.Nullable;
 
 public class CommitInfo {
 

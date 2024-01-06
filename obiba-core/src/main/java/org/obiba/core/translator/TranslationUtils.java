@@ -37,12 +37,12 @@ public class TranslationUtils {
       String key = keys.next();
       Object property = object.get(key);
       logger.debug("{} : {}", key, property.toString());
-      if (property instanceof String && !"".equals(property)) {
-        object.put(key, translator.translate((String) property));
-      } else if (property instanceof JSONArray) {
-        translate((JSONArray) property, translator);
-      } else if (property instanceof JSONObject) {
-        translate((JSONObject) property, translator);
+      if (property instanceof String string && !"".equals(property)) {
+        object.put(key, translator.translate(string));
+      } else if (property instanceof JSONArray array) {
+        translate(array, translator);
+      } else if (property instanceof JSONObject nObject) {
+        translate(nObject, translator);
       }
     }
     return object;
@@ -51,12 +51,12 @@ public class TranslationUtils {
   private JSONArray translate(JSONArray array, Translator translator) {
     for (int i = 0; i < array.length(); i++) {
       Object value = array.get(i);
-      if (value instanceof JSONArray) {
-        translate((JSONArray) value, translator);
-      } else if (value instanceof JSONObject) {
-        translate((JSONObject) value, translator);
-      } else if (value instanceof String) {
-        array.put(i, translator.translate((String) value));
+      if (value instanceof JSONArray nArray) {
+        translate(nArray, translator);
+      } else if (value instanceof JSONObject object) {
+        translate(object, translator);
+      } else if (value instanceof String string) {
+        array.put(i, translator.translate(string));
       }
     }
     return array;

@@ -18,7 +18,7 @@
   <parent>
     <groupId>org.obiba.commons</groupId>
     <artifactId>obiba-commons</artifactId>
-    <version>3.1-SNAPSHOT</version>
+    <version>4.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>obiba-web-model</artifactId>
@@ -29,13 +29,41 @@
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java-util</artifactId>
+    </dependency>
 
   </dependencies>
 
   <build>
 
     <plugins>
-
+      <plugin>
+        <groupId>com.github.os72</groupId>
+        <artifactId>protoc-jar-maven-plugin</artifactId>
+        <version>3.11.4</version>
+        <executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <protocVersion>${protobuf.version}</protocVersion>
+              <inputDirectories>
+                <include>src/main/resources</include>
+              </inputDirectories>
+              <outputTargets>
+                <outputTarget>
+                  <type>java</type>
+                  <outputDirectory>${project.build.directory}/generated-sources/protobuf-java</outputDirectory>
+                </outputTarget>
+              </outputTargets>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <!-- Add generated sources to the build path -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -50,76 +78,8 @@
             <configuration>
               <sources>
                 <source>${project.build.directory}/generated-sources/protobuf-java</source>
-                <source>${project.build.directory}/generated-sources/protobuf-python</source>
               </sources>
             </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>generate-sources</id>
-            <phase>generate-sources</phase>
-            <configuration>
-              <tasks>
-                <!-- Determine which protoc binary we can use -->
-                <condition property="os.protoc" value="${protobuf.version}-linux-x86_64">
-                  <or>
-                    <os name="linux" arch="amd64" />
-                    <os name="linux" arch="x86_64" />
-                  </or>
-                </condition>
-                <condition property="os.protoc" value="${protobuf.version}-linux-x86_32">
-                  <or>
-                    <os name="linux" arch="x86" />
-                    <os name="linux" arch="i386" />
-                  </or>
-                </condition>
-                <condition property="os.protoc" value="${protobuf.version}-win32">
-                  <os family="windows" />
-                </condition>
-
-                <fail message="No protoc binary for your OS: ${os.name} ${os.arch}." unless="os.protoc" />
-
-                <path id="protofiles">
-                  <fileset dir="src/main/resources">
-                    <include name="*.proto" />
-                  </fileset>
-                </path>
-                <pathconvert pathsep=" " property="protofilesList" refid="protofiles">
-                  <map from="${basedir}/" to="" />
-                </pathconvert>
-
-                <!-- Compile our .proto file -->
-                <!-- Java -->
-                <mkdir dir="target/generated-sources/protobuf-java" />
-                <!--suppress MavenModelInspection -->
-                <exec dir="${basedir}" executable="${basedir}/tools/protobuf/protoc-${os.protoc}" failonerror="true">
-                  <arg value="--java_out=target/generated-sources/protobuf-java" />
-                  <!--suppress MavenModelInspection -->
-                  <arg line="${protofilesList}" />
-                  <arg line="-Isrc/main/resources" />
-                </exec>
-
-                <!-- Python -->
-                <mkdir dir="target/generated-sources/protobuf-python" />
-                <!--suppress MavenModelInspection -->
-                <exec dir="${basedir}" executable="${basedir}/tools/protobuf/protoc-${os.protoc}" failonerror="true">
-                  <arg value="--python_out=target/generated-sources/protobuf-python" />
-                  <!--suppress MavenModelInspection -->
-                  <arg line="${protofilesList}" />
-                  <arg line="-Isrc/main/resources" />
-                </exec>
-
-                <delete file="${basedir}/src/main/resources/wrapper.proto" />
-              </tasks>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
           </execution>
         </executions>
       </plugin>

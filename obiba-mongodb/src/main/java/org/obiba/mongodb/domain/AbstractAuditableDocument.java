@@ -14,7 +14,6 @@ import java.util.Objects;
 
 import org.joda.time.DateTime;
 import org.springframework.data.annotation.*;
-import org.springframework.data.domain.Auditable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.domain.Persistable;

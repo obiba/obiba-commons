@@ -14,12 +14,12 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.Set;
 
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.eclipse.jgit.api.Git;
 
 import com.google.common.collect.ImmutableSet;
+import org.springframework.lang.Nullable;
 
 public class ReadFilesCommand extends AbstractGitCommand<Set<InputStream>> {
 

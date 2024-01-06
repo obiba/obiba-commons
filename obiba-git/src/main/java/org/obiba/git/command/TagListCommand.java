@@ -14,8 +14,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -24,6 +23,7 @@ import org.obiba.git.GitException;
 import org.obiba.git.TagInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
 
 public class TagListCommand extends AbstractGitCommand<Iterable<TagInfo>> {
 

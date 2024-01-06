@@ -26,13 +26,12 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
 
-import javax.annotation.Nullable;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.obiba.core.service.EntityQueryService;
 import org.obiba.core.validation.validator.AbstractPersistenceAwareClassValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -124,8 +123,8 @@ public class ObjectValidationInspector {
   public void inspectObject(List<Errors> errors, Object arg) {
     for(Validator validator : getValidators()) {
       if(validator.supports(arg.getClass())) {
-        if(entityQueryService != null && validator instanceof AbstractPersistenceAwareClassValidator) {
-          ((AbstractPersistenceAwareClassValidator) validator).setEntityQueryService(entityQueryService);
+        if(entityQueryService != null && validator instanceof AbstractPersistenceAwareClassValidator classValidator) {
+          classValidator.setEntityQueryService(entityQueryService);
         }
         log.debug("Validator supported: {}", arg.getClass());
         validateAndAddErrors(arg, validator, errors);

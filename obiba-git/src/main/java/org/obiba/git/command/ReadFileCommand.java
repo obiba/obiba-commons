@@ -16,8 +16,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.ObjectId;
@@ -29,6 +28,7 @@ import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.obiba.git.GitException;
 import org.obiba.git.NoSuchGitRepositoryException;
+import org.springframework.lang.Nullable;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 
@@ -66,7 +66,7 @@ public class ReadFileCommand extends AbstractGitCommand<InputStream> {
     Ref ref = repository.getTags().get(tag);
     ObjectId objectId = repository.resolve(ref.getObjectId().getName());
     if(objectId == null) {
-      throw new GitException(String.format("No commit with id '%s' for tag '%s'", ref.getObjectId(), tag));
+      throw new GitException("No commit with id '%s' for tag '%s'".formatted(ref.getObjectId(), tag));
     }
     return read(repository, objectId);
   }
@@ -74,7 +74,7 @@ public class ReadFileCommand extends AbstractGitCommand<InputStream> {
   private InputStream readCommit(Repository repository) throws IOException {
     ObjectId objectId = repository.resolve(commitId);
     if(objectId == null) {
-      throw new GitException(String.format("No commit with id '%s'", commitId));
+      throw new GitException("No commit with id '%s'".formatted(commitId));
     }
     return read(repository, objectId);
   }
@@ -84,7 +84,7 @@ public class ReadFileCommand extends AbstractGitCommand<InputStream> {
     RevTree tree = new RevWalk(reader).parseCommit(objectId).getTree();
     TreeWalk treeWalk = TreeWalk.forPath(reader, path, tree);
     if(treeWalk == null) {
-      throw new GitException(String.format("Path '%s' was not found in commit '%s'", path, objectId));
+      throw new GitException("Path '%s' was not found in commit '%s'".formatted(path, objectId));
     }
     return new ByteArrayInputStream(reader.open(treeWalk.getObjectId(0)).getBytes());
   }

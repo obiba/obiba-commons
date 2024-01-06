@@ -31,8 +31,7 @@ public class FixedPasswordCallbackHandler implements CallbackHandler {
   @Override
   public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
     for(Callback callback1 : callbacks) {
-      if(callback1 instanceof PasswordCallback) {
-        PasswordCallback callback = (PasswordCallback) callback1;
+      if(callback1 instanceof PasswordCallback callback) {
         callback.setPassword(password);
         return;
       }

@@ -9,8 +9,6 @@
  */
 package org.obiba.shiro.realm;
 
-import javax.annotation.Nullable;
-
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -27,6 +25,7 @@ import org.apache.shiro.session.mgt.SessionKey;
 import org.apache.shiro.session.mgt.SessionManager;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.support.DefaultSubjectContext;
+import org.springframework.lang.Nullable;
 
 public abstract class AbstractHttpAuthenticatingRealm extends AuthorizingRealm {
 

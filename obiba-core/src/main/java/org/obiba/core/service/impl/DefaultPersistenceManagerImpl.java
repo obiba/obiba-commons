@@ -39,7 +39,7 @@ public abstract class DefaultPersistenceManagerImpl implements PersistenceManage
       List<Errors> errors = new ArrayList<Errors>();
       getObjectValidationInspector().setEntityQueryService(this);
       getObjectValidationInspector().inspectObject(errors, entity);
-      if(errors.size() > 0) {
+      if(!errors.isEmpty()) {
         log.warn("Validation error(s) found, throwing ValidationException.");
         throw new ValidationRuntimeException(errors);
       }

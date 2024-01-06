@@ -16,8 +16,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.eclipse.jgit.api.Git;
 import org.obiba.git.GitException;
@@ -25,6 +24,7 @@ import org.obiba.git.GitException;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.io.CharStreams;
+import org.springframework.lang.Nullable;
 
 /**
  * Opal GIT command used to extract the content of a file. Folders are not supported.

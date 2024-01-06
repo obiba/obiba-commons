@@ -19,7 +19,6 @@ import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Set;
 
-import javax.annotation.Nullable;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.X509ExtendedKeyManager;
 
@@ -48,7 +47,7 @@ public class X509ExtendedKeyManagerImpl extends X509ExtendedKeyManager {
   }
 
   @Override
-  public String chooseClientAlias(String[] keyTypes, Principal[] issuers, @Nullable Socket socket) {
+  public String chooseClientAlias(String[] keyTypes, Principal[] issuers, Socket socket) {
     log.debug("chooseClientAlias({}, {}, socket)", keyTypes, issuers);
     for(String keyType : keyTypes) {
       if(isKeyType(HTTPS_ALIAS, keyType)) {
@@ -63,7 +62,7 @@ public class X509ExtendedKeyManagerImpl extends X509ExtendedKeyManager {
   }
 
   @Override
-  public String chooseServerAlias(String keyType, Principal[] issuers, @Nullable Socket socket) {
+  public String chooseServerAlias(String keyType, Principal[] issuers, Socket socket) {
     log.debug("Requested keyType: '{}'", keyType);
     if(isKeyType(HTTPS_ALIAS, keyType)) {
       log.debug("Selecting key '{}'", HTTPS_ALIAS);
@@ -92,7 +91,6 @@ public class X509ExtendedKeyManagerImpl extends X509ExtendedKeyManager {
     }
   }
 
-  @Nullable
   @Override
   public String[] getClientAliases(String keyType, Principal[] issuers) {
     log.debug("getClientAliases({}, {})", keyType, issuers);

@@ -13,8 +13,7 @@ package org.obiba.git.command;
 import java.io.File;
 import java.io.IOException;
 
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.ObjectId;
@@ -26,6 +25,7 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import org.obiba.git.CommitInfo;
 import org.obiba.git.GitException;
 import org.obiba.git.GitUtils;
+import org.springframework.lang.Nullable;
 
 /**
  * Opal GIT command used to extract the log of a repository path for a specific commit.
@@ -61,7 +61,7 @@ public class CommitLogCommand extends AbstractGitCommand<CommitInfo> {
     } catch(IOException e) {
       throw new GitException(e);
     }
-    throw new GitException(String.format("Path '%s' was not found in commit '%s'", path, commitId));
+    throw new GitException("Path '%s' was not found in commit '%s'".formatted(path, commitId));
   }
 
   public static class Builder {

@@ -9,13 +9,13 @@
  */
 package org.obiba.core.spring.xstream;
 
-import javax.annotation.Nullable;
 
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 
 import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
 import com.thoughtworks.xstream.converters.reflection.ReflectionProviderWrapper;
+import org.springframework.lang.Nullable;
 
 /**
  *

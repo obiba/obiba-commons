@@ -9,12 +9,11 @@
  */
 package org.obiba.shiro.authc;
 
-import javax.annotation.Nullable;
 
 import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authc.pam.UnsupportedTokenException;
 import org.apache.shiro.codec.Base64;
+import org.springframework.lang.Nullable;
 
 /**
  *

@@ -10,13 +10,12 @@
 
 package org.obiba.jersey.exceptionmapper;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.Provider;
 
 import org.obiba.web.model.ErrorDtos;
 
 import com.google.common.collect.Lists;
-import com.google.protobuf.GeneratedMessage;
 import com.google.protobuf.UninitializedMessageException;
 
 @Provider
@@ -29,7 +28,7 @@ public class UninitializedMessageExceptionMapper
   }
 
   @Override
-  protected GeneratedMessage.ExtendableMessage<?> getErrorDto(UninitializedMessageException exception) {
+  protected ErrorDtos.ClientErrorDto getErrorDto(UninitializedMessageException exception) {
     return ErrorDtos.ClientErrorDto.newBuilder() //
         .setCode(getStatus().getStatusCode()) //
         .setMessageTemplate("error.uninitializedMessage") //

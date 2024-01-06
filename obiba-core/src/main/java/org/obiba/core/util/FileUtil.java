@@ -14,7 +14,6 @@ import de.idyl.winzipaes.AesZipFileDecrypter;
 import de.idyl.winzipaes.impl.AESDecrypterBC;
 import de.idyl.winzipaes.impl.ExtZipEntry;
 
-import javax.annotation.Nonnull;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -23,10 +22,8 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Enumeration;
 import java.util.zip.DataFormatException;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 @SuppressWarnings("UnusedDeclaration")
@@ -37,7 +34,6 @@ public final class FileUtil {
   private FileUtil() {
   }
 
-  @Nonnull
   public static File getFileFromResource(String path) {
     try {
       URL resource = FileUtil.class.getClassLoader().getResource(path);

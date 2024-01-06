@@ -13,7 +13,6 @@
     default-autowire="no">
 
   <import resource="classpath:/test-db-config.xml"/>
-  <import resource="classpath:META-INF/spring/hibernate.xml"/>
   <import resource="classpath:META-INF/spring/beans.xml"/>
 
 </beans>

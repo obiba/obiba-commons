@@ -10,12 +10,11 @@
 
 package org.obiba.runtime;
 
+import org.springframework.lang.Nullable;
+
 import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Represents a version number and allows comparing to other version numbers.
@@ -37,21 +36,41 @@ final public class Version implements Comparable<Version>, Serializable {
 
   private int micro;
 
-  @Nonnull
   private String qualifier;
 
+  /**
+   * Base version.
+   */
   public Version() {
     this(0, 0, 0, null);
   }
 
+  /**
+   * No qualifier version.
+   * @param major token
+   * @param minor token
+   */
   public Version(int major, int minor) {
     this(major, minor, 0, null);
   }
 
+  /**
+   *
+   * @param major token
+   * @param minor token
+   * @param micro token
+   */
   public Version(int major, int minor, int micro) {
     this(major, minor, micro, null);
   }
 
+  /**
+   *
+   * @param major token
+   * @param minor token
+   * @param micro token
+   * @param qualifier token
+   */
   public Version(int major, int minor, int micro, @Nullable String qualifier) {
     this.major = major;
     this.minor = minor;
@@ -59,7 +78,10 @@ final public class Version implements Comparable<Version>, Serializable {
     this.qualifier = qualifier == null ? "" : qualifier;
   }
 
-  @SuppressWarnings("LocalVariableHidesMemberVariable")
+  /**
+   *
+   * @param version template
+   */
   public Version(String version) {
     try {
       Matcher m = VERSION_PATTERN.matcher(version);
@@ -82,26 +104,48 @@ final public class Version implements Comparable<Version>, Serializable {
     }
   }
 
+  /**
+   *
+   * @param major
+   */
   public void setMajor(int major) {
     this.major = major;
   }
 
+  /**
+   *
+   * @return major token
+   */
   public int getMajor() {
     return major;
   }
 
+  /**
+   * @param minor
+   */
   public void setMinor(int minor) {
     this.minor = minor;
   }
 
+  /**
+   *
+   * @return minor token
+   */
   public int getMinor() {
     return minor;
   }
 
+  /**
+   * @param micro
+   */
   public void setMicro(int micro) {
     this.micro = micro;
   }
 
+  /**
+   *
+   * @return micro token
+   */
   public int getMicro() {
     return micro;
   }
@@ -110,7 +154,10 @@ final public class Version implements Comparable<Version>, Serializable {
     this.qualifier = qualifier == null ? "" : qualifier;
   }
 
-  @Nonnull
+  /**
+   *
+   * @return qualifier token
+   */
   public String getQualifier() {
     return qualifier;
   }

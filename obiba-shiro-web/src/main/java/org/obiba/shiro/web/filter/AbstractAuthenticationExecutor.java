@@ -15,6 +15,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -25,8 +26,6 @@ import org.obiba.shiro.NoSuchOtpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
-import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -57,8 +56,7 @@ public abstract class AbstractAuthenticationExecutor implements AuthenticationEx
 
   @Override
   public Subject login(HttpServletRequest request, AuthenticationToken token, String sessionId) throws AuthenticationException {
-    if (isBanEnabled() && token instanceof UsernamePasswordToken) {
-      UsernamePasswordToken uToken = (UsernamePasswordToken) token;
+    if (isBanEnabled() && token instanceof UsernamePasswordToken uToken) {
       if (banCache.getIfPresent(uToken.getUsername()) != null)
         throwUserBannedException(uToken);
     }
@@ -84,8 +82,7 @@ public abstract class AbstractAuthenticationExecutor implements AuthenticationEx
         subject.login(token);
         ThreadContext.bind(subject);
         // successful login, so reset the failures list
-        if (isBanEnabled() && token instanceof UsernamePasswordToken) {
-          UsernamePasswordToken uToken = (UsernamePasswordToken) token;
+        if (isBanEnabled() && token instanceof UsernamePasswordToken uToken) {
           loginFailures.remove(uToken.getUsername());
         }
         ensureProfile(subject);
@@ -155,8 +152,7 @@ public abstract class AbstractAuthenticationExecutor implements AuthenticationEx
    */
   private synchronized void onLoginFailure(AuthenticationToken token, AuthenticationException authException) {
     if (!isBanEnabled()) return;
-    if (token instanceof UsernamePasswordToken && !(authException instanceof NoSuchOtpException)) {
-      UsernamePasswordToken uToken = (UsernamePasswordToken) token;
+    if (token instanceof UsernamePasswordToken uToken && !(authException instanceof NoSuchOtpException)) {
 
       List<Date> failures = loginFailures.getOrDefault(uToken.getUsername(), Lists.newArrayList());
       failures.add(new Date());

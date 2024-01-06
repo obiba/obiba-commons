@@ -59,7 +59,7 @@ public class PluginRepositoryCache {
   public File downloadPlugin(String name, String version, File tmpDir) throws IOException {
     Version versionObj = new Version(version);
     Optional<PluginPackage> pluginPackage = getOrUpdatePluginRepository().getPlugins().stream().filter(pp -> pp.isSameAs(name, versionObj)).findFirst();
-    if (!pluginPackage.isPresent())
+    if (pluginPackage.isEmpty())
       throw new NoSuchElementException("Plugin " + name + ":" + version + " cannot be found");
     File pluginFile = new File(tmpDir, pluginPackage.get().getFileName());
     ReadableByteChannel rbc = Channels.newChannel(getRepositoryURL(pluginPackage.get()).openStream());

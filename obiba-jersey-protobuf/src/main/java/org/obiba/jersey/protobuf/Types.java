@@ -48,7 +48,7 @@ public class Types {
 
   public static Class getTemplateParameterOfInterface(Class base, Class desiredInterface) {
     Object rtn = searchForInterfaceTemplateParameter(base, desiredInterface);
-    if(rtn instanceof Class) return (Class) rtn;
+    if(rtn instanceof Class class1) return class1;
     return null;
   }
 
@@ -57,8 +57,7 @@ public class Types {
       Class intf = base.getInterfaces()[i];
       if(intf.equals(desiredInterface)) {
         Type generic = base.getGenericInterfaces()[i];
-        if(generic instanceof ParameterizedType) {
-          ParameterizedType p = (ParameterizedType) generic;
+        if(generic instanceof ParameterizedType p) {
           Type type = p.getActualTypeArguments()[0];
           Class rtn = getRawTypeNoException(type);
           if(rtn != null) return rtn;
@@ -144,8 +143,7 @@ public class Types {
       paramTypes = new Class[paramTypes.length];
 
       for(int i = 0; i < paramTypes.length; i++) {
-        if(paramGenericTypes[i] instanceof TypeVariable) {
-          TypeVariable tv = (TypeVariable) paramGenericTypes[i];
+        if(paramGenericTypes[i] instanceof TypeVariable tv) {
           Type t = typeVarMap.get(tv.getName());
           if(t == null) {
             throw new RuntimeException("Unable to resolve type variable");
@@ -173,20 +171,17 @@ public class Types {
   }
 
   public static Class<?> getRawType(Type type) {
-    if(type instanceof Class<?>) {
+    if(type instanceof Class<?> class1) {
       // type is a normal class.
-      return (Class<?>) type;
+      return class1;
 
-    } else if(type instanceof ParameterizedType) {
-      ParameterizedType parameterizedType = (ParameterizedType) type;
+    } else if(type instanceof ParameterizedType parameterizedType) {
       Type rawType = parameterizedType.getRawType();
       return (Class<?>) rawType;
-    } else if(type instanceof GenericArrayType) {
-      final GenericArrayType genericArrayType = (GenericArrayType) type;
+    } else if(type instanceof GenericArrayType genericArrayType) {
       final Class<?> componentRawType = getRawType(genericArrayType.getGenericComponentType());
       return Array.newInstance(componentRawType, 0).getClass();
-    } else if(type instanceof TypeVariable) {
-      final TypeVariable typeVar = (TypeVariable) type;
+    } else if(type instanceof TypeVariable typeVar) {
       if(typeVar.getBounds() != null && typeVar.getBounds().length > 0) {
         return getRawType(typeVar.getBounds()[0]);
       }
@@ -195,16 +190,14 @@ public class Types {
   }
 
   public static Class<?> getRawTypeNoException(Type type) {
-    if(type instanceof Class<?>) {
+    if(type instanceof Class<?> class1) {
       // type is a normal class.
-      return (Class<?>) type;
+      return class1;
 
-    } else if(type instanceof ParameterizedType) {
-      ParameterizedType parameterizedType = (ParameterizedType) type;
+    } else if(type instanceof ParameterizedType parameterizedType) {
       Type rawType = parameterizedType.getRawType();
       return (Class<?>) rawType;
-    } else if(type instanceof GenericArrayType) {
-      final GenericArrayType genericArrayType = (GenericArrayType) type;
+    } else if(type instanceof GenericArrayType genericArrayType) {
       final Class<?> componentRawType = getRawType(genericArrayType.getGenericComponentType());
       return Array.newInstance(componentRawType, 0).getClass();
     }
@@ -225,12 +218,10 @@ public class Types {
   }
 
   public static Class getCollectionBaseType(Class type, Type genericType) {
-    if(genericType instanceof ParameterizedType) {
-      ParameterizedType parameterizedType = (ParameterizedType) genericType;
+    if(genericType instanceof ParameterizedType parameterizedType) {
       Type componentGenericType = parameterizedType.getActualTypeArguments()[0];
       return getRawType(componentGenericType);
-    } else if(genericType instanceof GenericArrayType) {
-      final GenericArrayType genericArrayType = (GenericArrayType) genericType;
+    } else if(genericType instanceof GenericArrayType genericArrayType) {
       Type componentGenericType = genericArrayType.getGenericComponentType();
       return getRawType(componentGenericType);
     } else if(type.isArray()) {
@@ -240,8 +231,7 @@ public class Types {
   }
 
   public static Class getMapKeyType(Type genericType) {
-    if(genericType instanceof ParameterizedType) {
-      ParameterizedType parameterizedType = (ParameterizedType) genericType;
+    if(genericType instanceof ParameterizedType parameterizedType) {
       Type componentGenericType = parameterizedType.getActualTypeArguments()[0];
       return getRawType(componentGenericType);
     }
@@ -249,8 +239,7 @@ public class Types {
   }
 
   public static Class getMapValueType(Type genericType) {
-    if(genericType instanceof ParameterizedType) {
-      ParameterizedType parameterizedType = (ParameterizedType) genericType;
+    if(genericType instanceof ParameterizedType parameterizedType) {
       Type componentGenericType = parameterizedType.getActualTypeArguments()[1];
       return getRawType(componentGenericType);
     }
@@ -258,11 +247,10 @@ public class Types {
   }
 
   public static Type resolveTypeVariables(Class<?> root, Type type) {
-    if(type instanceof TypeVariable) {
-      Type newType = resolveTypeVariable(root, (TypeVariable) type);
+    if(type instanceof TypeVariable variable) {
+      Type newType = resolveTypeVariable(root, variable);
       return (newType == null) ? type : newType;
-    } else if(type instanceof ParameterizedType) {
-      final ParameterizedType param = (ParameterizedType) type;
+    } else if(type instanceof ParameterizedType param) {
       final Type[] actuals = new Type[param.getActualTypeArguments().length];
       for(int i = 0; i < actuals.length; i++) {
         Type newType = resolveTypeVariables(root, param.getActualTypeArguments()[i]);
@@ -284,8 +272,7 @@ public class Types {
           return param.getOwnerType();
         }
       };
-    } else if(type instanceof GenericArrayType) {
-      GenericArrayType arrayType = (GenericArrayType) type;
+    } else if(type instanceof GenericArrayType arrayType) {
       final Type componentType = resolveTypeVariables(root, arrayType.getGenericComponentType());
       if(componentType == null) return type;
       return new GenericArrayType() {
@@ -365,8 +352,7 @@ public class Types {
       return extractTypes(typeVarMap, genericSuper);
     }
 
-    if(genericSuper instanceof ParameterizedType) {
-      ParameterizedType intfParam = (ParameterizedType) genericSuper;
+    if(genericSuper instanceof ParameterizedType intfParam) {
       Type[] types = findClassParameterizedTypes(superclass, intfParam, searchedForClass);
       if(types != null) {
         return extractTypeVariables(typeVarMap, types);
@@ -420,8 +406,7 @@ public class Types {
 
   private static Type[] recurseSuperclassForInterface(Class<?> searchedForInterface, Map<String, Type> typeVarMap,
       Type genericSub, Class<?> sub) {
-    if(genericSub instanceof ParameterizedType) {
-      ParameterizedType intfParam = (ParameterizedType) genericSub;
+    if(genericSub instanceof ParameterizedType intfParam) {
       Type[] types = findInterfaceParameterizedTypes(sub, intfParam, searchedForInterface);
       if(types != null) {
         return extractTypeVariables(typeVarMap, types);
@@ -437,8 +422,7 @@ public class Types {
 
   private static Type[] extractTypeVariables(Map<String, Type> typeVarMap, Type[] types) {
     for(int j = 0; j < types.length; j++) {
-      if(types[j] instanceof TypeVariable) {
-        TypeVariable tv = (TypeVariable) types[j];
+      if(types[j] instanceof TypeVariable tv) {
         types[j] = typeVarMap.get(tv.getName());
       } else {
         types[j] = types[j];
@@ -448,8 +432,7 @@ public class Types {
   }
 
   private static Type[] extractTypes(Map<String, Type> typeVarMap, Type genericSub) {
-    if(genericSub instanceof ParameterizedType) {
-      ParameterizedType param = (ParameterizedType) genericSub;
+    if(genericSub instanceof ParameterizedType param) {
       Type[] types = param.getActualTypeArguments();
       Type[] returnTypes = new Type[types.length];
       System.arraycopy(types, 0, returnTypes, 0, types.length);

@@ -15,8 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LogCommand;
@@ -29,6 +28,7 @@ import org.obiba.git.GitException;
 import org.obiba.git.GitUtils;
 
 import com.google.common.base.Strings;
+import org.springframework.lang.Nullable;
 
 public class LogsCommand extends AbstractGitCommand<Iterable<CommitInfo>> {
 

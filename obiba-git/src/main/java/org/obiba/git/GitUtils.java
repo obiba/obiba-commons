@@ -13,10 +13,9 @@ package org.obiba.git;
 import java.io.IOException;
 import java.util.Objects;
 
-import javax.annotation.Nullable;
-
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
+import org.springframework.lang.Nullable;
 
 public class GitUtils {
 

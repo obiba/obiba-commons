@@ -11,11 +11,9 @@ package org.obiba.oidc;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-import com.nimbusds.oauth2.sdk.ParseException;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import org.obiba.oidc.utils.OIDCHelper;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 

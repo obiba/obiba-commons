@@ -9,10 +9,10 @@
  */
 package org.obiba.oidc.web;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.obiba.oidc.OIDCException;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -152,13 +152,11 @@ public class J2EContext {
 
   public Collection<Cookie> getRequestCookies() {
     final Collection<Cookie> pac4jCookies = new LinkedHashSet<>();
-    final javax.servlet.http.Cookie[] cookies = this.request.getCookies();
+    final jakarta.servlet.http.Cookie[] cookies = this.request.getCookies();
 
     if (cookies != null) {
-      for (final javax.servlet.http.Cookie c : cookies) {
+      for (final jakarta.servlet.http.Cookie c : cookies) {
         final Cookie cookie = new Cookie(c.getName(), c.getValue());
-        cookie.setVersion(c.getVersion());
-        cookie.setComment(c.getComment());
         cookie.setDomain(c.getDomain());
         cookie.setHttpOnly(c.isHttpOnly());
         cookie.setMaxAge(c.getMaxAge());
@@ -171,13 +169,11 @@ public class J2EContext {
   }
 
   public void addResponseCookie(final Cookie cookie) {
-    final javax.servlet.http.Cookie c = new javax.servlet.http.Cookie(cookie.getName(), cookie.getValue());
-    c.setVersion(cookie.getVersion());
+    final jakarta.servlet.http.Cookie c = new jakarta.servlet.http.Cookie(cookie.getName(), cookie.getValue());
     c.setSecure(cookie.isSecure());
     c.setPath(cookie.getPath());
     c.setMaxAge(cookie.getMaxAge());
     c.setHttpOnly(cookie.isHttpOnly());
-    c.setComment(cookie.getComment());
     c.setDomain(cookie.getDomain());
     this.response.addCookie(c);
   }

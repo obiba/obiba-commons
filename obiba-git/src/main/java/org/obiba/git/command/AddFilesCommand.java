@@ -20,8 +20,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -29,6 +28,7 @@ import org.eclipse.jgit.transport.PushResult;
 import org.obiba.git.GitException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
 
 @SuppressWarnings("ClassTooDeepInInheritanceTree")
 public class AddFilesCommand extends AbstractGitWriteCommand {

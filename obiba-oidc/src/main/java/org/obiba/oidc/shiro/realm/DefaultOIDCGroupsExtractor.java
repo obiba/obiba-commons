@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.script.Bindings;
 import javax.script.ScriptEngine;
+import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 import java.util.Collection;
 import java.util.Map;
@@ -60,7 +61,7 @@ public class DefaultOIDCGroupsExtractor implements OIDCGroupsExtractor {
         ScriptEngine engine = manager.getEngineByName("nashorn");
         if (engine == null) {
           log.error("ScriptEngine is null!!!");
-          log.info("EngineFactories.size={}", manager.getEngineFactories().size());
+          log.error("EngineFactories=[{}]", manager.getEngineFactories().stream().map(ScriptEngineFactory::getEngineName).collect(Collectors.joining()));
           manager.getEngineFactories().forEach(f -> log.info("EngineFactory: {} '{}'", f.getClass().getSimpleName(), f.getEngineName()));
           return groups;
         }
@@ -84,14 +85,14 @@ public class DefaultOIDCGroupsExtractor implements OIDCGroupsExtractor {
   protected Iterable<String> extractGroups(Object groupsValue) {
     if (groupsValue == null) return Lists.newArrayList();
 
-    if (groupsValue instanceof Bindings) {
-      Bindings jsRes = ((Bindings) groupsValue);
+    if (groupsValue instanceof Bindings bindings) {
+      Bindings jsRes = bindings;
       return jsRes.values().stream()
           .filter(g -> g instanceof String)
           .map(Object::toString)
           .collect(Collectors.toSet());
-    } else if (groupsValue instanceof Collection) {
-      return ((Collection<Object>) groupsValue).stream()
+    } else if (groupsValue instanceof Collection collection) {
+      return ((Collection<Object>) collection).stream()
           .filter(Objects::nonNull)
           .map(Object::toString)
           .collect(Collectors.toSet());

@@ -25,6 +25,10 @@ import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
 import com.nimbusds.openid.connect.sdk.*;
 import com.nimbusds.openid.connect.sdk.claims.IDTokenClaimsSet;
 import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.obiba.oidc.*;
 import org.obiba.oidc.utils.OIDCHelper;
 import org.obiba.oidc.utils.OIDCTokenValidator;
@@ -33,14 +37,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class OIDCCallbackFilter extends OncePerRequestFilter {
@@ -192,7 +194,7 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
   }
 
   private AuthenticationSuccessResponse extractAuthenticationResponse(J2EContext context, OIDCConfiguration config) {
-    Map<String, String> parameters = retrieveParameters(context);
+    Map<String, List<String>> parameters = retrieveParameters(context);
     String computedCallbackUrl = context.getFullRequestURL();
 
     AuthenticationResponse response;
@@ -202,8 +204,8 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
       throw new OIDCException(e);
     }
 
-    if (response instanceof AuthenticationErrorResponse) {
-      String error = ((AuthenticationErrorResponse) response).getErrorObject().toJSONObject().toString();
+    if (response instanceof AuthenticationErrorResponse errorResponse) {
+      String error = errorResponse.getErrorObject().toJSONObject().toString();
       OIDCSession session = oidcSessionManager.getSession(context.getClientId());
       onAuthenticationError(session, error, context.getResponse());
       throw new OIDCSessionException("Authentication response error: " + error, session);
@@ -238,8 +240,8 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
       log.debug("Token response: status={}, content={}", httpResponse.getStatusCode(), httpResponse.getContent());
 
       final TokenResponse response = OIDCTokenResponseParser.parse(httpResponse);
-      if (response instanceof TokenErrorResponse) {
-        String error = ((TokenErrorResponse) response).getErrorObject().toJSONObject().toString();
+      if (response instanceof TokenErrorResponse errorResponse) {
+        String error = errorResponse.getErrorObject().toJSONObject().toString();
         OIDCSession session = oidcSessionManager.getSession(context.getClientId());
         onAuthenticationError(session, error, context.getResponse());
         throw new OIDCSessionException("Bad token response, error=" + error, session);
@@ -285,8 +287,8 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
             httpResponse.getContent());
 
         final UserInfoResponse userInfoResponse = UserInfoResponse.parse(httpResponse);
-        if (userInfoResponse instanceof UserInfoErrorResponse) {
-          log.error("Bad User Info response ({}), error={}", httpResponse.getStatusMessage(), ((UserInfoErrorResponse) userInfoResponse).getErrorObject().toJSONObject());
+        if (userInfoResponse instanceof UserInfoErrorResponse response) {
+          log.error("Bad User Info response ({}), error={}", httpResponse.getStatusMessage(), response.getErrorObject().toJSONObject());
         } else {
           final UserInfoSuccessResponse userInfoSuccessResponse = (UserInfoSuccessResponse) userInfoResponse;
           final JWTClaimsSet userInfoClaimsSet;
@@ -303,11 +305,11 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
     }
   }
 
-  private Map<String, String> retrieveParameters(final J2EContext context) {
+  private Map<String, List<String>> retrieveParameters(final J2EContext context) {
     final Map<String, String[]> requestParameters = context.getRequestParameters();
-    Map<String, String> map = new HashMap<>();
+    Map<String, List<String>> map = new HashMap<>();
     for (final Map.Entry<String, String[]> entry : requestParameters.entrySet()) {
-      map.put(entry.getKey(), entry.getValue()[0]);
+      map.put(entry.getKey(), Arrays.asList(entry.getValue()[0]));
     }
     return map;
   }
