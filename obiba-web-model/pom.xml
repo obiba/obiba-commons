@@ -52,7 +52,7 @@
             <configuration>
               <protocVersion>${protobuf.version}</protocVersion>
               <inputDirectories>
-                <include>src/main/protobuf</include>
+                <include>src/main/resources</include>
               </inputDirectories>
               <outputTargets>
                 <outputTarget>
