@@ -48,6 +48,7 @@
     <dependency>
       <groupId>org.apache.shiro</groupId>
       <artifactId>shiro-core</artifactId>
+      <classifier>jakarta</classifier>
       <optional>true</optional>
     </dependency>
       <dependency>
