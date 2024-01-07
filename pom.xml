@@ -39,7 +39,7 @@
     <hsqldb.version>2.3.3</hsqldb.version>
     <httpclient.version>5.2.1</httpclient.version>
     <io-jsonwebtoken.version>0.6.0</io-jsonwebtoken.version>
-    <jackson.version>2.15.2</jackson.version>
+    <jackson.version>2.16.1</jackson.version>
     <json-path.version>2.0.0</json-path.version>
     <json.version>20230227</json.version>
     <javassist.version>3.12.1.GA</javassist.version>
@@ -61,7 +61,7 @@
     <servlet-api.version>6.0.0.RC1-jbossorg-1</servlet-api.version>
     <shiro.version>1.13.0</shiro.version>
     <shiro-extras.version>1.1.0</shiro-extras.version>
-    <slf4j.version>1.7.12</slf4j.version>
+    <slf4j.version>2.0.9</slf4j.version>
     <spring.version>6.0.12</spring.version>
     <spring-data-mongodb.version>3.4.2</spring-data-mongodb.version>
     <validation-api.version>3.0.2</validation-api.version>
