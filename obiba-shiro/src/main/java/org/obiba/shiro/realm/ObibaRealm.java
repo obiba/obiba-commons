@@ -23,6 +23,9 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.*;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
@@ -65,17 +68,9 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Header;
-import io.jsonwebtoken.Jwt;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
 
 import static java.net.URLEncoder.encode;
 
@@ -257,7 +252,7 @@ public class ObibaRealm extends AuthorizingRealm {
     if(thisPrincipals != null && !thisPrincipals.isEmpty()) {
       Set<String> groups = Sets.newHashSet(getName());
       try {
-        Jwt<Header, Claims> webToken = getWebTokenFromPrincipals(thisPrincipals);
+        Jws<Claims> webToken = getWebTokenFromPrincipals(thisPrincipals);
 
         if(webToken != null) {
           TicketContextUser user = new ObjectMapper()
@@ -288,15 +283,16 @@ public class ObibaRealm extends AuthorizingRealm {
     return new SimpleAuthorizationInfo();
   }
 
-  private Jwt<Header, Claims> getWebTokenFromPrincipals(Collection<?> principals) {
+  private Jws<Claims> getWebTokenFromPrincipals(Collection<?> principals) {
     for(Object principal : principals) {
       try {
         String[] webTokenParts = ((String) principal).split("\\.");
         if(webTokenParts.length > 1) {
           String webToken = "%s.%s.".formatted(webTokenParts[0], webTokenParts[1]); //do not validate signature
-          return Jwts.parser().parse(webToken);
+          return Jwts.parser().build().parseSignedClaims(webToken);
         }
-      } catch(MalformedJwtException e) {
+      } catch(Exception e) {
+        log.error("Error while parsing JWT", e);
       }
     }
 
