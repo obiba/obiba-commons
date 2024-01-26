@@ -49,7 +49,7 @@
     <joda-time.version>2.8.2</joda-time.version>
     <json-smart.version>2.4.10</json-smart.version>
     <jsr305.version>3.0.0</jsr305.version>
-    <junit.version>4.13.1</junit.version>
+    <junit.version>4.13.2</junit.version>
     <lang-tag.version>1.4.4</lang-tag.version>
     <logback.version>1.4.14</logback.version>
     <mail.version>2.0.1</mail.version>
@@ -58,7 +58,7 @@
     <nimbus-jose-jwt.version>9.35</nimbus-jose-jwt.version>
     <oauth-oidc-sdk.version>11.0</oauth-oidc-sdk.version>
     <protobuf.version>3.24.3</protobuf.version>
-    <servlet-api.version>6.0.0.RC1-jbossorg-1</servlet-api.version>
+    <jakarta-servlet.version>5.0.0</jakarta-servlet.version>
     <shiro.version>1.13.0</shiro.version>
     <shiro-extras.version>1.1.0</shiro-extras.version>
     <slf4j.version>2.0.9</slf4j.version>
@@ -294,9 +294,6 @@
           </exclusion>
         </exclusions>
       </dependency>
-
-
-
 
       <dependency>
         <groupId>org.springframework.data</groupId>
@@ -548,7 +545,7 @@
       <dependency>
         <groupId>jakarta.servlet</groupId>
         <artifactId>jakarta.servlet-api</artifactId>
-        <version>${servlet-api.version}</version>
+        <version>${jakarta-servlet.version}</version>
         <scope>provided</scope>
       </dependency>
 
