@@ -26,7 +26,9 @@
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
+    <annotation-api.verion>2.1.1</annotation-api.verion>
     <assertj-core.version>1.7.1</assertj-core.version>
+    <bind-api.version>4.0.1</bind-api.version>
     <bouncycastle.version>1.76</bouncycastle.version>
     <cglib.version>3.1</cglib.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
@@ -39,15 +41,16 @@
     <guava.version>33.0.0-jre</guava.version>
     <hsqldb.version>2.7.1</hsqldb.version>
     <httpclient.version>5.2.1</httpclient.version>
-    <jjwt.version>0.12.3</jjwt.version>
     <jackson.version>2.16.1</jackson.version>
-    <json-path.version>2.8.0</json-path.version>
-    <json.version>20231013</json.version>
     <javassist.version>3.12.1.GA</javassist.version>
+    <jaxb-runtime.version>4.0.3</jaxb-runtime.version>
     <jersey.version>3.1.3</jersey.version>
     <jetty.version>11.0.19</jetty.version>
     <jgit.version>6.7.0.202309050840-r</jgit.version>
+    <jjwt.version>0.12.3</jjwt.version>
     <joda-time.version>2.8.2</joda-time.version>
+    <json.version>20231013</json.version>
+    <json-path.version>2.8.0</json-path.version>
     <json-smart.version>2.4.10</json-smart.version>
     <jsr305.version>3.0.0</jsr305.version>
     <junit.version>4.13.2</junit.version>
@@ -55,6 +58,7 @@
     <logback.version>1.4.14</logback.version>
     <mail.version>2.0.1</mail.version>
     <jakarta.ws.rs.version>3.1.0.RC1-jbossorg-1</jakarta.ws.rs.version>
+    <js-engine.version>1.1</js-engine.version>
     <nashorn.version>15.4</nashorn.version>
     <nimbus-jose-jwt.version>9.35</nimbus-jose-jwt.version>
     <oauth-oidc-sdk.version>11.0</oauth-oidc-sdk.version>
@@ -67,6 +71,7 @@
     <spring.version>6.0.16</spring.version>
     <spring-data-mongodb.version>4.1.8</spring-data-mongodb.version>
     <validation-api.version>3.0.2</validation-api.version>
+    <winzipaes.version>1.0.1</winzipaes.version>
     <xstream.version>1.4.20</xstream.version>
 
     <!-- maven plugins -->
@@ -146,11 +151,10 @@
         </exclusions>
       </dependency>
 
-      <!-- https://mvnrepository.com/artifact/javax.script/js-engine -->
       <dependency>
         <groupId>javax.script</groupId>
         <artifactId>js-engine</artifactId>
-        <version>1.1</version>
+        <version>${js-engine.version}</version>
       </dependency>
 
       <dependency>
@@ -214,19 +218,17 @@
       <dependency>
         <groupId>jakarta.xml.bind</groupId>
         <artifactId>jakarta.xml.bind-api</artifactId>
-        <version>4.0.1</version>
+        <version>${bind-api.version}</version>
       </dependency>
-      <!-- https://mvnrepository.com/artifact/jakarta.annotation/jakarta.annotation-api -->
       <dependency>
         <groupId>jakarta.annotation</groupId>
         <artifactId>jakarta.annotation-api</artifactId>
-        <version>2.1.1</version>
+        <version>${annotation-api.verion}</version>
       </dependency>
-
       <dependency>
         <groupId>org.glassfish.jaxb</groupId>
         <artifactId>jaxb-runtime</artifactId>
-        <version>4.0.3</version>
+        <version>${jaxb-runtime.version}</version>
         <scope>runtime</scope>
       </dependency>
 
@@ -606,7 +608,7 @@
       <dependency>
         <groupId>de.idyl</groupId>
         <artifactId>winzipaes</artifactId>
-        <version>1.0.1</version>
+        <version>${winzipaes.version}</version>
       </dependency>
     </dependencies>
 
