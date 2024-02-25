@@ -31,9 +31,7 @@ import java.security.Security;
 import java.security.SignatureException;
 import java.security.UnrecoverableEntryException;
 import java.security.UnrecoverableKeyException;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.X509Certificate;
+import java.security.cert.*;
 import java.util.*;
 
 import javax.security.auth.callback.CallbackHandler;
@@ -404,32 +402,30 @@ public class KeyStoreManager {
   }
 
   private X509Certificate getCertificate(InputStream certificate) {
-    try(PemReader pemReader = getPemReader(certificate)) {
-      Object object = getPemObject(pemReader);
-      if(object instanceof X509Certificate x509Certificate) {
-        return x509Certificate;
-      }
-      throw new RuntimeException("Unexpected type [" + object + "]. Expected X509Certificate.");
-    } catch(IOException e) {
+    try {
+      return (X509Certificate) CertificateFactory
+          .getInstance("X509")
+          .generateCertificate(certificate);
+    } catch(CertificateException e) {
       throw new RuntimeException(e);
     }
   }
 
   private X509Certificate[] getCertificates(InputStream certificates) {
     List<X509Certificate> certs = Lists.newArrayList();
-    try(PemReader pemReader = getPemReader(certificates)) {
-      Object object = getPemObject(pemReader);
-      while (object != null) {
-        if (object instanceof X509Certificate certificate) {
+    try {
+      Collection<? extends Certificate> certifs = CertificateFactory
+          .getInstance("X509")
+          .generateCertificates(certificates);
+      for (Certificate certif : certifs) {
+        if (certif instanceof X509Certificate certificate) {
           certs.add(certificate);
         } else {
-          throw new RuntimeException("Unexpected type [" + object + "]. Expected X509Certificate.");
+          throw new RuntimeException("Unexpected type [" + certif + "]. Expected X509Certificate.");
         }
-        // read next certificate
-        object = pemReader.readPemObject();
       }
-      return certs.toArray(new X509Certificate[certs.size()]);
-    } catch(IOException e) {
+      return certs.toArray(new X509Certificate[0]);
+    } catch(CertificateException e) {
       throw new RuntimeException(e);
     }
   }
