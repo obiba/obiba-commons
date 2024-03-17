@@ -9,6 +9,7 @@
  */
 package org.obiba.jersey.exceptionmapper;
 
+import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.ext.Provider;
 import org.obiba.web.model.ErrorDtos;
@@ -18,9 +19,7 @@ import org.slf4j.LoggerFactory;
 import java.util.NoSuchElementException;
 
 @Provider
-public class NoSuchElementExceptionMapper extends AbstractErrorDtoExceptionMapper<NoSuchElementException> {
-
-  private static final Logger log = LoggerFactory.getLogger(NoSuchElementExceptionMapper.class);
+public class NotFoundExceptionMapper extends AbstractErrorDtoExceptionMapper<NotFoundException> {
 
   @Override
   protected Status getStatus() {
@@ -28,8 +27,7 @@ public class NoSuchElementExceptionMapper extends AbstractErrorDtoExceptionMappe
   }
 
   @Override
-  protected ErrorDtos.ClientErrorDto getErrorDto(NoSuchElementException e) {
-    log.debug("{}", e.getClass().getSimpleName(), e);
+  protected ErrorDtos.ClientErrorDto getErrorDto(NotFoundException e) {
     ErrorDtos.ClientErrorDto.Builder errorBuilder = ErrorDtos.ClientErrorDto.newBuilder()
         .setCode(getStatus().getStatusCode())
         .setMessageTemplate("server.error.not-found");
