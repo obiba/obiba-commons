@@ -9,14 +9,12 @@
  */
 package org.obiba.jersey.exceptionmapper;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.Provider;
-
 import org.obiba.web.model.ErrorDtos;
-
-import com.google.protobuf.GeneratedMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.Provider;
 
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
@@ -31,7 +29,7 @@ public class UnhandledExceptionMapper extends AbstractErrorDtoExceptionMapper<Ex
   }
 
   @Override
-  protected GeneratedMessage.ExtendableMessage<?> getErrorDto(Exception exception) {
+  protected ErrorDtos.ClientErrorDto getErrorDto(Exception exception) {
 
     logger.warn("Exception catched by UnhandledExceptionMapper", exception);
 
