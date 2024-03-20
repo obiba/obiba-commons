@@ -148,27 +148,20 @@ public class ObibaRealm extends AuthorizingRealm {
       log.debug("Invalid credentials. Response status code [{}], response body [{}], credentials used [{}]", response.getStatusCode(), response.getBody(), token);
       return null;
     } catch(HttpClientErrorException e) {
-      if (HttpStatus.FORBIDDEN.equals(e.getStatusCode())) {
-        log.debug("Invalid credentials. Response status code [{}], response body [{}], credentials used [{}]", e.getStatusCode(), e.getResponseBodyAsString(), token);
-        return null;
-      } else if (HttpStatus.UNAUTHORIZED.equals(e.getStatusCode())) {
+      List<String> wwwAuths = e.getResponseHeaders().get("WWW-Authenticate");
+      if (wwwAuths != null && !wwwAuths.isEmpty()) {
         log.debug("Invalid OTP. Response status code [{}], response body [{}], credentials used [{}]", e.getStatusCode(), e.getResponseBodyAsString(), token);
-        List<String> wwwAuths = e.getResponseHeaders().get("WWW-Authenticate");
-        if (wwwAuths != null && !wwwAuths.isEmpty()) {
-          log.info("Expecting header: {}", wwwAuths.get(0));
-          String qrImage = null;
-          if (Strings.isNullOrEmpty(e.getResponseBodyAsString())) {
-            try {
-              JSONObject respObj = new JSONObject(e.getResponseBodyAsString());
-              if (respObj.has("image"))
-                qrImage = respObj.getString("image");
-            } catch (Exception ej) {
-              // ignore
-            }
+        String qrImage = null;
+        if (!Strings.isNullOrEmpty(e.getResponseBodyAsString())) {
+          try {
+            JSONObject respObj = new JSONObject(e.getResponseBodyAsString());
+            if (respObj.has("image"))
+              qrImage = respObj.getString("image");
+          } catch (Exception ej) {
+            // ignore
           }
-          throw new NoSuchOtpException(wwwAuths.get(0), qrImage);
         }
-        return null;
+        throw new NoSuchOtpException(wwwAuths.get(0), qrImage);
       }
       if (log.isDebugEnabled())
         log.error("Connection failure with identification server", e);
