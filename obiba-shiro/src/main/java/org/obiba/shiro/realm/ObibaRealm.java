@@ -10,22 +10,16 @@
 
 package org.obiba.shiro.realm;
 
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.*;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
@@ -37,12 +31,7 @@ import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
 import org.apache.hc.core5.http.config.Registry;
 import org.apache.hc.core5.http.config.RegistryBuilder;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.AccountException;
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.AuthenticationInfo;
-import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authc.SimpleAuthenticationInfo;
-import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authc.*;
 import org.apache.shiro.authc.credential.AllowAllCredentialsMatcher;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
@@ -55,12 +44,7 @@ import org.obiba.shiro.authc.TicketAuthenticationToken;
 import org.obiba.shiro.authc.UsernamePasswordOtpToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.web.client.HttpClientErrorException;
@@ -68,9 +52,17 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static java.net.URLEncoder.encode;
 
@@ -146,6 +138,7 @@ public class ObibaRealm extends AuthorizingRealm {
           headers.set("X-Obiba-TOTP", otpToken.getOtp());
       }
       headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+      headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON.toString());
       String form = "username=" + encode(username, "UTF-8") + "&password=" + encode(new String(token.getPassword()), "UTF-8");
       HttpEntity<String> entity = new HttpEntity<String>(form, headers);
 
@@ -171,7 +164,16 @@ public class ObibaRealm extends AuthorizingRealm {
         List<String> wwwAuths = e.getResponseHeaders().get("WWW-Authenticate");
         if (wwwAuths != null && !wwwAuths.isEmpty()) {
           log.info("Expecting header: {}", wwwAuths.get(0));
-          throw new NoSuchOtpException(wwwAuths.get(0));
+          String qrImage = null;
+          if (Strings.isNullOrEmpty(e.getResponseBodyAsString())) {
+            try {
+              JsonObject respObj = JsonParser.parseString(e.getResponseBodyAsString()).getAsJsonObject();
+              qrImage = respObj.get("image").getAsString();
+            } catch (Exception ej) {
+              // ignore
+            }
+          }
+          throw new NoSuchOtpException(wwwAuths.get(0), qrImage);
         }
         return null;
       }
