@@ -21,8 +21,7 @@
   <version>4.0-SNAPSHOT</version>
 
   <properties>
-    <maven.compiler.target>21</maven.compiler.target>
-    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.release>21</maven.compiler.release>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -68,7 +67,7 @@
     <shiro-ehcache3.version>1.0.0</shiro-ehcache3.version>
     <shiro-extras.version>1.1.0</shiro-extras.version>
     <slf4j.version>2.0.9</slf4j.version>
-    <spring.version>6.0.16</spring.version>
+    <spring.version>6.0.18</spring.version>
     <spring-data-mongodb.version>4.1.8</spring-data-mongodb.version>
     <validation-api.version>3.0.2</validation-api.version>
     <winzipaes.version>1.0.1</winzipaes.version>
@@ -754,7 +753,7 @@
                     <version>[3.0.0,)</version>
                   </requireMavenVersion>
                   <requireJavaVersion>
-                    <version>${maven.compiler.target}</version>
+                    <version>${maven.compiler.release}</version>
                   </requireJavaVersion>
                 </rules>
                 <fail>true</fail>
