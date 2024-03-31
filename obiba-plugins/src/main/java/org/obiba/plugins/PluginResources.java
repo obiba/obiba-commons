@@ -191,7 +191,6 @@ public abstract class PluginResources {
       try {
         File lib = libs[i];
         urls[i] = lib.toURI().toURL();
-        addLibrary(lib);
       } catch (Exception e) {
         log.warn("Failed adding library file to classpath: {}", lib, e);
       }
@@ -216,13 +215,6 @@ public abstract class PluginResources {
     } catch (Exception e) {
       throw new IllegalStateException("Failed to load plugin " + getName() + " due to jar conflict", e);
     }
-  }
-
-  private void addLibrary(File file) throws Exception {
-    log.info("Adding library file to classpath: {}", file);
-    Method method = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
-    method.setAccessible(true);
-    method.invoke(ClassLoader.getSystemClassLoader(), file.toURI().toURL());
   }
 
   public void cancelUninstall() {
