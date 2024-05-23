@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashSet;
@@ -179,11 +178,11 @@ public abstract class PluginResources {
     return new URLClassLoader(urls, Thread.currentThread().getContextClassLoader());
   }
 
-  public void init() {
-    init(true);
+  public void init(PluginsClassLoader classLoader) {
+    init(classLoader, true);
   }
 
-  public void init(boolean checkJars) {
+  public void init(PluginsClassLoader classLoader, boolean checkJars) {
     File[] libs = lib.listFiles();
     URL[] urls = new URL[libs.length];
     if (libs == null) return;
@@ -191,6 +190,7 @@ public abstract class PluginResources {
       try {
         File lib = libs[i];
         urls[i] = lib.toURI().toURL();
+        addLibrary(classLoader, lib);
       } catch (Exception e) {
         log.warn("Failed adding library file to classpath: {}", lib, e);
       }
@@ -215,6 +215,13 @@ public abstract class PluginResources {
     } catch (Exception e) {
       throw new IllegalStateException("Failed to load plugin " + getName() + " due to jar conflict", e);
     }
+  }
+
+  private void addLibrary(PluginsClassLoader classLoader, File file) throws Exception {
+    log.info("Adding library file to classpath: {}", file);
+    // Convert the file path to URL
+    URL jarUrl = file.toURI().toURL();
+    classLoader.addURLToClassPath(jarUrl);
   }
 
   public void cancelUninstall() {
