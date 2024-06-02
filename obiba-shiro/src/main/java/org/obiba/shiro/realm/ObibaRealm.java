@@ -252,7 +252,7 @@ public class ObibaRealm extends AuthorizingRealm {
 
         if(webToken != null) {
           TicketContextUser user = new ObjectMapper()
-              .convertValue(webToken.getBody().get("context", Map.class).get("user"),
+              .convertValue(webToken.getPayload().get("context", Map.class).get("user"),
                   TicketContextUser.class);
           if (user.getGroups() != null)
             groups.addAll(user.getGroups());
