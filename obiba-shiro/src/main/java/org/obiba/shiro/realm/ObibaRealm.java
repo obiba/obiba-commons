@@ -17,9 +17,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.JWTParser;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
@@ -248,11 +247,10 @@ public class ObibaRealm extends AuthorizingRealm {
     if(thisPrincipals != null && !thisPrincipals.isEmpty()) {
       Set<String> groups = Sets.newHashSet(getName());
       try {
-        Jws<Claims> webToken = getWebTokenFromPrincipals(thisPrincipals);
-
+        JWTClaimsSet webToken = getWebTokenFromPrincipals(thisPrincipals);
         if(webToken != null) {
           TicketContextUser user = new ObjectMapper()
-              .convertValue(webToken.getPayload().get("context", Map.class).get("user"),
+              .convertValue(webToken.getJSONObjectClaim("context").get("user"),
                   TicketContextUser.class);
           if (user.getGroups() != null)
             groups.addAll(user.getGroups());
@@ -279,13 +277,14 @@ public class ObibaRealm extends AuthorizingRealm {
     return new SimpleAuthorizationInfo();
   }
 
-  private Jws<Claims> getWebTokenFromPrincipals(Collection<?> principals) {
+  private JWTClaimsSet getWebTokenFromPrincipals(Collection<?> principals) {
     for(Object principal : principals) {
       try {
-        String[] webTokenParts = ((String) principal).split("\\.");
+        String[] webTokenParts = principal.toString().split("\\.");
         if(webTokenParts.length > 1) {
-          String webToken = "%s.%s.".formatted(webTokenParts[0], webTokenParts[1]); //do not validate signature
-          return Jwts.parser().build().parseSignedClaims(webToken);
+          String webToken = principal.toString();
+          // note: do not validate because it was obtained in a trusted way (and only agate can validate)
+          return JWTParser.parse(webToken).getJWTClaimsSet();
         }
       } catch(Exception e) {
         log.error("Error while parsing JWT", e);
