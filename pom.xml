@@ -18,7 +18,7 @@
   <groupId>org.obiba.commons</groupId>
   <artifactId>obiba-commons</artifactId>
   <packaging>pom</packaging>
-  <version>4.1-SNAPSHOT</version>
+  <version>4.2-SNAPSHOT</version>
 
   <properties>
     <maven.compiler.release>21</maven.compiler.release>
@@ -924,7 +924,7 @@
     <connection>scm:git:https://github.com/obiba/obiba-commons.git</connection>
     <developerConnection>scm:git:https://github.com/obiba/obiba-commons.git</developerConnection>
     <url>https://github.com/obiba/obiba-commons</url>
-    <tag>obiba-commons-4.1.x</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <issueManagement>
