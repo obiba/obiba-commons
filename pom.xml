@@ -28,11 +28,10 @@
     <annotation-api.verion>2.1.1</annotation-api.verion>
     <assertj-core.version>1.7.1</assertj-core.version>
     <bind-api.version>4.0.1</bind-api.version>
-    <bouncycastle.version>1.76</bouncycastle.version>
+    <bouncycastle.version>1.78</bouncycastle.version>
     <cglib.version>3.1</cglib.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
     <commons-dbcp.version>2.10.0</commons-dbcp.version>
-    <commons-httpclient.version>3.1</commons-httpclient.version>
     <dbunit.version>2.5.1</dbunit.version>
     <easymock.version>3.4</easymock.version>
     <ehcache.version>3.10.8</ehcache.version>
@@ -49,7 +48,7 @@
     <jjwt.version>0.12.3</jjwt.version>
     <joda-time.version>2.8.2</joda-time.version>
     <json.version>20231013</json.version>
-    <json-path.version>2.8.0</json-path.version>
+    <json-path.version>2.9.0</json-path.version>
     <json-smart.version>2.4.10</json-smart.version>
     <jsr305.version>3.0.0</jsr305.version>
     <junit.version>4.13.2</junit.version>
@@ -311,18 +310,6 @@
       </dependency>
 
       <dependency>
-        <groupId>org.apache.httpcomponents.client5</groupId>
-        <artifactId>httpclient5</artifactId>
-        <version>${httpclient.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-
-      <dependency>
         <groupId>org.dbunit</groupId>
         <artifactId>dbunit</artifactId>
         <version>${dbunit.version}</version>
@@ -364,9 +351,9 @@
       </dependency>
 
       <dependency>
-        <groupId>commons-httpclient</groupId>
-        <artifactId>commons-httpclient</artifactId>
-        <version>${commons-httpclient.version}</version>
+        <groupId>org.apache.httpcomponents.client5</groupId>
+        <artifactId>httpclient5</artifactId>
+        <version>${httpclient.version}</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
