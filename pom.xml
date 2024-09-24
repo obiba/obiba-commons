@@ -60,7 +60,7 @@
     <nashorn.version>15.4</nashorn.version>
     <nimbus-jose-jwt.version>9.37.3</nimbus-jose-jwt.version>
     <oauth-oidc-sdk.version>11.12</oauth-oidc-sdk.version>
-    <protobuf.version>3.24.3</protobuf.version>
+    <protobuf.version>3.25.5</protobuf.version>
     <jakarta-servlet.version>6.0.0</jakarta-servlet.version>
     <shiro.version>1.13.0</shiro.version>
     <shiro-ehcache3.version>1.0.0</shiro-ehcache3.version>
