@@ -70,7 +70,7 @@
     <spring-data-mongodb.version>4.3.0</spring-data-mongodb.version>
     <validation-api.version>3.0.2</validation-api.version>
     <winzipaes.version>1.0.1</winzipaes.version>
-    <xstream.version>1.4.20</xstream.version>
+    <xstream.version>1.4.21</xstream.version>
 
     <!-- maven plugins -->
     <maven-build-helper-plugin.version>1.8</maven-build-helper-plugin.version>
