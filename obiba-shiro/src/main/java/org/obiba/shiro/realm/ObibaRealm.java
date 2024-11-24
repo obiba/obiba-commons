@@ -94,8 +94,15 @@ public class ObibaRealm extends AuthorizingRealm {
 
   private String serviceKey;
 
+  private GroupsToRolesMapper groupsToRolesMapper;
+
   public ObibaRealm() {
     super(null, new AllowAllCredentialsMatcher());
+    groupsToRolesMapper = new GroupsToRolesMapper() {};
+  }
+
+  public void setGroupToRoleMapper(GroupsToRolesMapper groupsToRolesMapper) {
+    this.groupsToRolesMapper = groupsToRolesMapper;
   }
 
   @Override
@@ -266,7 +273,7 @@ public class ObibaRealm extends AuthorizingRealm {
       } catch(Exception e) {
         throw new AuthenticationException("Failed authorizing on " + baseUrl, e);
       }
-      return new SimpleAuthorizationInfo(groups);
+      return new SimpleAuthorizationInfo(groupsToRolesMapper.toRoles(groups));
     }
     return new SimpleAuthorizationInfo();
   }
