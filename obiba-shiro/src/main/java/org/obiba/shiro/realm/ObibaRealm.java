@@ -109,7 +109,7 @@ public class ObibaRealm extends AuthorizingRealm {
     groupsToRolesMapper = new GroupsToRolesMapper() {};
   }
 
-  public void setGroupToRoleMapper(GroupsToRolesMapper groupsToRolesMapper) {
+  public void setGroupsToRolesMapper(GroupsToRolesMapper groupsToRolesMapper) {
     this.groupsToRolesMapper = groupsToRolesMapper;
   }
 
