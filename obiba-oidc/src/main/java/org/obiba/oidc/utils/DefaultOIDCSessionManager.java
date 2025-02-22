@@ -46,34 +46,23 @@ public class DefaultOIDCSessionManager implements OIDCSessionManager {
   public void saveSession(OIDCSession session) {
     synchronized (this) {
       init();
-      cache.put(session.getId(), session);
+      cache.put(session.getStateValue(), session);
     }
   }
 
   @Override
-  public boolean checkState(String client, State state) {
+  public OIDCSession getSession(String state) {
     synchronized (this) {
       init();
-      OIDCSession found = cache.getIfPresent(client);
-      if (found == null) return false;
-      if (found.hasState()) return found.getState().equals(state);
-      else return state == null;
+      return cache.getIfPresent(state);
     }
   }
 
   @Override
-  public OIDCSession getSession(String client) {
+  public boolean hasSession(String state) {
     synchronized (this) {
       init();
-      return cache.getIfPresent(client);
-    }
-  }
-
-  @Override
-  public boolean hasSession(String client) {
-    synchronized (this) {
-      init();
-      return cache.getIfPresent(client) != null;
+      return cache.getIfPresent(state) != null;
     }
   }
 

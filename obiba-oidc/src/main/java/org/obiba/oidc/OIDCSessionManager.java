@@ -24,15 +24,6 @@ public interface OIDCSessionManager {
   void saveSession(OIDCSession session);
 
   /**
-   * Check the state is the same for the remote client.
-   * 
-   * @param client Session identifier
-   * @param state
-   * @return
-   */
-  boolean checkState(String client, State state);
-
-  /**
    * Get the session for the client.
    *
    * @param client

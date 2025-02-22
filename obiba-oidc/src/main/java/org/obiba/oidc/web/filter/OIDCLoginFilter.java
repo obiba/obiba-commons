@@ -100,7 +100,7 @@ public class OIDCLoginFilter extends OncePerRequestFilter {
         if (config == null)
           throw new OIDCException("No OIDC configuration could be found: " + provider);
         String cbURL = config.hasCallbackURL() ? config.getCallbackURL() : callbackURL;
-        OIDCAuthenticationRequestFactory factory = new OIDCAuthenticationRequestFactory(makeCallbackURL(provider, cbURL));
+        OIDCAuthenticationRequestFactory factory = new OIDCAuthenticationRequestFactory(makeCallbackURL(provider, cbURL), context.getClientId());
         AuthenticationRequest authRequest = factory.create(config);
         if (oidcSessionManager != null) {
           OIDCSession session = makeSession(context, authRequest);
@@ -124,15 +124,11 @@ public class OIDCLoginFilter extends OncePerRequestFilter {
     return new OIDCSession(context, authRequest.getState(), authRequest.getNonce());
   }
 
-  protected String makeCallbackURL(String provider) {
-    return makeCallbackURL(provider, callbackURL);
-  }
-
   protected String makeCallbackURL(String provider, String callbackURL) {
     if (Strings.isNullOrEmpty(providerParameter)) {
-      return callbackURL + (callbackURL.endsWith("/") ? "" : "/") + provider;
+      return String.format("%s%s%s", callbackURL, (callbackURL.endsWith("/") ? "" : "/"), provider);
     } else {
-      return callbackURL + "?" + providerParameter + "=" + provider;
+      return String.format("%s?%s=%s", callbackURL, providerParameter, provider);
     }
   }
 }

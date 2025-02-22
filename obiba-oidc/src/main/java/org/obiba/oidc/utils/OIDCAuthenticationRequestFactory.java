@@ -9,6 +9,7 @@
  */
 package org.obiba.oidc.utils;
 
+import com.google.common.base.Strings;
 import com.nimbusds.oauth2.sdk.ResponseType;
 import com.nimbusds.oauth2.sdk.Scope;
 import com.nimbusds.oauth2.sdk.id.ClientID;
@@ -26,15 +27,18 @@ public class OIDCAuthenticationRequestFactory {
 
   private final String callbackURI;
 
-  public OIDCAuthenticationRequestFactory(String callbackURI) {
+  private final String clientId;
+
+  public OIDCAuthenticationRequestFactory(String callbackURI, String clientId) {
     this.callbackURI = callbackURI;
+    this.clientId = clientId;
   }
 
   public AuthenticationRequest create(OIDCConfiguration configuration) {
     OIDCProviderMetadata providerMetadata = configuration.findProviderMetaData();
 
     // Generate random state string for pairing the response to the request
-    State state = new State();
+    State state = Strings.isNullOrEmpty(clientId) ? new State() : new State(clientId);
     // Generate nonce
     Nonce nonce = configuration.isUseNonce() ? new Nonce() : null;
     // Specify scope

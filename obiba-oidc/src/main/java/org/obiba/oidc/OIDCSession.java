@@ -49,6 +49,10 @@ public class OIDCSession {
     return state;
   }
 
+  public String getStateValue() {
+    return hasState() ? state.getValue() : null;
+  }
+
   public boolean hasNonce() {
     return nonce != null;
   }

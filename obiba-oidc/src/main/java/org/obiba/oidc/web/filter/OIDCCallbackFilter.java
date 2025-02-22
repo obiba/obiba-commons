@@ -127,13 +127,21 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
     J2EContext context = makeJ2EContext(request, response);
 
     String provider = OIDCHelper.extractProviderName(context, providerParameter);
+    State state = null;
     if (Strings.isNullOrEmpty(provider)) {
       log.error("No ID provider could be identified.");
     } else {
-      doOIDCDance(context, provider);
+      OIDCConfiguration config = oidcConfigurationProvider.getConfiguration(provider);
+      if (config == null)
+        throw new OIDCException("No OIDC configuration could be found: " + provider);
+
+      AuthenticationSuccessResponse authResponse = extractAuthenticationResponse(context, config);
+      doOIDCDance(context, config, authResponse);
+      state = authResponse.getState();
     }
 
-    onRedirect(oidcSessionManager.getSession(context.getClientId()), context, provider);
+    if (!response.isCommitted())
+      onRedirect(oidcSessionManager.getSession(state == null ? context.getClientId() : state.getValue()), context, provider);
     filterChain.doFilter(request, response);
   }
 
@@ -175,25 +183,22 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
     context.getResponse().sendRedirect(defaultRedirectURL);
   }
 
-  private void doOIDCDance(J2EContext context, String provider) {
-    if (!oidcSessionManager.hasSession(context.getClientId())) {
-      String error = "Cannot find OIDC session. Is it expired?";
-      onAuthenticationError(null, error, context.getResponse());
-      throw new OIDCSessionException(error, null);
-    }
-
+  private void doOIDCDance(J2EContext context, OIDCConfiguration config, AuthenticationSuccessResponse authResponse) {
     try {
-      OIDCConfiguration config = oidcConfigurationProvider.getConfiguration(provider);
-      if (config == null)
-        throw new OIDCException("No OIDC configuration could be found: " + provider);
-      AuthenticationSuccessResponse authResponse = extractAuthenticationResponse(context, config);
+      State state = authResponse.getState();
+      if (!oidcSessionManager.hasSession(state.getValue())) {
+        String error = "Cannot find OIDC session. Is it expired?";
+        onAuthenticationError(null, error, context.getResponse());
+        throw new OIDCSessionException(error, null);
+      }
+
       if (authResponse.getAuthorizationCode() != null) {
         OIDCCredentials credentials = validate(context, config, authResponse);
         extractUserInfo(context, config, credentials);
-        onAuthenticationSuccess(oidcSessionManager.getSession(context.getClientId()), credentials, context.getResponse());
+        onAuthenticationSuccess(oidcSessionManager.getSession(state.getValue()), credentials, context.getResponse());
       }
     } catch (Exception e) {
-      log.error("OIDC callback request from '{}' failed.", provider, e);
+      log.error("OIDC callback request from '{}' failed.", config.getName(), e);
     }
   }
 
@@ -207,24 +212,20 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
     } catch (final URISyntaxException | ParseException e) {
       throw new OIDCException(e);
     }
+    final State state = response.getState();
+    if (state == null) {
+      throw new OIDCException("Missing state parameter");
+    }
 
     if (response instanceof AuthenticationErrorResponse errorResponse) {
       String error = errorResponse.getErrorObject().toJSONObject().toString();
-      OIDCSession session = oidcSessionManager.getSession(context.getClientId());
+      OIDCSession session = oidcSessionManager.getSession(response.getState().getValue());
       onAuthenticationError(session, error, context.getResponse());
       throw new OIDCSessionException("Authentication response error: " + error, session);
     }
 
     log.debug("Authentication response successful");
-    AuthenticationSuccessResponse successResponse = (AuthenticationSuccessResponse) response;
-    final State state = successResponse.getState();
-    if (state == null) {
-      throw new OIDCException("Missing state parameter");
-    } else if (oidcSessionManager != null && !oidcSessionManager.checkState(context.getClientId(), state)) {
-      throw new OIDCException("Not valid or expired state: " + state + " for " + context.getRemoteAddr());
-    }
-
-    return successResponse;
+    return (AuthenticationSuccessResponse) response;
   }
 
   private OIDCCredentials validate(J2EContext context, OIDCConfiguration config, AuthenticationSuccessResponse authResponse) {
@@ -246,7 +247,7 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
       final TokenResponse response = OIDCTokenResponseParser.parse(httpResponse);
       if (response instanceof TokenErrorResponse errorResponse) {
         String error = errorResponse.getErrorObject().toJSONObject().toString();
-        OIDCSession session = oidcSessionManager.getSession(context.getClientId());
+        OIDCSession session = oidcSessionManager.getSession(authResponse.getState().getValue());
         onAuthenticationError(session, error, context.getResponse());
         throw new OIDCSessionException("Bad token response, error=" + error, session);
       }
@@ -257,7 +258,7 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
 
       if (config.isUseNonce()) {
         OIDCTokenValidator validator = new OIDCTokenValidator(config);
-        OIDCSession session = oidcSessionManager.getSession(context.getClientId());
+        OIDCSession session = oidcSessionManager.getSession(authResponse.getState().getValue());
         IDTokenClaimsSet claimsSet = validator.validate(oidcTokens.getIDToken(), session.getNonce());
         if (claimsSet == null) {
           onAuthenticationError(session,"ID token cannot be validated", context.getResponse());

@@ -18,7 +18,7 @@ public class OIDCTest {
     config.setClientId("opal");
     config.setBaseUri("http://localhost:8899/auth");
     config.setRealm("obiba");
-    OIDCAuthenticationRequestFactory factory = new OIDCAuthenticationRequestFactory("https://opal-demo.obiba.org/auth/callback");
+    OIDCAuthenticationRequestFactory factory = new OIDCAuthenticationRequestFactory("https://opal-demo.obiba.org/auth/callback", "1234");
 
     URI authReqURI = factory.create(config).toURI();
     System.out.println(authReqURI);
