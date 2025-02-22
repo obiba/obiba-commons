@@ -18,7 +18,7 @@
   <groupId>org.obiba.commons</groupId>
   <artifactId>obiba-commons</artifactId>
   <packaging>pom</packaging>
-  <version>4.2-sNAPSHOT</version>
+  <version>4.2-SNAPSHOT</version>
 
   <properties>
     <maven.compiler.release>21</maven.compiler.release>
