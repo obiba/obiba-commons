@@ -124,7 +124,7 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-    J2EContext context = new J2EContext(request, response);
+    J2EContext context = makeJ2EContext(request, response);
 
     String provider = OIDCHelper.extractProviderName(context, providerParameter);
     if (Strings.isNullOrEmpty(provider)) {
@@ -135,6 +135,10 @@ public class OIDCCallbackFilter extends OncePerRequestFilter {
 
     onRedirect(oidcSessionManager.getSession(context.getClientId()), context, provider);
     filterChain.doFilter(request, response);
+  }
+
+  protected J2EContext makeJ2EContext(HttpServletRequest request, HttpServletResponse response) {
+    return new J2EContext(request, response);
   }
 
   /**
