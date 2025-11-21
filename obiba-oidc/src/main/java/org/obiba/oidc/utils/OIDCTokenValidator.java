@@ -7,6 +7,7 @@ import com.nimbusds.jose.util.DefaultResourceRetriever;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.oauth2.sdk.auth.Secret;
 import com.nimbusds.oauth2.sdk.id.ClientID;
+import com.nimbusds.oauth2.sdk.id.Issuer;
 import com.nimbusds.openid.connect.sdk.Nonce;
 import com.nimbusds.openid.connect.sdk.claims.IDTokenClaimsSet;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
@@ -57,9 +58,8 @@ public class OIDCTokenValidator {
 
       // build validator
       final IDTokenValidator idTokenValidator;
-      final OIDCProviderMetadata providerMetaData = configuration.findProviderMetaData();
       if (jwsAlgorithm == null) {
-        idTokenValidator = new IDTokenValidator(providerMetaData.getIssuer(), _clientID);
+        idTokenValidator = new IDTokenValidator(getIssuer(configuration), _clientID);
       } else if (configuration.hasSecret() && (JWSAlgorithm.HS256.equals(jwsAlgorithm) ||
           JWSAlgorithm.HS384.equals(jwsAlgorithm) || JWSAlgorithm.HS512.equals(jwsAlgorithm))) {
         idTokenValidator = createHMACTokenValidator(configuration, jwsAlgorithm, _clientID, _secret);
@@ -70,6 +70,15 @@ public class OIDCTokenValidator {
 
       idTokenValidators.add(idTokenValidator);
     }
+  }
+
+  private Issuer getIssuer(final OIDCConfiguration configuration) {
+    OIDCProviderMetadata providerMetadata = configuration.findProviderMetaData();
+    Issuer issuer = providerMetadata.getIssuer();
+    if (issuer == null) {
+      throw new OIDCException("No issuer found in provider metadata");
+    }
+    return issuer;
   }
 
   protected IDTokenValidator createRSATokenValidator(final OIDCConfiguration configuration,
