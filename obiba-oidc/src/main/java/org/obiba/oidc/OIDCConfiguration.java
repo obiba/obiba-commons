@@ -34,6 +34,11 @@ public class OIDCConfiguration {
   // discovery URI for fetching OP metadata (http://openid.net/specs/openid-connect-discovery-1_0.html)
   private String discoveryURI;
 
+  // Prompt
+  private String prompt;
+
+  private Integer maxAge;
+
   // Scope
   private String scope = "openid";
 
@@ -137,6 +142,30 @@ public class OIDCConfiguration {
 
   public boolean isUseNonce() {
     return useNonce;
+  }
+
+  public String getPrompt() {
+    return prompt;
+  }
+
+  public void setPrompt(String prompt) {
+    this.prompt = prompt;
+  }
+
+  public boolean hasPrompt() {
+    return !Strings.isNullOrEmpty(prompt);
+  }
+
+  public Integer getMaxAge() {
+    return maxAge;
+  }
+
+  public void setMaxAge(Integer maxAge) {
+    this.maxAge = maxAge;
+  }
+
+  public boolean hasMaxAge() {
+    return maxAge != null && maxAge >= 0;
   }
 
   public Map<String, String> getCustomParams() {
