@@ -434,26 +434,26 @@ public class ObibaRealm extends AuthorizingRealm {
   }
 
   private String getLoginUrl(UsernamePasswordToken token) {
-    UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUrl).path(DEFAULT_REST_PREFIX)
+    UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(baseUrl).path(DEFAULT_REST_PREFIX)
         .path(DEFAULT_LOGIN_PATH);
     builder.queryParam("rememberMe", token.isRememberMe());
     return builder.build().toUriString();
   }
 
   private String getValidateUrl(String ticket) {
-    UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUrl).path(DEFAULT_REST_PREFIX)
+    UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(baseUrl).path(DEFAULT_REST_PREFIX)
         .path(DEFAULT_VALIDATE_PATH);
     return builder.buildAndExpand(ticket).toUriString();
   }
 
   private String getSubjectUrl(String ticketId) {
-    UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUrl).path(DEFAULT_REST_PREFIX)
+    UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(baseUrl).path(DEFAULT_REST_PREFIX)
         .path(DEFAULT_SUBJECT_PATH);
     return builder.buildAndExpand(ticketId).toUriString();
   }
 
   private String getTicketUrl(String id) {
-    UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUrl).path(DEFAULT_REST_PREFIX)
+    UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(baseUrl).path(DEFAULT_REST_PREFIX)
         .path(DEFAULT_TICKET_PATH);
     return builder.buildAndExpand(id).toUriString();
   }
