@@ -12,7 +12,7 @@ package org.obiba.shiro.authc;
 
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.pam.UnsupportedTokenException;
-import org.apache.shiro.codec.Base64;
+import java.util.Base64;
 import org.springframework.lang.Nullable;
 
 /**
@@ -52,7 +52,7 @@ public class HttpAuthorizationToken extends UsernamePasswordOtpToken implements 
         throw new UnsupportedTokenException();
       }
 
-      String decoded[] = Base64.decodeToString(schemeAndToken[1]).split(":", 2);
+      String decoded[] = new String(Base64.getDecoder().decode(schemeAndToken[1])).split(":", 2);
       username = decoded[0];
       password = decoded[1];
     }

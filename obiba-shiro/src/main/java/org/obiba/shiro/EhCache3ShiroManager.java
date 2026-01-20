@@ -1,14 +1,15 @@
 package org.obiba.shiro;
 
-import org.apache.shiro.ShiroException;
+import org.apache.shiro.lang.ShiroException;
 import org.apache.shiro.cache.Cache;
 import org.apache.shiro.cache.CacheException;
-import org.apache.shiro.io.ResourceUtils;
+import org.springframework.util.ClassUtils;
+import java.util.*;
 import org.ehcache.config.CacheConfiguration;
 import org.ehcache.config.builders.CacheConfigurationBuilder;
 import org.ehcache.config.builders.CacheManagerBuilder;
-import org.ehcache.integrations.shiro.EhcacheShiro;
-import org.ehcache.integrations.shiro.EhcacheShiroManager;
+
+import org.apache.shiro.cache.AbstractCacheManager;
 import org.ehcache.xml.XmlConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,9 +18,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 
-public class EhCache3ShiroManager extends EhcacheShiroManager {
+public class EhCache3ShiroManager extends AbstractCacheManager {
 
-  private static final Logger log = LoggerFactory.getLogger(EhcacheShiroManager.class);
+  private static final Logger log = LoggerFactory.getLogger(EhCache3ShiroManager.class);
 
   private volatile org.ehcache.CacheManager manager;
 
@@ -84,30 +85,13 @@ public class EhCache3ShiroManager extends EhcacheShiroManager {
     this.cacheManagerConfigFile = cacheManagerConfigFile;
   }
 
-  /**
-   * {@inheritDoc}
-   */
-  public <K, V> Cache<K, V> getCache(String name) throws CacheException {
-    log.trace("Acquiring EhcacheShiro instance named [{}]", name);
 
-    try {
-      org.ehcache.Cache<Object, Object> cache = ensureCacheManager().getCache(name, Object.class, Object.class);
 
-      if (cache == null) {
-        log.info("Cache with name {} does not yet exist.  Creating now.", name);
-        cache = createCache(name);
-        log.info("Added EhcacheShiro named [{}]", name);
-      } else {
-        log.info("Using existing EhcacheShiro named [{}]", name);
-      }
-
-      return new EhcacheShiro<K, V>(cache);
-    } catch (MalformedURLException e) {
-      throw new CacheException(e);
-    }
+  protected <K, V> org.apache.shiro.cache.Cache<K, V> createCache(String name) {
+    return new EhcacheShiro(createEhcache(name));
   }
 
-  private org.ehcache.Cache<Object, Object> createCache(String name) {
+  private org.ehcache.Cache<Object, Object> createEhcache(String name) {
     try {
       XmlConfiguration xmlConfiguration = getConfiguration();
       CacheConfigurationBuilder<Object, Object> configurationBuilder = xmlConfiguration.newCacheConfigurationBuilderFromTemplate(
@@ -137,16 +121,13 @@ public class EhCache3ShiroManager extends EhcacheShiroManager {
   }
 
   private URL getResource() throws MalformedURLException {
-    String cacheManagerConfigFile = getCacheManagerConfigFile();
-    String configFileWithoutPrefix = stripPrefix(cacheManagerConfigFile);
-    if (cacheManagerConfigFile.startsWith(ResourceUtils.CLASSPATH_PREFIX)) {
-      return ClassUtils.getResource(configFileWithoutPrefix);
+    String configFile = getCacheManagerConfigFile();
+    if (configFile.startsWith("classpath:")) {
+      String path = configFile.substring("classpath:".length());
+      return ClassUtils.getDefaultClassLoader().getResource(path);
+    } else {
+      return new URL(configFile);
     }
-
-    String url = ResourceUtils.hasResourcePrefix(cacheManagerConfigFile) ? configFileWithoutPrefix
-        : cacheManagerConfigFile;
-
-    return new URL(url);
   }
 
   private static String stripPrefix(String resourcePath) {
@@ -188,6 +169,54 @@ public class EhCache3ShiroManager extends EhcacheShiroManager {
     } catch (MalformedURLException e) {
       throw new ShiroException(e);
     }
+  }
+
+  private static class EhcacheShiro<K, V> implements org.apache.shiro.cache.Cache<K, V> {
+
+    private final org.ehcache.Cache<Object, Object> cache;
+
+    public EhcacheShiro(org.ehcache.Cache<Object, Object> cache) {
+      this.cache = cache;
+    }
+
+    @Override
+    public V get(K key) {
+      return (V) cache.get(key);
+    }
+
+    @Override
+    public V put(K key, V value) {
+      cache.put(key, value);
+      return value;
+    }
+
+    @Override
+    public V remove(K key) {
+      V old = (V) cache.get(key);
+      cache.remove(key);
+      return old;
+    }
+
+    @Override
+    public void clear() {
+      cache.clear();
+    }
+
+    @Override
+    public int size() {
+      return 0; // not supported
+    }
+
+    @Override
+    public Set<K> keys() {
+      return Collections.emptySet();
+    }
+
+    @Override
+    public Collection<V> values() {
+      return Collections.emptyList();
+    }
+
   }
 
 }

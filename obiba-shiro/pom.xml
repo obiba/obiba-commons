@@ -41,13 +41,10 @@
       <classifier>jakarta</classifier>
     </dependency>
     <dependency>
-      <groupId>org.ehcache.integrations.shiro</groupId>
-      <artifactId>shiro-ehcache3</artifactId>
+      <groupId>org.apache.shiro</groupId>
+      <artifactId>shiro-ehcache</artifactId>
     </dependency>
-    <dependency>
-      <groupId>eu.flatwhite.shiro</groupId>
-      <artifactId>shiro-extras</artifactId>
-    </dependency>
+
     <dependency>
       <groupId>org.glassfish.jaxb</groupId>
       <artifactId>jaxb-runtime</artifactId>

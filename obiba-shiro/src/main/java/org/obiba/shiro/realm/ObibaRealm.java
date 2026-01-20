@@ -34,7 +34,7 @@ import org.apache.shiro.authc.*;
 import org.apache.shiro.authc.credential.AllowAllCredentialsMatcher;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
-import org.apache.shiro.codec.Base64;
+import java.util.Base64;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.SimplePrincipalCollection;
@@ -460,7 +460,7 @@ public class ObibaRealm extends AuthorizingRealm {
 
   private String getApplicationAuth() {
     String token = serviceName + ":" + serviceKey;
-    return APPLICATION_AUTH_SCHEMA + " " + Base64.encodeToString(token.getBytes());
+    return APPLICATION_AUTH_SCHEMA + " " + Base64.getEncoder().encodeToString(token.getBytes());
   }
 
   public static class Subject {

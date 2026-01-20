@@ -13,7 +13,7 @@ import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.SimpleAccount;
 import org.apache.shiro.authc.credential.AllowAllCredentialsMatcher;
-import org.apache.shiro.crypto.hash.Md5Hash;
+import org.apache.shiro.crypto.hash.Sha256Hash;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.obiba.shiro.authc.HttpCookieAuthenticationToken;
 import org.springframework.stereotype.Component;
@@ -48,7 +48,7 @@ public class CookieAuthenticatingRealm extends AbstractHttpAuthenticatingRealm {
    * @return
    */
   private String getUrlHash(String sessionId, String url) {
-    return new Md5Hash(url, sessionId).toHex();
+    return new Sha256Hash(url, sessionId).toHex();
   }
 
 }
