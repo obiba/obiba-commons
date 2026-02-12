@@ -14,6 +14,8 @@ import javax.script.Bindings;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
@@ -32,7 +34,9 @@ public class DefaultOIDCGroupsExtractor implements OIDCGroupsExtractor {
   private final ScriptEngineManager manager;
 
   public DefaultOIDCGroupsExtractor() {
-    this.manager = new ScriptEngineManager(null);
+    // Use the thread context ClassLoader so ScriptEngineManager can discover
+    // ScriptEngineFactory implementations that are present on the application's classpath.
+    this.manager = new ScriptEngineManager(Thread.currentThread().getContextClassLoader());
   }
 
   public Set<String> extractGroups(OIDCConfiguration configuration, Map<String, Object> userInfo) {
@@ -48,7 +52,7 @@ public class DefaultOIDCGroupsExtractor implements OIDCGroupsExtractor {
       try {
         Object gps = userInfo.get(groupsClaim);
         if (gps != null) {
-          extractGroups(gps).forEach(groups::add);
+          groups.addAll(extractGroups(gps));
         }
       } catch (Exception e) {
         log.debug("UserInfo: {}", userInfo);
@@ -68,7 +72,7 @@ public class DefaultOIDCGroupsExtractor implements OIDCGroupsExtractor {
         Bindings bindings = engine.createBindings();
         bindings.put("userInfo", userInfo);
         Object res = engine.eval(groupsJS, bindings);
-        extractGroups(res).forEach(groups::add);
+        groups.addAll(extractGroups(res));
       } catch (Exception e) {
         log.warn("OIDC groups JS script evaluation failed: {}", groupsJS, e);
       }
@@ -78,44 +82,54 @@ public class DefaultOIDCGroupsExtractor implements OIDCGroupsExtractor {
   }
 
   protected String getGroupsClaim(OIDCConfiguration configuration) {
+
     String groupsClaim = configuration.getCustomParam(OIDCRealm.GROUPS_CLAIM_PARAM);
-    return Strings.isNullOrEmpty(groupsClaim) ? DEFAULT_GROUPS_CLAIM : groupsClaim;
+    if (Strings.isNullOrEmpty(groupsClaim)) {
+      groupsClaim = DEFAULT_GROUPS_CLAIM;
+    }
+    return groupsClaim;
   }
 
-  protected Iterable<String> extractGroups(Object groupsValue) {
-    if (groupsValue == null) return Lists.newArrayList();
-
-    if (groupsValue instanceof Bindings bindings) {
-      Bindings jsRes = bindings;
-      return jsRes.values().stream()
-          .filter(g -> g instanceof String)
-          .map(Object::toString)
-          .collect(Collectors.toSet());
-    } else if (groupsValue instanceof Collection collection) {
-      return ((Collection<Object>) collection).stream()
-          .filter(Objects::nonNull)
-          .map(Object::toString)
-          .collect(Collectors.toSet());
-    } else if (groupsValue.getClass().isArray()) {
-      JSONArray gps = new JSONArray(groupsValue);
-      return gps.toList().stream()
-          .filter(g -> g instanceof String)
-          .map(Object::toString)
-          .collect(Collectors.toSet());
-    } else {
-      String groupsValueStr = groupsValue.toString();
-      if (groupsValueStr.startsWith("[") && groupsValueStr.endsWith("]")) {
-        // expect a json array
-        return new JSONArray(groupsValueStr).toList().stream()
-            .filter(Objects::nonNull)
-            .map(Object::toString)
-            .collect(Collectors.toList());
-      }
-      if (groupsValueStr.contains(",")) {
-        return Splitter.on(",").omitEmptyStrings().trimResults().split(groupsValueStr);
-      } else {
-        return Splitter.on(" ").omitEmptyStrings().trimResults().split(groupsValueStr);
-      }
+  protected Collection<String> extractGroups(Object gps) {
+    if (gps instanceof Collection) {
+      return Lists.newArrayList(((Collection<?>) gps).stream().filter(Objects::nonNull).map(Object::toString).iterator());
     }
+    if (gps instanceof String gpsStr) {
+      if (gpsStr.startsWith("[") && gpsStr.endsWith("]")) {
+        // try parse as JSON array (e.g. provider returned a JSON array as string)
+        try {
+          JSONArray arr = new JSONArray(gpsStr);
+          return Lists.newArrayList(arr.toList().stream().filter(Objects::nonNull).map(Object::toString).iterator());
+        } catch (Exception ignore) {
+          // fall through to split
+        }
+      }
+      // split on commas or whitespace (supports "a,b,c", "a b c", "a, b, c", etc.)
+      return Lists.newArrayList(Splitter.onPattern("[,\\s]+").trimResults().omitEmptyStrings().splitToList(gpsStr));
+    }
+
+    // handle Java arrays
+    if (gps != null && gps.getClass().isArray()) {
+      Object[] arr = (Object[]) gps;
+      return Lists.newArrayList(Arrays.stream(arr).filter(Objects::nonNull).map(Object::toString).iterator());
+    }
+
+    // handle Map-like results (e.g. ScriptObjectMirror) by returning values
+    if (gps instanceof Map) {
+      return Lists.newArrayList(((Map<?, ?>) gps).values().stream().filter(Objects::nonNull).map(Object::toString).iterator());
+    }
+
+    // try to convert JavaScript array-like objects (e.g. Nashorn's ScriptObjectMirror)
+    try {
+      Method toList = gps.getClass().getMethod("toList");
+      Object listObj = toList.invoke(gps);
+      if (listObj instanceof Collection) {
+        return Lists.newArrayList(((Collection<?>) listObj).stream().filter(Objects::nonNull).map(Object::toString).iterator());
+      }
+    } catch (Exception ignore) {
+      // ignore and fall through
+    }
+
+    return Lists.newArrayList();
   }
 }

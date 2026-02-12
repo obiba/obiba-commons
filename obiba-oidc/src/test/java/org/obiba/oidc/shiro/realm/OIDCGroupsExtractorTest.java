@@ -1,16 +1,14 @@
 package org.obiba.oidc.shiro.realm;
 
-import org.assertj.core.util.Lists;
-import org.assertj.core.util.Maps;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.obiba.oidc.OIDCConfiguration;
 
 import java.util.Map;
 import java.util.Set;
 
-@Ignore
 public class OIDCGroupsExtractorTest {
 
   @Test
