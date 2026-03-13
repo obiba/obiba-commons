@@ -166,16 +166,19 @@ public class ObibaRealm extends AuthorizingRealm {
       if (wwwAuths != null && !wwwAuths.isEmpty()) {
         log.debug("Invalid OTP. Response status code [{}], response body [{}], credentials used [{}]", e.getStatusCode(), e.getResponseBodyAsString(), token);
         String qrImage = null;
+        boolean email = false;
         if (!Strings.isNullOrEmpty(e.getResponseBodyAsString())) {
           try {
             JsonObject respObj = JsonParser.parseString(e.getResponseBodyAsString()).getAsJsonObject();
             if (respObj.has("image"))
               qrImage = respObj.get("image").getAsString();
+            if (respObj.has("email"))
+              email = respObj.get("email").getAsBoolean();
           } catch (Exception ej) {
             // ignore
           }
         }
-        throw new NoSuchOtpException(wwwAuths.get(0), qrImage);
+        throw new NoSuchOtpException(wwwAuths.getFirst(), qrImage, email);
       }
       if (log.isDebugEnabled())
         log.error("Connection failure with identification server", e);

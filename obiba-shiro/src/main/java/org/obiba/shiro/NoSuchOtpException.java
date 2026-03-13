@@ -10,15 +10,20 @@ public class NoSuchOtpException extends AuthenticationException {
 
   private final String otpHeader;
 
+  // OTP QR code
   private final String qrImage;
 
+  // Whether a temporary code was sent by email
+  private final boolean email;
+
   public NoSuchOtpException(String otpHeader) {
-    this(otpHeader, null);
+    this(otpHeader, null, false);
   }
 
-  public NoSuchOtpException(String otpHeader, String qrImage) {
+  public NoSuchOtpException(String otpHeader, String qrImage, boolean email) {
     this.otpHeader = otpHeader;
     this.qrImage = qrImage;
+    this.email = email;
   }
 
   public String getOtpHeader() {
@@ -31,5 +36,9 @@ public class NoSuchOtpException extends AuthenticationException {
 
   public String getQrImage() {
     return qrImage;
+  }
+
+  public boolean isEmail() {
+    return email;
   }
 }
