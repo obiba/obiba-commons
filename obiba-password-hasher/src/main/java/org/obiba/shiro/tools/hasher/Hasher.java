@@ -17,7 +17,8 @@ import org.apache.shiro.crypto.hash.format.DefaultHashFormatFactory;
 import org.apache.shiro.crypto.hash.format.HashFormat;
 import org.apache.shiro.crypto.hash.format.HashFormatFactory;
 import org.apache.shiro.crypto.hash.format.Shiro1CryptFormat;
-import org.apache.shiro.util.ByteSource;
+import org.apache.shiro.lang.util.ByteSource;
+
 
 /**
  * Inspired from org.apache.shiro.tools.hasher.Hasher and used by Debian while installing Opal.
@@ -29,7 +30,7 @@ public final class Hasher {
 
   private static final int DEFAULT_GENERATED_SALT_SIZE = 128;
 
-  private static final int DEFAULT_PASSWORD_NUM_ITERATIONS = DefaultPasswordService.DEFAULT_HASH_ITERATIONS;
+  private static final int DEFAULT_PASSWORD_NUM_ITERATIONS = 500000;
 
   private static final HashFormatFactory HASH_FORMAT_FACTORY = new DefaultHashFormatFactory();
 
