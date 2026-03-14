@@ -180,17 +180,21 @@ public class ObibaRealm extends AuthorizingRealm {
         }
         throw new NoSuchOtpException(wwwAuths.getFirst(), qrImage, email);
       }
+      if (e.getStatusCode().equals(HttpStatus.FORBIDDEN)) {
+        log.debug("Invalid credentials", e);
+        throw new AuthenticationException("Invalid credentials for user [" + username + "]");
+      }
       if (log.isDebugEnabled())
         log.error("Connection failure with identification server", e);
       else
         log.error("Connection failure with identification server: [%s]".formatted(e.getMessage()));
-      return null;
+      throw new AuthenticationException("Failed authenticating on " + baseUrl, e);
     } catch(ResourceAccessException e) {
       if (log.isDebugEnabled())
         log.error("Connection failure with identification server", e);
       else
         log.error("Connection failure with identification server: [%s]".formatted(e.getMessage()));
-      return null;
+      throw new AuthenticationException("Failed authenticating on " + baseUrl, e);
     } catch(Exception e) {
       if (log.isDebugEnabled())
         log.error("Authentication failure", e);
