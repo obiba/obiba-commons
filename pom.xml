@@ -62,8 +62,7 @@
     <oauth-oidc-sdk.version>11.12</oauth-oidc-sdk.version>
     <protobuf.version>3.25.5</protobuf.version>
     <jakarta-servlet.version>6.0.0</jakarta-servlet.version>
-    <shiro.version>1.13.0</shiro.version>
-    <shiro-ehcache3.version>1.0.0</shiro-ehcache3.version>
+    <shiro.version>2.1.0</shiro.version>
     <shiro-extras.version>1.1.0</shiro-extras.version>
     <slf4j.version>2.0.9</slf4j.version>
     <spring.version>7.0.3</spring.version>
@@ -366,19 +365,16 @@
         <groupId>org.apache.shiro</groupId>
         <artifactId>shiro-core</artifactId>
         <version>${shiro.version}</version>
-        <classifier>jakarta</classifier>
       </dependency>
       <dependency>
         <groupId>org.apache.shiro</groupId>
         <artifactId>shiro-web</artifactId>
         <version>${shiro.version}</version>
-        <classifier>jakarta</classifier>
       </dependency>
       <dependency>
         <groupId>org.apache.shiro</groupId>
         <artifactId>shiro-spring</artifactId>
         <version>${shiro.version}</version>
-        <classifier>jakarta</classifier>
         <exclusions>
           <exclusion>
             <groupId>org.apache.shiro</groupId>
@@ -389,17 +385,6 @@
             <artifactId>shiro-web</artifactId>
           </exclusion>
         </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.ehcache</groupId>
-        <artifactId>ehcache</artifactId>
-        <version>${ehcache.version}</version>
-        <classifier>jakarta</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.ehcache.integrations.shiro</groupId>
-        <artifactId>shiro-ehcache3</artifactId>
-        <version>${shiro-ehcache3.version}</version>
       </dependency>
       <dependency>
         <groupId>eu.flatwhite.shiro</groupId>

@@ -12,7 +12,7 @@ package org.obiba.shiro.authc;
 
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.pam.UnsupportedTokenException;
-import org.apache.shiro.codec.Base64;
+import org.apache.shiro.lang.codec.Base64;
 import org.springframework.lang.Nullable;
 
 /**
