@@ -10,14 +10,6 @@
 package org.obiba.shiro.tools.hasher;
 
 import org.apache.shiro.authc.credential.DefaultPasswordService;
-import org.apache.shiro.crypto.SecureRandomNumberGenerator;
-import org.apache.shiro.crypto.hash.Hash;
-import org.apache.shiro.crypto.hash.SimpleHash;
-import org.apache.shiro.crypto.hash.format.DefaultHashFormatFactory;
-import org.apache.shiro.crypto.hash.format.HashFormat;
-import org.apache.shiro.crypto.hash.format.HashFormatFactory;
-import org.apache.shiro.crypto.hash.format.Shiro1CryptFormat;
-import org.apache.shiro.lang.util.ByteSource;
 
 
 /**
@@ -26,13 +18,7 @@ import org.apache.shiro.lang.util.ByteSource;
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
 public final class Hasher {
 
-  private static final String DEFAULT_PASSWORD_ALGORITHM_NAME = DefaultPasswordService.DEFAULT_HASH_ALGORITHM;
-
-  private static final int DEFAULT_GENERATED_SALT_SIZE = 128;
-
-  private static final int DEFAULT_PASSWORD_NUM_ITERATIONS = 500000;
-
-  private static final HashFormatFactory HASH_FORMAT_FACTORY = new DefaultHashFormatFactory();
+  private static final DefaultPasswordService PASSWORD_SERVICE = new DefaultPasswordService();
 
   private Hasher() {}
 
@@ -50,14 +36,7 @@ public final class Hasher {
   }
 
   public static String hash(String value) {
-    Hash hash = new SimpleHash(DEFAULT_PASSWORD_ALGORITHM_NAME, value, getSalt(), DEFAULT_PASSWORD_NUM_ITERATIONS);
-    HashFormat format = HASH_FORMAT_FACTORY.getInstance(Shiro1CryptFormat.class.getName());
-    return format.format(hash);
-  }
-
-  private static ByteSource getSalt() {
-    int byteSize = DEFAULT_GENERATED_SALT_SIZE / 8; //generatedSaltSize is in *bits* - convert to byte size:
-    return new SecureRandomNumberGenerator().nextBytes(byteSize);
+    return PASSWORD_SERVICE.encryptPassword(value);
   }
 
   private static void printException(Exception e) {
@@ -68,7 +47,7 @@ public final class Hasher {
   }
 
   private static void printUsage() {
-    System.out.println("Usage: java -jar password-hasher-<version>.jar <value>");
+    System.out.println("Usage: java -jar obiba-password-hasher-<version>-cli.jar <value>");
     System.out.println("\nPrint a cryptographic hash (aka message digest) of the specified <value>.");
   }
 
