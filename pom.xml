@@ -28,7 +28,7 @@
     <annotation-api.verion>2.1.1</annotation-api.verion>
     <assertj-core.version>3.27.7</assertj-core.version>
     <bind-api.version>4.0.1</bind-api.version>
-    <bouncycastle.version>1.78</bouncycastle.version>
+    <bouncycastle.version>1.79</bouncycastle.version>
     <cglib.version>3.1</cglib.version>
     <commons-beanutils.version>1.11.0</commons-beanutils.version>
     <commons-dbcp.version>2.10.0</commons-dbcp.version>
@@ -81,6 +81,7 @@
     <maven-javadoc-plugin.version>3.6.0</maven-javadoc-plugin.version>
     <maven-pmd-plugin.version>3.1</maven-pmd-plugin.version>
     <maven-release-plugin.version>2.5.2</maven-release-plugin.version>
+    <maven-shade-plugin.version>3.5.3</maven-shade-plugin.version>
     <maven-source-plugin.version>2.2</maven-source-plugin.version>
     <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
   </properties>
