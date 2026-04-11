@@ -19,7 +19,7 @@ import jakarta.validation.constraints.NotNull;
 import org.eclipse.jgit.api.Git;
 
 import com.google.common.collect.ImmutableSet;
-import org.springframework.lang.Nullable;
+import jakarta.annotation.Nullable;
 
 public class ReadFilesCommand extends AbstractGitCommand<Set<InputStream>> {
 

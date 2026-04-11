@@ -23,7 +23,7 @@ import org.obiba.git.GitException;
 import org.obiba.git.TagInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.lang.Nullable;
+import jakarta.annotation.Nullable;
 
 public class TagListCommand extends AbstractGitCommand<Iterable<TagInfo>> {
 

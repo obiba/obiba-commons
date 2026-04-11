@@ -25,7 +25,7 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import org.obiba.git.CommitInfo;
 import org.obiba.git.GitException;
 import org.obiba.git.GitUtils;
-import org.springframework.lang.Nullable;
+import jakarta.annotation.Nullable;
 
 /**
  * Opal GIT command used to extract the log of a repository path for a specific commit.

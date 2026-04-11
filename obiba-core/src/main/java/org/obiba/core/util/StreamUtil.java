@@ -10,7 +10,7 @@
 
 package org.obiba.core.util;
 
-import org.springframework.lang.Nullable;
+import jakarta.annotation.Nullable;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;

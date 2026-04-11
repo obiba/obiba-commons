@@ -15,7 +15,7 @@ import java.io.File;
 import jakarta.validation.constraints.NotNull;
 
 import com.google.common.io.Files;
-import org.springframework.lang.Nullable;
+import jakarta.annotation.Nullable;
 
 /**
  * Base class for all  GIT commands. All subclasses are immutable and must be created by their respective builders

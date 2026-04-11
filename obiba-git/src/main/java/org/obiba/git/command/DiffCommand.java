@@ -31,7 +31,7 @@ import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.obiba.git.GitException;
 
 import com.google.common.base.Strings;
-import org.springframework.lang.Nullable;
+import jakarta.annotation.Nullable;
 
 /**
  * Opal GIT command used to extract the diff between two commits. By default, the diff is between the given commit and

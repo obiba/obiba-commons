@@ -56,7 +56,6 @@
     <logback.version>1.4.14</logback.version>
     <mail.version>2.0.1</mail.version>
     <jakarta.ws.rs.version>3.1.0.RC1-jbossorg-1</jakarta.ws.rs.version>
-    <js-engine.version>1.1</js-engine.version>
     <nashorn.version>15.4</nashorn.version>
     <nimbus-jose-jwt.version>10.0.2</nimbus-jose-jwt.version>
     <oauth-oidc-sdk.version>11.12</oauth-oidc-sdk.version>
@@ -146,12 +145,6 @@
             <artifactId>commons-logging</artifactId>
           </exclusion>
         </exclusions>
-      </dependency>
-
-      <dependency>
-        <groupId>javax.script</groupId>
-        <artifactId>js-engine</artifactId>
-        <version>${js-engine.version}</version>
       </dependency>
 
       <dependency>

@@ -15,7 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.subject.Subject;
-import org.springframework.lang.Nullable;
+import jakarta.annotation.Nullable;
 
 /**
  * Implement this interface so that the AuthenticationFilter handles the single sign-on ticket.

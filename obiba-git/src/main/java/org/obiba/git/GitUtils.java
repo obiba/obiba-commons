@@ -15,7 +15,7 @@ import java.util.Objects;
 
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
-import org.springframework.lang.Nullable;
+import jakarta.annotation.Nullable;
 
 public class GitUtils {
 

@@ -15,7 +15,7 @@ import org.springframework.context.ApplicationContext;
 
 import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
 import com.thoughtworks.xstream.converters.reflection.ReflectionProviderWrapper;
-import org.springframework.lang.Nullable;
+import jakarta.annotation.Nullable;
 
 /**
  *

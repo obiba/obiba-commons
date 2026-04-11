@@ -31,10 +31,10 @@ import org.obiba.shiro.NoSuchOtpException;
 import org.obiba.shiro.authc.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jakarta.annotation.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.WebUtils;
@@ -226,7 +226,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
   @Nullable
   private Subject authenticateSslCert(HttpServletRequest request) {
-    X509Certificate[] chain = (X509Certificate[]) request.getAttribute("javax.servlet.request.X509Certificate");
+    X509Certificate[] chain = (X509Certificate[]) request.getAttribute("jakarta.servlet.request.X509Certificate");
     if (chain == null || chain.length == 0) return null;
 
     AuthenticationToken token = new X509CertificateAuthenticationToken(chain[0]);

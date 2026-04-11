@@ -10,7 +10,7 @@
 
 package org.obiba.git;
 
-import org.springframework.lang.Nullable;
+import jakarta.annotation.Nullable;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

@@ -24,7 +24,7 @@ import org.obiba.git.GitException;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.io.CharStreams;
-import org.springframework.lang.Nullable;
+import jakarta.annotation.Nullable;
 
 /**
  * Opal GIT command used to extract the content of a file. Folders are not supported.

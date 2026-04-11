@@ -178,7 +178,9 @@ public class JarUtil {
           || clazz.startsWith("com.sun") // jaxb-core includes classes of and depends on istack-commons-runtime, resteasy-core and jaxb-runtime
           || clazz.startsWith("org.xmlpull") // xmlpull includes classes of and depends on xpp3...
           || clazz.startsWith("javax.transaction") // jboss-transaction-api and ow2-jta
+          || clazz.startsWith("jakarta.transaction") // jakarta migration equivalent
           || clazz.startsWith("javax.xml") //jsr173_api and stax-api
+          || clazz.startsWith("jakarta.xml") // jakarta migration equivalent
           || clazz.startsWith("org.apache.shiro") // shiro-lang and shiro-core badly packaged
           || clazz.startsWith("org.aopalliance") // spring-aop vs. aopalliance
           || clazz.startsWith("org.jboss.resteasy") // dirty packaging of resteasy

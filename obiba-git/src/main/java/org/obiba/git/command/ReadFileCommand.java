@@ -28,7 +28,7 @@ import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.obiba.git.GitException;
 import org.obiba.git.NoSuchGitRepositoryException;
-import org.springframework.lang.Nullable;
+import jakarta.annotation.Nullable;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 

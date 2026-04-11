@@ -28,7 +28,7 @@ import org.obiba.git.GitException;
 import org.obiba.git.GitUtils;
 
 import com.google.common.base.Strings;
-import org.springframework.lang.Nullable;
+import jakarta.annotation.Nullable;
 
 public class LogsCommand extends AbstractGitCommand<Iterable<CommitInfo>> {
 

@@ -29,7 +29,7 @@ import org.obiba.git.GitUtils;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
-import org.springframework.lang.Nullable;
+import jakarta.annotation.Nullable;
 
 public class ListFilesCommand extends AbstractGitCommand<Set<String>> {
 

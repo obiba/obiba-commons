@@ -25,7 +25,7 @@ import org.apache.shiro.session.mgt.SessionKey;
 import org.apache.shiro.session.mgt.SessionManager;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.support.DefaultSubjectContext;
-import org.springframework.lang.Nullable;
+import jakarta.annotation.Nullable;
 
 public abstract class AbstractHttpAuthenticatingRealm extends AuthorizingRealm {
 

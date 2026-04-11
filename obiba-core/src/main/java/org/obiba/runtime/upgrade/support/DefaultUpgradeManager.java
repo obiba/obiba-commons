@@ -26,7 +26,7 @@ import org.obiba.runtime.upgrade.VersionModifier;
 import org.obiba.runtime.upgrade.VersionProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.lang.Nullable;
+import jakarta.annotation.Nullable;
 
 import static java.util.stream.Collectors.toList;
 
