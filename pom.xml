@@ -63,7 +63,7 @@
     <protobuf.version>3.25.5</protobuf.version>
     <jakarta-servlet.version>6.0.0</jakarta-servlet.version>
     <shiro.version>2.1.0</shiro.version>
-    <shiro-extras.version>1.1.0</shiro-extras.version>
+    <shiro-extras.version>2.0.0</shiro-extras.version>
     <slf4j.version>2.0.9</slf4j.version>
     <spring.version>7.0.3</spring.version>
     <spring-data-mongodb.version>5.0.2</spring-data-mongodb.version>
@@ -71,18 +71,17 @@
     <winzipaes.version>1.0.1</winzipaes.version>
     <xstream.version>1.4.21</xstream.version>
 
-    <!-- maven plugins -->
-    <maven-build-helper-plugin.version>1.8</maven-build-helper-plugin.version>
-    <maven-buildnumber-plugin.version>1.2</maven-buildnumber-plugin.version>
-    <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
-    <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
-    <maven.enforcer.plugin>1.2</maven.enforcer.plugin>
-    <maven-findbugs-plugin.version>3.0.4</maven-findbugs-plugin.version>
-    <maven-javadoc-plugin.version>3.6.0</maven-javadoc-plugin.version>
-    <maven-pmd-plugin.version>3.1</maven-pmd-plugin.version>
-    <maven-release-plugin.version>2.5.2</maven-release-plugin.version>
+    <maven-build-helper-plugin.version>3.4.0</maven-build-helper-plugin.version>
+    <maven-buildnumber-plugin.version>3.2.0</maven-buildnumber-plugin.version>
+    <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+    <maven-deploy-plugin.version>3.1.1</maven-deploy-plugin.version>
+    <maven.enforcer.plugin>3.4.1</maven.enforcer.plugin>
+    <maven-findbugs-plugin.version>3.0.5</maven-findbugs-plugin.version>
+    <maven-javadoc-plugin.version>3.7.0</maven-javadoc-plugin.version>
+    <maven-pmd-plugin.version>3.23.0</maven-pmd-plugin.version>
+    <maven-release-plugin.version>3.0.1</maven-release-plugin.version>
     <maven-shade-plugin.version>3.5.3</maven-shade-plugin.version>
-    <maven-source-plugin.version>2.2</maven-source-plugin.version>
+    <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
     <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
   </properties>
 
@@ -660,8 +659,7 @@
           <artifactId>maven-compiler-plugin</artifactId>
           <version>${maven-compiler-plugin.version}</version>
           <configuration>
-            <source>${maven.compiler.source}</source>
-            <target>${maven.compiler.target}</target>
+            <release>${maven.compiler.release}</release>
             <encoding>${project.build.sourceEncoding}</encoding>
             <showWarnings>true</showWarnings>
           </configuration>
@@ -679,7 +677,7 @@
           <configuration>
             <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
             <minimumTokens>30</minimumTokens>
-            <targetJdk>${maven.compiler.target}</targetJdk>
+            <targetJdk>${maven.compiler.release}</targetJdk>
             <rulesets>
               <ruleset>https://github.com/obiba/conventions/raw/master/obiba-pmd-ruleset.xml</ruleset>
             </rulesets>
@@ -763,25 +761,24 @@
         </executions>
       </plugin>
 
-<!--      <plugin>-->
-<!--        <groupId>org.apache.maven.plugins</groupId>-->
-<!--        <artifactId>maven-javadoc-plugin</artifactId>-->
-<!--        <version>${maven-javadoc-plugin.version}</version>-->
-<!--        <configuration>-->
-<!--          <source>17</source>-->
-<!--        </configuration>-->
-<!--        <executions>-->
-<!--          <execution>-->
-<!--            <id>attach-javadocs</id>-->
-<!--            <goals>-->
-<!--              <goal>jar</goal>-->
-<!--            </goals>-->
-<!--            <configuration>-->
-<!--              <additionalparam>-Xdoclint:none</additionalparam>-->
-<!--            </configuration>-->
-<!--          </execution>-->
-<!--        </executions>-->
-<!--      </plugin>-->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>${maven-javadoc-plugin.version}</version>
+        <configuration>
+          <release>${maven.compiler.release}</release>
+          <doclint>none</doclint>
+        </configuration>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
