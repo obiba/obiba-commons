@@ -316,8 +316,17 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
   @Nullable
   private Subject authenticateCookie(HttpServletRequest request, String sessionId, String requestId) {
-    AuthenticationToken token = new HttpCookieAuthenticationToken(sessionId, request.getRequestURI(), requestId);
     Subject subject = new Subject.Builder(securityManager).sessionId(sessionId).buildSubject();
+    // If the session is already valid and authenticated, reuse it as-is instead of calling login() again.
+    // Since Shiro 2.2.x, DefaultSecurityManager#beforeSuccessfulLogin unconditionally stops the subject's
+    // current session and creates a new one on every successful login. As this method is invoked on every
+    // request carrying the session cookie (not just on an actual sign-in), re-logging in here would churn
+    // through a new session per request and race with other concurrent requests stopping the same session,
+    // surfacing as StoppedSessionException/UnknownSessionException and prematurely ending the user's session.
+    if (subject.isAuthenticated()) {
+      return subject;
+    }
+    AuthenticationToken token = new HttpCookieAuthenticationToken(sessionId, request.getRequestURI(), requestId);
     try {
       subject.login(token);
     } catch (AuthenticationException e) {
