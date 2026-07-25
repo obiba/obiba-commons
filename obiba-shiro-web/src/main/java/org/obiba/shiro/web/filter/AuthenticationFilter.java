@@ -153,7 +153,14 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     }
     String requestUri = request.getRequestURI();
     if (!(contextPath + "/").equals(requestUri) && !requestPrefixes.isEmpty() && requestPrefixes.stream().noneMatch(requestUri::startsWith)) {
-      filterChain.doFilter(request, response);
+      // No authentication is performed on this request, but the filter chain (servlets, interceptors etc.) may still
+      // call SecurityUtils.getSubject(), which binds an anonymous subject to the executing thread. As threads are
+      // pooled, that subject would leak to the next request served by the same thread. Always unbind.
+      try {
+        filterChain.doFilter(request, response);
+      } finally {
+        unbind();
+      }
       return;
     }
 
