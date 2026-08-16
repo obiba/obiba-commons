@@ -38,7 +38,7 @@
     <findbugs.version>3.0.1</findbugs.version>
     <guava.version>33.6.0-jre</guava.version>
     <hsqldb.version>2.7.4</hsqldb.version>
-    <httpclient.version>5.6.2</httpclient.version>
+    <httpclient.version>5.6.3</httpclient.version>
     <jackson-annotations.version>2.22</jackson-annotations.version>
     <jackson-databind.version>2.22.1</jackson-databind.version>
     <javassist.version>3.12.1.GA</javassist.version>
