@@ -392,7 +392,10 @@ public class ObibaRealm extends AuthorizingRealm {
   }
 
   private CloseableHttpClient createHttpClient() {
-    HttpClientBuilder builder = HttpClients.custom();
+    // Content compression is disabled: the payloads exchanged with Agate are small text/JSON documents, so it buys
+    // nothing, and since httpclient5 5.6 an unknown Content-Encoding is a hard failure (obiba/agate#715: an Agate
+    // returning "Content-Encoding: UTF-8" made every ticket validation, i.e. the single sign-on, fail).
+    HttpClientBuilder builder = HttpClients.custom().disableContentCompression();
     try {
       SSLConnectionSocketFactory sslsf = getSocketFactory();
       Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory> create()
