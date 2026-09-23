@@ -10,21 +10,27 @@
 
 package org.obiba.plugins;
 
+import com.google.common.base.Strings;
+import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 import org.obiba.core.util.FileUtil;
 import org.obiba.plugins.spi.ServicePlugin;
+import org.obiba.runtime.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -33,6 +39,8 @@ public class PluginsManagerHelper {
   private static final Logger log = LoggerFactory.getLogger(PluginsManagerHelper.class);
 
   private static final SimpleDateFormat ISO_8601 = new SimpleDateFormat("yyyy-MM-dd");
+
+  public static final String DIST_FILE_SUFFIX = ".dist";
 
   /**
    * Uncompress and archive any zip file that could be found.
@@ -45,7 +53,7 @@ public class PluginsManagerHelper {
     if (!archiveDir.exists()) archiveDir.mkdirs();
     for (File child : children) {
       try {
-        extractPlugin(child);
+        extractPlugin(child, archiveDir);
         Files.move(child, new File(archiveDir, child.getName()));
       } catch (IOException e) {
         log.warn("Failed extracting plugin file: {}" + child.getAbsolutePath(), e);
@@ -120,11 +128,13 @@ public class PluginsManagerHelper {
    * Extract plugin folder from zip file.
    *
    * @param fileZip
+   * @param archiveDir
    * @throws IOException
    */
-  private static void extractPlugin(File fileZip) throws IOException {
+  private static void extractPlugin(File fileZip, File archiveDir) throws IOException {
     File destination = new File(fileZip.getParent());
     File expectedFolder = new File(destination, fileZip.getName().replace(PluginResources.PLUGIN_DIST_SUFFIX, ""));
+    boolean reinstall = expectedFolder.exists();
     // backup any site properties
     File sitePropertiesBackup = backupPluginSiteProperties(expectedFolder);
     // Open the zip file
@@ -157,6 +167,8 @@ public class PluginsManagerHelper {
     zipFile.close();
     // restore site properties
     restorePluginSiteProperties(expectedFolder, sitePropertiesBackup);
+    // new version of the plugin: inherit settings from the previous version
+    if (!reinstall) inheritPluginSettings(expectedFolder, archiveDir);
   }
 
   /**
@@ -192,6 +204,159 @@ public class PluginsManagerHelper {
     if (siteProperties.exists()) FileUtil.delete(siteProperties);
     FileUtil.copyFile(sitePropertiesBackup, siteProperties);
     sitePropertiesBackup.delete();
+  }
+
+  /**
+   * Copy the settings of the most recent previous version of the same plugin (same name and same major version)
+   * into the folder of a newly installed version: the site properties and the yaml files modified by the user.
+   * The previous plugin folder is left unchanged.
+   *
+   * @param pluginFolder
+   * @param archiveDir
+   */
+  private static void inheritPluginSettings(File pluginFolder, File archiveDir) {
+    Properties properties = readPluginProperties(pluginFolder);
+    if (properties == null) return;
+    String name = properties.getProperty("name");
+    Version version = parseVersion(properties.getProperty("version"));
+    if (Strings.isNullOrEmpty(name) || version == null) return;
+    File previousFolder = findPreviousPluginFolder(pluginFolder, name, version);
+    if (previousFolder == null) {
+      log.info("Plugin {} {}: no previous version with same major version to inherit settings from", name, version);
+      return;
+    }
+    try {
+      inheritSiteProperties(pluginFolder, previousFolder);
+      inheritYamlFiles(pluginFolder, previousFolder, archiveDir);
+    } catch (IOException e) {
+      log.warn("Plugin {} {}: failed to inherit settings from {}", name, version, previousFolder.getAbsolutePath(), e);
+    }
+  }
+
+  /**
+   * Find the most recent folder of a plugin with the same name and major version, older than the given version,
+   * and not marked for uninstallation.
+   *
+   * @param pluginFolder
+   * @param name
+   * @param version
+   * @return null if not found
+   */
+  private static File findPreviousPluginFolder(File pluginFolder, String name, Version version) {
+    File[] siblings = pluginFolder.getParentFile().listFiles(pathname -> pathname.isDirectory()
+        && !pathname.getName().startsWith(".")
+        && !pathname.equals(pluginFolder)
+        && !new File(pathname, PluginResources.UNINSTALL_FILE).exists());
+    if (siblings == null) return null;
+    File previousFolder = null;
+    Version previousVersion = null;
+    for (File sibling : siblings) {
+      Properties properties = readPluginProperties(sibling);
+      if (properties == null || !name.equals(properties.getProperty("name"))) continue;
+      Version siblingVersion = parseVersion(properties.getProperty("version"));
+      if (siblingVersion == null
+          || siblingVersion.getMajor() != version.getMajor()
+          || siblingVersion.compareTo(version) >= 0) continue;
+      if (previousVersion == null || siblingVersion.compareTo(previousVersion) > 0) {
+        previousFolder = sibling;
+        previousVersion = siblingVersion;
+      }
+    }
+    return previousFolder;
+  }
+
+  /**
+   * Site properties are always user settings: copy them over the default ones.
+   *
+   * @param pluginFolder
+   * @param previousFolder
+   * @throws IOException
+   */
+  private static void inheritSiteProperties(File pluginFolder, File previousFolder) throws IOException {
+    File previousSiteProperties = new File(previousFolder, PluginResources.SITE_PROPERTIES);
+    if (!previousSiteProperties.exists()) return;
+    Files.copy(previousSiteProperties, new File(pluginFolder, PluginResources.SITE_PROPERTIES));
+    log.info("Plugin {}: inherited {} from {}", pluginFolder.getName(), PluginResources.SITE_PROPERTIES, previousFolder.getName());
+  }
+
+  /**
+   * Yaml files hold user settings as well as plugin defaults: copy only the ones that were modified by the user
+   * (or that cannot be verified against the previous plugin archive) and keep the new default as a ".dist" file.
+   *
+   * @param pluginFolder
+   * @param previousFolder
+   * @param archiveDir
+   * @throws IOException
+   */
+  private static void inheritYamlFiles(File pluginFolder, File previousFolder, File archiveDir) throws IOException {
+    File[] previousFiles = previousFolder.listFiles(pathname -> pathname.isFile() && isYamlFile(pathname.getName()));
+    if (previousFiles == null) return;
+    File previousZip = new File(archiveDir, previousFolder.getName() + PluginResources.PLUGIN_DIST_SUFFIX);
+    for (File previousFile : previousFiles) {
+      byte[] content = Files.toByteArray(previousFile);
+      byte[] original = readZipEntry(previousZip, previousFolder.getName() + "/" + previousFile.getName());
+      if (original != null && Arrays.equals(original, content)) continue; // not modified by the user
+      File file = new File(pluginFolder, previousFile.getName());
+      byte[] newDefault = file.exists() ? Files.toByteArray(file) : null;
+      if (newDefault != null && Arrays.equals(newDefault, content)) continue;
+      if (newDefault != null && (original == null || !Arrays.equals(newDefault, original))) {
+        // the default has changed (or cannot be verified): keep it for review
+        File distFile = new File(pluginFolder, file.getName() + DIST_FILE_SUFFIX);
+        Files.copy(file, distFile);
+        log.warn("Plugin {}: inherited {} from {}, the new default was saved as {}, please review",
+            pluginFolder.getName(), file.getName(), previousFolder.getName(), distFile.getName());
+      } else {
+        log.info("Plugin {}: inherited {} from {}", pluginFolder.getName(), file.getName(), previousFolder.getName());
+      }
+      Files.copy(previousFile, file);
+    }
+  }
+
+  private static boolean isYamlFile(String fileName) {
+    return fileName.endsWith(".yml") || fileName.endsWith(".yaml");
+  }
+
+  /**
+   * Read the content of a zip entry.
+   *
+   * @param fileZip
+   * @param entryName
+   * @return null if the zip file or the entry does not exist or cannot be read
+   */
+  private static byte[] readZipEntry(File fileZip, String entryName) {
+    if (!fileZip.exists()) return null;
+    try (ZipFile zipFile = new ZipFile(fileZip)) {
+      ZipEntry zipEntry = zipFile.getEntry(entryName);
+      if (zipEntry == null) return null;
+      try (InputStream is = zipFile.getInputStream(zipEntry)) {
+        return ByteStreams.toByteArray(is);
+      }
+    } catch (IOException e) {
+      log.warn("Failed reading {} from plugin archive: {}", entryName, fileZip.getAbsolutePath(), e);
+      return null;
+    }
+  }
+
+  private static Properties readPluginProperties(File pluginFolder) {
+    File propertiesFile = new File(pluginFolder, PluginResources.PLUGIN_PROPERTIES);
+    if (!propertiesFile.exists()) return null;
+    try (FileInputStream in = new FileInputStream(propertiesFile)) {
+      Properties properties = new Properties();
+      properties.load(in);
+      return properties;
+    } catch (IOException e) {
+      log.warn("Failed reading plugin properties: {}", propertiesFile.getAbsolutePath(), e);
+      return null;
+    }
+  }
+
+  private static Version parseVersion(String version) {
+    if (Strings.isNullOrEmpty(version)) return null;
+    try {
+      return new Version(version);
+    } catch (RuntimeException e) {
+      return null;
+    }
   }
 
 }
