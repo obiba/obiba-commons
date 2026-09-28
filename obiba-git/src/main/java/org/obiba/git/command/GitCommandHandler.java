@@ -144,11 +144,10 @@ public class GitCommandHandler {
     return repository;
   }
 
-  private Repository createBareRepository(File repositoryPath) throws IOException {
+  private Repository createBareRepository(File repositoryPath) throws GitAPIException {
     log.debug("Create bare repository for {}", repositoryPath.getAbsolutePath());
-    Repository repository = new FileRepository(repositoryPath);
-    repository.create(true);
-    return repository;
+    // init command honors init.defaultBranch, as the clone does
+    return Git.init().setBare(true).setGitDir(repositoryPath).call().getRepository();
   }
 
   private FetchResult fetchAllRepository(Git git) throws GitAPIException {
