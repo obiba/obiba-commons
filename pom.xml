@@ -62,7 +62,7 @@
     <oauth-oidc-sdk.version>11.38.2</oauth-oidc-sdk.version>
     <protobuf.version>3.25.8</protobuf.version>
     <jakarta-servlet.version>6.1.0</jakarta-servlet.version>
-    <shiro.version>2.2.1</shiro.version>
+    <shiro.version>3.0.1</shiro.version>
     <shiro-extras.version>2.0.0</shiro-extras.version>
     <slf4j.version>2.0.17</slf4j.version>
     <spring.version>7.0.8</spring.version>
@@ -358,19 +358,16 @@
       <dependency>
         <groupId>org.apache.shiro</groupId>
         <artifactId>shiro-core</artifactId>
-        <classifier>jakarta</classifier>
         <version>${shiro.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.shiro</groupId>
         <artifactId>shiro-web</artifactId>
-        <classifier>jakarta</classifier>
         <version>${shiro.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.shiro</groupId>
         <artifactId>shiro-spring</artifactId>
-        <classifier>jakarta</classifier>
         <version>${shiro.version}</version>
         <exclusions>
           <exclusion>
