@@ -57,6 +57,9 @@ public class OIDCRealm extends AuthorizingRealm {
 
   public OIDCRealm(OIDCConfiguration configuration) {
     setName(configuration.getName());
+    // the groups are derived from the UserInfo carried by the principals: nothing to cache, and a cache would hand
+    // back the groups of a previous login (obiba/opal#4235)
+    setAuthorizationCachingEnabled(false);
     this.configuration = configuration;
   }
 
