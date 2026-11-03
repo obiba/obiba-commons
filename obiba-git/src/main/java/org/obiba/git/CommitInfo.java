@@ -14,6 +14,7 @@ import jakarta.annotation.Nullable;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -44,6 +45,8 @@ public class CommitInfo {
   private boolean head;
 
   private boolean current;
+
+  private List<String> tags;
 
   public String getAuthorName() {
     return authorName;
@@ -86,6 +89,13 @@ public class CommitInfo {
     return diffEntries == null ? null : diffEntries.subList(0, diffEntries.size());
   }
 
+  /**
+   * Names of the tags on this commit, empty if none.
+   */
+  public List<String> getTags() {
+    return tags == null ? Collections.emptyList() : Collections.unmodifiableList(tags);
+  }
+
   @Override
   public String toString() {
     return "CommitInfo{" +
@@ -98,6 +108,7 @@ public class CommitInfo {
         ", blob='" + blob + '\'' +
         ", head=" + head +
         ", current=" + current +
+        ", tags=" + tags +
         '}';
   }
 
@@ -165,10 +176,15 @@ public class CommitInfo {
       return this;
     }
 
+    public Builder tags(List<String> tags) {
+      commitInfo.tags = tags;
+      return this;
+    }
+
     public static Builder createFromObject(CommitInfo commitInfo) {
       return new Builder().authorName(commitInfo.authorName).authorEmail(commitInfo.authorEmail)
           .comment(commitInfo.comment).commitId(commitInfo.commitId).date(commitInfo.date)
-          .diffEntries(commitInfo.diffEntries);
+          .diffEntries(commitInfo.diffEntries).tags(commitInfo.tags);
     }
 
     public CommitInfo build() {
