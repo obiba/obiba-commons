@@ -76,6 +76,14 @@ public class TagListCommand extends AbstractGitCommand<Iterable<TagInfo>> {
     return tagInfos;
   }
 
+  /**
+   * Append a slash to a non-empty prefix, so that it matches a whole folder of the tag names.
+   */
+  @Nullable
+  static String toFolderPrefix(@Nullable String prefix) {
+    return Strings.isNullOrEmpty(prefix) || prefix.endsWith("/") ? prefix : prefix + "/";
+  }
+
   @SuppressWarnings("ParameterHidesMemberVariable")
   public static class Builder {
 
@@ -90,10 +98,10 @@ public class TagListCommand extends AbstractGitCommand<Iterable<TagInfo>> {
     }
 
     /**
-     * List only the tags whose name starts with this prefix.
+     * List only the tags under this prefix, a folder of the tag names: "v1" lists "v1/t1", not "v10/t1".
      */
     public Builder prefix(String prefix) {
-      command.prefix = prefix;
+      command.prefix = toFolderPrefix(prefix);
       return this;
     }
 

@@ -150,10 +150,11 @@ public class LogsCommand extends AbstractGitCommand<Iterable<CommitInfo>> {
     }
 
     /**
-     * Fill in the tags, under this prefix, of the commits. The tag names are given without the prefix.
+     * Fill in the tags, under this prefix, of the commits. The prefix is a folder of the tag names ("v1" is "v1/"),
+     * and the tag names are given without it.
      */
     public Builder tagsPrefix(String tagsPrefix) {
-      command.tagsPrefix = tagsPrefix;
+      command.tagsPrefix = TagListCommand.toFolderPrefix(tagsPrefix);
       return this;
     }
 

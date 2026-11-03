@@ -248,13 +248,16 @@ public class GitCommandsTest {
     File repo = getRepoPath();
     addFile(repo, "a.txt", "A1", "Add a");
     handler.execute(new TagCommand.Builder(repo, "Tag", "v1/t1").build());
-    handler.execute(new TagCommand.Builder(repo, "Tag", "v2/t2").build());
+    handler.execute(new TagCommand.Builder(repo, "Tag", "v10/t2").build());
 
     TagInfo tagInfo = Iterables
         .getOnlyElement(handler.execute(new TagListCommand.Builder(repo).prefix("v1/").build()));
     // the full name, with slashes
     assertThat(tagInfo.getName()).isEqualTo("v1/t1");
     assertThat(tagInfo.getRef()).isEqualTo("refs/tags/v1/t1");
+    // the prefix is a folder: v1 does not match v10/t2
+    assertThat(Iterables.getOnlyElement(handler.execute(new TagListCommand.Builder(repo).prefix("v1").build()))
+        .getName()).isEqualTo("v1/t1");
     assertThat(handler.execute(new TagListCommand.Builder(repo).build())).hasSize(2);
   }
 
@@ -286,7 +289,7 @@ public class GitCommandsTest {
 
     // b.txt did not exist at t0: t0 is left out
     CommitInfo[] b = Iterables
-        .toArray(handler.execute(new LogsCommand.Builder(repo).path("b.txt").tagsPrefix("p/").build()),
+        .toArray(handler.execute(new LogsCommand.Builder(repo).path("b.txt").tagsPrefix("p").build()),
             CommitInfo.class);
     assertThat(b).hasSize(1);
     assertThat(b[0].getTags()).containsExactly("t1");
