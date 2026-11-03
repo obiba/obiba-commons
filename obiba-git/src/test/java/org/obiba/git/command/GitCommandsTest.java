@@ -193,6 +193,121 @@ public class GitCommandsTest {
 
     assertThat(readFileFromTag(repo, "root.txt", "1.0")).isEqualTo("Version 1");
     assertThat(readFileFromCommit(repo, "root.txt", tagInfo.getCommitId())).isEqualTo("Version 1");
+
+    // the tagged commit, not the annotated tag object
+    assertThat(tagInfo.getCommitId()).isEqualTo(getCommitIds(repo, null)[0]);
+    assertThat(tagInfo.getMessage()).isEqualTo("Test first tag");
+    assertThat(tagInfo.getTaggerName()).isEqualTo(AbstractGitWriteCommand.DEFAULT_AUTHOR_NAME);
+    assertThat(tagInfo.getDate()).isNotNull();
+  }
+
+  @Test
+  public void test_tag_path() throws Exception {
+    File repo = getRepoPath();
+    addFile(repo, "a.txt", "A1", "Add a");
+    addFile(repo, "b.txt", "B1", "Add b");
+
+    handler.execute(new TagCommand.Builder(repo, "Tag a", "t1").path("a.txt").build());
+
+    TagInfo tagInfo = Iterables.getOnlyElement(handler.execute(new TagListCommand.Builder(repo).build()));
+    assertThat(tagInfo.getCommitId()).isEqualTo(getCommitIds(repo, "a.txt")[0]);
+    assertThat(tagInfo.getCommitId()).isNotEqualTo(getCommitIds(repo, null)[0]);
+  }
+
+  @Test
+  public void test_tag_path_without_commit() throws Exception {
+    File repo = getRepoPath();
+    addFile(repo, "a.txt", "A1", "Add a");
+    try {
+      handler.execute(new TagCommand.Builder(repo, "Tag", "t1").path("none.txt").build());
+      fail("Should throw GitException");
+    } catch(GitException e) {
+      assertThat(e).hasMessageContaining("none.txt");
+    }
+  }
+
+  @Test
+  public void test_tag_rejected_names() throws Exception {
+    File repo = getRepoPath();
+    addFile(repo, "a.txt", "A1", "Add a");
+    handler.execute(new TagCommand.Builder(repo, "Tag", "t1").build());
+
+    for(String name : new String[] { "t1", "bad name", "bad..name" }) {
+      try {
+        handler.execute(new TagCommand.Builder(repo, "Tag", name).build());
+        fail("Should throw GitException for tag name: " + name);
+      } catch(GitException e) {
+        // expected
+      }
+    }
+    assertThat(handler.execute(new TagListCommand.Builder(repo).build())).hasSize(1);
+  }
+
+  @Test
+  public void test_tag_list_prefix() throws Exception {
+    File repo = getRepoPath();
+    addFile(repo, "a.txt", "A1", "Add a");
+    handler.execute(new TagCommand.Builder(repo, "Tag", "v1/t1").build());
+    handler.execute(new TagCommand.Builder(repo, "Tag", "v2/t2").build());
+
+    TagInfo tagInfo = Iterables
+        .getOnlyElement(handler.execute(new TagListCommand.Builder(repo).prefix("v1/").build()));
+    // the full name, with slashes
+    assertThat(tagInfo.getName()).isEqualTo("v1/t1");
+    assertThat(tagInfo.getRef()).isEqualTo("refs/tags/v1/t1");
+    assertThat(handler.execute(new TagListCommand.Builder(repo).build())).hasSize(2);
+  }
+
+  @Test
+  public void test_logs_with_tags() throws Exception {
+    File repo = getRepoPath();
+    addFile(repo, "a.txt", "A1", "Add a"); // c1
+    handler.execute(new TagCommand.Builder(repo, "Tag", "p/t0").build()); // on c1, before b.txt exists
+    addFile(repo, "b.txt", "B1", "Add b"); // c2
+    handler.execute(new TagCommand.Builder(repo, "Tag", "p/t1").build()); // on c2
+    handler.execute(new TagCommand.Builder(repo, "Tag", "other").build()); // not under the prefix
+    addFile(repo, "a.txt", "A2", "Update a"); // c3
+
+    // folder (whole repository) history: tags on the tagged commits
+    CommitInfo[] all = Iterables.toArray(handler.execute(new LogsCommand.Builder(repo).tagsPrefix("p/").build()),
+        CommitInfo.class);
+    assertThat(all).hasSize(3);
+    assertThat(all[0].getTags()).isEmpty();
+    assertThat(all[1].getTags()).containsExactly("t1");
+    assertThat(all[2].getTags()).containsExactly("t0");
+
+    // a.txt was not changed by c2: t1 goes on c1, the version of a.txt at the tag time
+    CommitInfo[] a = Iterables
+        .toArray(handler.execute(new LogsCommand.Builder(repo).path("a.txt").tagsPrefix("p/").build()),
+            CommitInfo.class);
+    assertThat(a).hasSize(2);
+    assertThat(a[0].getTags()).isEmpty();
+    assertThat(a[1].getTags()).containsExactlyInAnyOrder("t0", "t1");
+
+    // b.txt did not exist at t0: t0 is left out
+    CommitInfo[] b = Iterables
+        .toArray(handler.execute(new LogsCommand.Builder(repo).path("b.txt").tagsPrefix("p/").build()),
+            CommitInfo.class);
+    assertThat(b).hasSize(1);
+    assertThat(b[0].getTags()).containsExactly("t1");
+
+    // no prefix, no tags
+    assertThat(Iterables.getFirst(handler.execute(new LogsCommand.Builder(repo).path("b.txt").build()), null)
+        .getTags()).isEmpty();
+  }
+
+  private void addFile(File repo, String path, String content, String message) throws IOException {
+    try(InputStream input = new FileInputStream(createFile(content))) {
+      handler.execute(new AddFilesCommand.Builder(repo, message).addFile(path, input).build());
+    }
+  }
+
+  /**
+   * Commit ids of the path, latest first.
+   */
+  private String[] getCommitIds(File repo, String path) {
+    return Iterables.toArray(Iterables.transform(handler.execute(new LogsCommand.Builder(repo).path(path).build()),
+        CommitInfo::getCommitId), String.class);
   }
 
   @Test

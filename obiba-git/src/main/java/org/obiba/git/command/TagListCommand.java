@@ -11,23 +11,30 @@
 package org.obiba.git.command;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 import jakarta.validation.constraints.NotNull;
 
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.Constants;
+import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revwalk.RevObject;
+import org.eclipse.jgit.revwalk.RevTag;
+import org.eclipse.jgit.revwalk.RevWalk;
 import org.obiba.git.GitException;
 import org.obiba.git.TagInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Strings;
 import jakarta.annotation.Nullable;
 
 public class TagListCommand extends AbstractGitCommand<Iterable<TagInfo>> {
 
-  private static final Logger log = LoggerFactory.getLogger(TagListCommand.class);
+  private String prefix;
 
   private TagListCommand(@NotNull File repositoryPath, @Nullable File workPath) {
     super(repositoryPath, workPath);
@@ -36,17 +43,37 @@ public class TagListCommand extends AbstractGitCommand<Iterable<TagInfo>> {
   @Override
   public Iterable<TagInfo> execute(Git git) {
     try {
-      Collection<TagInfo> tagInfos = new ArrayList<>();
-      for(Ref ref : git.tagList().call()) {
-        tagInfos.add(new TagInfo.Builder() //
-            .ref(ref.getName()).commitId(ref.getObjectId().getName()) //
-            .name(ref.getName().substring(ref.getName().lastIndexOf('/') + 1, ref.getName().length())) //
-            .build());
-      }
-      return tagInfos;
-    } catch(GitAPIException e) {
+      return listTags(git.getRepository(), prefix);
+    } catch(IOException e) {
       throw new GitException(e);
     }
+  }
+
+  /**
+   * List the tags whose name starts with the prefix (all the tags if the prefix is empty).
+   * The commit id is the one of the tagged commit, also for an annotated tag.
+   */
+  static List<TagInfo> listTags(Repository repository, @Nullable String prefix) throws IOException {
+    List<TagInfo> tagInfos = new ArrayList<>();
+    try(RevWalk walk = new RevWalk(repository)) {
+      for(Ref ref : repository.getRefDatabase().getRefsByPrefix(Constants.R_TAGS + Strings.nullToEmpty(prefix))) {
+        RevObject object = walk.parseAny(ref.getObjectId());
+        TagInfo.Builder builder = new TagInfo.Builder() //
+            .ref(ref.getName()) //
+            .name(ref.getName().substring(Constants.R_TAGS.length())) //
+            .commitId(walk.peel(object).getName());
+        if(object instanceof RevTag tag) {
+          builder.message(tag.getFullMessage());
+          PersonIdent tagger = tag.getTaggerIdent();
+          if(tagger != null) {
+            builder.taggerName(tagger.getName()).taggerEmail(tagger.getEmailAddress())
+                .date(Date.from(tagger.getWhenAsInstant()));
+          }
+        }
+        tagInfos.add(builder.build());
+      }
+    }
+    return tagInfos;
   }
 
   @SuppressWarnings("ParameterHidesMemberVariable")
@@ -60,6 +87,14 @@ public class TagListCommand extends AbstractGitCommand<Iterable<TagInfo>> {
 
     public Builder(@NotNull File repositoryPath, @Nullable File workPath) {
       command = new TagListCommand(repositoryPath, workPath);
+    }
+
+    /**
+     * List only the tags whose name starts with this prefix.
+     */
+    public Builder prefix(String prefix) {
+      command.prefix = prefix;
+      return this;
     }
 
     public TagListCommand build() {
