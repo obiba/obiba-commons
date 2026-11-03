@@ -397,6 +397,32 @@ public class GitCommandsTest {
     return readFile(repo, path, null, null);
   }
 
+  @Test
+  public void test_delete_tags_under_prefix() throws Exception {
+    File repo = getRepoPath();
+    File work = new File(testFolder, "work-" + repo.getName());
+    createDummyFiles(repo);
+    handler.execute(new TagCommand.Builder(repo, work, "Tag", "v1/t1").build());
+    handler.execute(new TagCommand.Builder(repo, work, "Tag", "v1/t2").build());
+    handler.execute(new TagCommand.Builder(repo, work, "Tag", "v10/t1").build());
+
+    handler.execute(new TagDeleteCommand.Builder(repo, work, "v1").build());
+
+    assertThat(handler.execute(new TagListCommand.Builder(repo, work).prefix("v1").build())).isEmpty();
+    // a later tag pushes all the tags of the clone: the deleted ones must not come back
+    handler.execute(new TagCommand.Builder(repo, work, "Tag", "other").build());
+    assertThat(handler.execute(new TagListCommand.Builder(repo).build())).extracting(TagInfo::getName)
+        .containsExactlyInAnyOrder("v10/t1", "other");
+
+    // nothing to delete
+    handler.execute(new TagDeleteCommand.Builder(repo, work, "v1").build());
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void test_delete_tags_requires_prefix() throws Exception {
+    new TagDeleteCommand.Builder(getRepoPath(), "").build();
+  }
+
   private String readFileFromTag(File repo, String path, String tag) throws Exception {
     return readFile(repo, path, null, tag);
   }
