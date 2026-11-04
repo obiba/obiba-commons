@@ -12,6 +12,7 @@ package org.obiba.git.command;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.validation.constraints.NotNull;
@@ -20,8 +21,10 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.lib.RefDatabase;
 import org.eclipse.jgit.transport.PushResult;
 import org.eclipse.jgit.transport.RefSpec;
+import org.eclipse.jgit.transport.RemoteRefUpdate;
 import org.obiba.git.GitException;
 
 import com.google.common.base.Preconditions;
@@ -29,8 +32,8 @@ import com.google.common.base.Strings;
 import jakarta.annotation.Nullable;
 
 /**
- * Delete the tags under a prefix, a folder of the tag names, from the remote repository and from the clone. The clone
- * must also lose them: a fetch does not prune the tags and {@link TagCommand} pushes all the tags of the clone.
+ * Delete from the remote repository the tags under a prefix, a folder of the tag names, and the tag named as the prefix.
+ * The clones lose them when they next fetch, see {@link GitCommandHandler}.
  */
 @SuppressWarnings("ClassTooDeepInInheritanceTree")
 public class TagDeleteCommand extends AbstractGitWriteCommand {
@@ -46,15 +49,34 @@ public class TagDeleteCommand extends AbstractGitWriteCommand {
   @Override
   public Iterable<PushResult> execute(Git git) {
     try {
-      List<Ref> refs = git.getRepository().getRefDatabase().getRefsByPrefix(Constants.R_TAGS + prefix);
+      RefDatabase refDatabase = git.getRepository().getRefDatabase();
+      List<Ref> refs = new ArrayList<>(refDatabase.getRefsByPrefix(Constants.R_TAGS + prefix));
+      Ref tag = refDatabase.exactRef(Constants.R_TAGS + prefix.substring(0, prefix.length() - 1));
+      if(tag != null) refs.add(tag);
       if(refs.isEmpty()) return List.of();
       Iterable<PushResult> results = git.push().setRemote("origin")
           .setRefSpecs(refs.stream().map(ref -> new RefSpec(":" + ref.getName())).toList()).call();
-      git.tagDelete().setTags(refs.stream().map(Ref::getName).toArray(String[]::new)).call();
+      checkDeleted(results);
       return results;
     } catch(IOException | GitAPIException e) {
       throw new GitException(e);
     }
+  }
+
+  /**
+   * A rejected ref update is reported in the push result, it does not make the push fail.
+   */
+  private void checkDeleted(Iterable<PushResult> results) {
+    List<String> rejected = new ArrayList<>();
+    for(PushResult result : results) {
+      for(RemoteRefUpdate update : result.getRemoteUpdates()) {
+        RemoteRefUpdate.Status status = update.getStatus();
+        if(status != RemoteRefUpdate.Status.OK && status != RemoteRefUpdate.Status.NON_EXISTING) {
+          rejected.add(update.getRemoteName() + " (" + status + ")");
+        }
+      }
+    }
+    if(!rejected.isEmpty()) throw new GitException("Failed to delete tags: " + String.join(", ", rejected));
   }
 
   public static class Builder {

@@ -151,7 +151,8 @@ public class GitCommandHandler {
   }
 
   private FetchResult fetchAllRepository(Git git) throws GitAPIException {
-    return git.fetch().setRefSpecs(DEFAULT_REF_SPEC).call();
+    // prune, so that a ref deleted from the remote is not pushed back by a clone that still has it
+    return git.fetch().setRefSpecs(DEFAULT_REF_SPEC).setRemoveDeletedRefs(true).call();
   }
 
 }

@@ -415,12 +415,69 @@ public class GitCommandsTest {
         .containsExactlyInAnyOrder("v10/t1", "other");
 
     // nothing to delete
+    assertThat(handler.execute(new TagDeleteCommand.Builder(repo, work, "v1").build())).isEmpty();
+  }
+
+  @Test
+  public void test_delete_tag_named_as_prefix() throws Exception {
+    File repo = getRepoPath();
+    createDummyFiles(repo);
+    handler.execute(new TagCommand.Builder(repo, "Tag", "v1").build());
+    handler.execute(new TagCommand.Builder(repo, "Tag", "v10").build());
+
+    handler.execute(new TagDeleteCommand.Builder(repo, "v1").build());
+
+    assertThat(handler.execute(new TagListCommand.Builder(repo).build())).extracting(TagInfo::getName)
+        .containsExactly("v10");
+  }
+
+  @Test
+  public void test_deleted_tags_do_not_come_back_from_another_clone() throws Exception {
+    File repo = getRepoPath();
+    File work = new File(testFolder, "work-" + repo.getName());
+    File otherWork = new File(testFolder, "other-work-" + repo.getName());
+    createDummyFiles(repo);
+    handler.execute(new TagCommand.Builder(repo, work, "Tag", "v1/t1").build());
+    assertThat(handler.execute(new TagListCommand.Builder(repo, otherWork).build())).hasSize(1);
+
     handler.execute(new TagDeleteCommand.Builder(repo, work, "v1").build());
+
+    assertThat(handler.execute(new TagListCommand.Builder(repo, otherWork).build())).isEmpty();
+    handler.execute(new TagCommand.Builder(repo, otherWork, "Tag", "other").build());
+    assertThat(handler.execute(new TagListCommand.Builder(repo).build())).extracting(TagInfo::getName)
+        .containsExactly("other");
+    // the name is free again in both clones
+    handler.execute(new TagCommand.Builder(repo, otherWork, "Tag", "v1/t1").build());
+    assertThat(handler.execute(new TagListCommand.Builder(repo, work).build())).hasSize(2);
+  }
+
+  @Test
+  public void test_delete_tags_rejected_by_remote() throws Exception {
+    File repo = getRepoPath();
+    File work = new File(testFolder, "work-" + repo.getName());
+    createDummyFiles(repo);
+    handler.execute(new TagCommand.Builder(repo, work, "Tag", "v1/t1").build());
+    // a locked ref makes the remote reject its update, receive.denyDeletes would apply to the branches only
+    assertThat(new File(repo, "refs/tags/v1/t1.lock").createNewFile()).isTrue();
+
+    try {
+      handler.execute(new TagDeleteCommand.Builder(repo, work, "v1").build());
+      fail("Should throw GitException");
+    } catch(GitException e) {
+      assertThat(e).hasMessageContaining("refs/tags/v1/t1");
+    }
+
+    assertThat(handler.execute(new TagListCommand.Builder(repo, work).build())).hasSize(1);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void test_delete_tags_requires_prefix() throws Exception {
     new TagDeleteCommand.Builder(getRepoPath(), "").build();
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void test_delete_tags_requires_non_null_prefix() throws Exception {
+    new TagDeleteCommand.Builder(getRepoPath(), null).build();
   }
 
   private String readFileFromTag(File repo, String path, String tag) throws Exception {
